@@ -4,21 +4,16 @@
   <meta charset="UTF-8">
   <title>Client Registration</title>
 
-  <!-- Supabase -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
   <!-- Google Font -->
-  
-  
- <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
+  <link rel="pregoogleapis.com
+  <link rel="preconnect" href="https://f="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display- Supabase JS -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supcript>
 
   <style>
     body {
       margin: 0;
       font-family: 'Montserrat', sans-serif;
-      background: #0b0b0b;
+      background-color: #0b0b0b;
       color: #ffffff;
     }
 
@@ -28,21 +23,18 @@
       padding: 28px 22px 40px;
     }
 
-    .header {
-      text-align: center;
-      margin-bottom: 24px;
-    }
-
-    .header h1 {
+    h1 {
       color: #ff7a00;
       font-weight: 800;
-      letter-spacing: 1px;
+      text-align: center;
+      margin-bottom: 10px;
     }
 
-    .header p {
-      font-size: 14px;
+    p.sub {
+      text-align: center;
       color: #cccccc;
-      line-height: 1.5;
+      font-size: 14px;
+      margin-bottom: 25px;
     }
 
     .card {
@@ -55,7 +47,6 @@
     label {
       font-size: 12px;
       font-weight: 600;
-      letter-spacing: 0.6px;
       color: #ffb366;
     }
 
@@ -72,3 +63,135 @@
 
     input:focus, select:focus, textarea:focus {
       outline: 2px solid #ff7a00;
+      background: #242424;
+    }
+
+    .age {
+      color: #ffb366;
+      font-size: 13px;
+      margin-bottom: 14px;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, #ff7a00, #ff9500);
+      border: none;
+      border-radius: 10px;
+      color: #000;
+      font-weight: 800;
+      font-size: 15px;
+      cursor: pointer;
+    }
+
+    .error {
+      color: #ff4d4d;
+      font-size: 13px;
+      margin-bottom: 12px;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <h1>REGISTER NOW</h1>
+  <p class="sub">
+    Secure your slot and keep your body feeling loose,
+    refreshed and competition‑ready.
+  </p>
+
+  <div class="card">
+    <form id="form">
+
+      <label>FULL NAME</label>
+      <input name="full_name" required>
+
+      <label>DATE OF BIRTH</label>
+      <input type="date" id="dob" required>
+      <div class="age">Age: <span id="age"></span></div>
+
+      <label>GENDER</label>
+      <select name="gender" required>
+        <option value="">Select</option>
+        <option>Male</option>
+        <option>Female</option>
+      </select>
+
+      <label>CITIZENSHIP</label>
+      <select id="citizenship" required>
+        <option>Malaysian</option>
+        <option>Foreigner</option>
+      </select>
+
+      <label>IC / PASSPORT NUMBER</label>
+      <input name="ic_passport" required>
+
+      <label>CONTACT NUMBER</label>
+      <input name="contact">
+
+      <label>EMAIL</label>
+      <input name="email">
+
+      <label>ADDRESS (OPTIONAL)</label>
+      <textarea name="address"></textarea>
+
+      <div class="error" id="error"></div>
+
+      <button type="submit">SUBMIT</button>
+    </form>
+  </div>
+</div>
+
+<script>
+  const supabase = supabaseJs.createClient(
+    "https://eookqiucuncovvxzdcml.supabase.co",
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVvb2txaXVjdW5jb3Z2eHpkY21sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYxOTIwNDksImV4cCI6MjA5MTc2ODA0OX0.Bk9QU8CufXnyiavO35WWM3gj1GupNRBk3EJZx-tO9hU"
+  );
+
+  const dob = document.getElementById("dob");
+  const age = document.getElementById("age");
+  const errorDiv = document.getElementById("error");
+
+  dob.addEventListener("change", () => {
+    const year = new Date(dob.value).getFullYear();
+    age.textContent = new Date().getFullYear() - year;
+  });
+
+  document.getElementById("form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    errorDiv.textContent = "";
+
+    const ctz = document.getElementById("citizenship").value;
+    const ic = e.target.ic_passport.value.trim();
+
+    if (ctz === "Malaysian" && !/^\d{12}$/.test(ic)) {
+      errorDiv.textContent = "Malaysian IC must be exactly 12 digits.";
+      return;
+    }
+
+    const { error } = await supabase.from("clients").insert({
+      full_name: e.target.full_name.value,
+      date_of_birth: dob.value,
+      gender: e.target.gender.value,
+      citizenship: ctz,
+      ic_passport: ic,
+      contact: e.target.contact.value,
+      email: e.target.email.value,
+      address: e.target.address.value
+    });
+
+    if (error) {
+      errorDiv.textContent = error.message;
+    } else {
+      alert("Registration successful!");
+      e.target.reset();
+      age.textContent = "";
+    }
+  });
+</script>
+
+</body>
+</html>
+``
