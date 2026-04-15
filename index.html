@@ -7,14 +7,12 @@
 <!-- Font -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
 
 <!-- Supabase -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
-* { box-sizing: border-box; }
-
 body {
   margin: 0;
   font-family: 'Montserrat', sans-serif;
@@ -22,19 +20,18 @@ body {
   color: #111;
 }
 
-/* ===== TOP NAV ===== */
 header {
   display: flex;
-  gap: 12px;
-  padding: 14px 20px;
-  background: #121212;
+  gap: 10px;
+  padding: 12px 16px;
+  background: #111;
 }
 
 header button {
-  background: #2a2a2a;
+  background: #333;
   color: #fff;
   border: none;
-  padding: 10px 18px;
+  padding: 8px 14px;
   border-radius: 6px;
   cursor: pointer;
 }
@@ -45,81 +42,68 @@ header button.active {
   font-weight: 700;
 }
 
-/* ===== LAYOUT ===== */
 .container {
-  max-width: 1200px;
+  max-width: 1100px;
   margin: auto;
-  padding: 24px;
+  padding: 20px;
 }
 
 .hidden { display: none; }
 
-/* ===== CARD ===== */
 .card {
   background: #fff;
-  border-radius: 10px;
-  padding: 20px;
+  border-radius: 8px;
+  padding: 16px;
   margin-bottom: 20px;
 }
 
-/* ===== FORM ===== */
 label {
   font-size: 12px;
   font-weight: 600;
-  margin-bottom: 4px;
   display: block;
+  margin-top: 10px;
 }
 
 input, select, textarea {
   width: 100%;
-  padding: 10px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  margin-bottom: 12px;
+  padding: 8px;
+  margin-top: 4px;
 }
 
 button.primary {
   background: #ff7a00;
   color: #000;
   border: none;
-  padding: 10px 16px;
+  padding: 8px 14px;
   border-radius: 6px;
   cursor: pointer;
-  font-weight: 600;
+  margin-top: 12px;
 }
 
-button.secondary {
-  background: #666;
+button.danger {
+  background: #e74c3c;
   color: #fff;
   border: none;
-  padding: 10px 16px;
+  padding: 6px 10px;
   border-radius: 6px;
   cursor: pointer;
-  margin-left: 8px;
 }
 
-/* ===== TABLE ===== */
 table {
   width: 100%;
   border-collapse: collapse;
+  margin-top: 10px;
+}
+
+th, td {
+  padding: 8px;
+  border-bottom: 1px solid #ddd;
+  font-size: 13px;
 }
 
 th {
-  background: #f1f1f1;
+  background: #f0f0f0;
   text-align: left;
-  padding: 10px;
-  font-size: 13px;
-}
-
-td {
-  padding: 10px;
-  border-top: 1px solid #ddd;
-  font-size: 13px;
-}
-
-/* ===== ACTION BAR ===== */
-.action-bar {
-  margin-bottom: 16px;
 }
 </style>
 </head>
@@ -134,117 +118,204 @@ td {
 
 <div class="container">
 
-<!-- CLIENTS -->
+<!-- ================= CLIENTS ================= -->
 <section id="clientsTab">
-  <div class="action-bar">
-    <button class="primary" id="btnAddClient">+ Add Client</button>
-  </div>
 
-  <div class="card hidden" id="clientForm">
-    <h3>Add Client</h3>
+<div class="card">
+<h3>Add Client</h3>
 
-    <label>Name</label><input id="c_name">
-    <label>DOB</label><input type="date" id="c_dob">
-    <label>Gender</label>
-    <select id="c_gender"><option>Male</option><option>Female</option></select>
-    <label>Citizenship</label>
-    <select id="c_citizen"><option>Malaysian</option><option>Foreigner</option></select>
-    <label>Contact</label><input id="c_contact">
-    <label>Email</label><input id="c_email">
-    <label>IC</label><input id="c_ic">
+<label>Name</label><input id="c_name">
+<label>DOB</label><input type="date" id="c_dob">
+<label>Gender</label>
+<select id="c_gender"><option>Male</option><option>Female</option></select>
+<label>Citizenship</label>
+<select id="c_citizen"><option>Malaysian</option><option>Foreigner</option></select>
+<label>Contact</label><input id="c_contact">
+<label>Email</label><input id="c_email">
+<label>IC / Passport</label><input id="c_ic">
 
-    <button class="primary" id="saveClient">Save</button>
-    <button class="secondary" id="cancelClient">Cancel</button>
-  </div>
+<button class="primary" onclick="addClient()">Add Client</button>
+</div>
 
-  <div class="card">
-    <h3>Client List</h3>
-    <table>
-      <thead>
-        <tr>
-          <th>Name</th><th>DOB</th><th>Gender</th>
-          <th>Citizen</th><th>Contact</th><th>Email</th><th>IC</th>
-        </tr>
-      </thead>
-      <tbody id="clientsTable"></tbody>
-    </table>
-  </div>
+<div class="card">
+<h3>Client List</h3>
+<table>
+<thead>
+<tr>
+<th>Name</th><th>DOB</th><th>Gender</th>
+<th>Citizen</th><th>Contact</th><th>Email</th><th>IC</th>
+</tr>
+</thead>
+<tbody id="clientsTable"></tbody>
+</table>
+</div>
+
 </section>
 
-<!-- PRACTITIONERS -->
+<!-- ================= PRACTITIONERS ================= -->
 <section id="practitionersTab" class="hidden">
-  <div class="card">
-    <h3>Practitioners</h3>
-    <label>Name</label>
-    <input id="p_name">
-    <button class="primary" id="addPractitioner">Add</button>
-  </div>
+
+<div class="card">
+<h3>Add Practitioner</h3>
+<label>Name</label>
+<input id="p_name">
+<button class="primary" onclick="addPractitioner()">Add Practitioner</button>
+</div>
+
+<div class="card">
+<h3>Practitioners On Duty</h3>
+
+<label>Date</label>
+<input type="date" id="dutyDate">
+
+<table>
+<thead>
+<tr><th>Name</th><th>On Duty</th><th>Remove</th></tr>
+</thead>
+<tbody id="practitionerTable"></tbody>
+</table>
+
+<button class="primary" onclick="saveDuty()">Save Duty</button>
+</div>
+
 </section>
 
-<!-- APPOINTMENTS -->
+<!-- ================= APPOINTMENTS ================= -->
 <section id="appointmentsTab" class="hidden">
-  <div class="action-bar">
-    <button class="primary">+ Add Appointment</button>
-  </div>
-  <div class="card">
-    <h3>Appointments</h3>
-    <p>(Appointment flow verified next step)</p>
-  </div>
+<div class="card">
+<h3>Appointments</h3>
+<p>Appointment flow will be verified next.</p>
+</div>
 </section>
 
 </div>
 
 <script>
-/* SAFETY */
-window.onerror = e => alert("JS error: " + e);
-
-/* INIT SUPABASE */
+/* ================= INIT ================= */
 const sb = supabase.createClient(
   "https://eookqiucuncovvxzdcml.supabase.co",
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVvb2txaXVjdW5jb3Z2eHpkY21sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYxOTIwNDksImV4cCI6MjA5MTc2ODA0OX0.Bk9QU8CufXnyiavO35WWM3gj1GupNRBk3EJZx-tO9hU"
 );
 
-/* TAB LOGIC */
-const tabs = {
-  Clients: document.getElementById("clientsTab"),
-  Practitioners: document.getElementById("practitionersTab"),
-  Appointments: document.getElementById("appointmentsTab")
-};
+/* ================= TABS ================= */
+const clientsTab = document.getElementById("clientsTab");
+const practitionersTab = document.getElementById("practitionersTab");
+const appointmentsTab = document.getElementById("appointmentsTab");
 
-function activate(tab) {
-  Object.values(tabs).forEach(t => t.classList.add("hidden"));
-  tabs[tab].classList.remove("hidden");
+tabClients.onclick = () => showTab("clients");
+tabPractitioners.onclick = () => showTab("practitioners");
+tabAppointments.onclick = () => showTab("appointments");
 
-  document.querySelectorAll("header button").forEach(b => b.classList.remove("active"));
-  document.getElementById("tab" + tab).classList.add("active");
+function showTab(tab) {
+  clientsTab.classList.add("hidden");
+  practitionersTab.classList.add("hidden");
+  appointmentsTab.classList.add("hidden");
+
+  tabClients.classList.remove("active");
+  tabPractitioners.classList.remove("active");
+  tabAppointments.classList.remove("active");
+
+  if (tab === "clients") {
+    clientsTab.classList.remove("hidden");
+    tabClients.classList.add("active");
+  }
+  if (tab === "practitioners") {
+    practitionersTab.classList.remove("hidden");
+    tabPractitioners.classList.add("active");
+  }
+  if (tab === "appointments") {
+    appointmentsTab.classList.remove("hidden");
+    tabAppointments.classList.add("active");
+  }
 }
 
-tabClients.onclick = () => activate("Clients");
-tabPractitioners.onclick = () => activate("Practitioners");
-tabAppointments.onclick = () => activate("Appointments");
+/* ================= CLIENTS ================= */
+async function addClient() {
+  if (c_citizen.value === "Malaysian" && !/^\d{12}$/.test(c_ic.value)) {
+    alert("Malaysian IC must be exactly 12 digits");
+    return;
+  }
 
-/* CLIENT FORM TOGGLE */
-btnAddClient.onclick = () => clientForm.classList.remove("hidden");
-cancelClient.onclick = () => clientForm.classList.add("hidden");
+  await sb.from("clients").insert({
+    full_name: c_name.value,
+    date_of_birth: c_dob.value,
+    gender: c_gender.value,
+    citizenship: c_citizen.value,
+    contact: c_contact.value,
+    email: c_email.value,
+    ic_passport: c_ic.value
+  });
 
-/* LOAD CLIENTS */
-async function loadClients(){
-  const {data} = await sb.from("clients").select("*");
-  clientsTable.innerHTML="";
-  data.forEach(c=>{
+  loadClients();
+}
+
+async function loadClients() {
+  const { data } = await sb.from("clients").select("*");
+  clientsTable.innerHTML = "";
+  data.forEach(c => {
     clientsTable.innerHTML += `
       <tr>
         <td>${c.full_name}</td>
         <td>${c.date_of_birth}</td>
         <td>${c.gender}</td>
         <td>${c.citizenship}</td>
-        <td>${c.contact||""}</td>
-        <td>${c.email||""}</td>
+        <td>${c.contact || ""}</td>
+        <td>${c.email || ""}</td>
         <td>${c.ic_passport}</td>
-      </tr>`;
+      </tr>
+    `;
   });
 }
+
+/* ================= PRACTITIONERS ================= */
+async function addPractitioner() {
+  if (!p_name.value) return;
+  await sb.from("practitioners").insert({ name: p_name.value });
+  p_name.value = "";
+  loadPractitioners();
+}
+
+async function loadPractitioners() {
+  const { data } = await sb.from("practitioners").select("*").eq("active", true);
+  practitionerTable.innerHTML = "";
+  data.forEach(p => {
+    practitionerTable.innerHTML += `
+      <tr>
+        <td>${p.name}</td>
+        <td><input type="checkbox" value="${p.id}"></td>
+        <td><button class="danger" onclick="removePractitioner('${p.id}')">X</button></td>
+      </tr>
+    `;
+  });
+}
+
+async function removePractitioner(id) {
+  await sb.from("practitioners").update({ active: false }).eq("id", id);
+  loadPractitioners();
+}
+
+async function saveDuty() {
+  await sb.from("practitioner_duty").delete().eq("duty_date", dutyDate.value);
+
+  const rows = [];
+  document.querySelectorAll("#practitionerTable input:checked").forEach(cb => {
+    rows.push({
+      practitioner_id: cb.value,
+      duty_date: dutyDate.value,
+      on_duty: true
+    });
+  });
+
+  if (rows.length) await sb.from("practitioner_duty").insert(rows);
+  alert("Duty saved");
+}
+
+/* ================= INIT LOAD ================= */
+const today = new Date().toISOString().slice(0,10);
+dutyDate.value = today;
+
 loadClients();
+loadPractitioners();
 </script>
 
 </body>
