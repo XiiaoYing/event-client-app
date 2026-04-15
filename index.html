@@ -350,30 +350,58 @@ async function loadOnDuty(){
   });
 }
 
-async function saveAppointment(){
-  const client=clientsCache.find(c=>c.id===appClient.value);
-  const svc=SERVICES.find(s=>s.name===appService.value);
-  if(!client||!svc||!appTime.value){
-    alert("Please fill all required fields"); return;
-  }
-  const start=new Date(`${appDate.value}T${appTime.value}`);
-  const end=new Date(start); end.setMinutes(start.getMinutes()+svc.duration);
-  const sst=client.citizenship==="Foreigner"?+(svc.price*0.06).toFixed(2):0;
-  const total=+(svc.price+sst).toFixed(2);
+async function saveAppointment() {
+  const client = clientsCache.find(c => c.id === appClient.value);
+  const service = SERVICES.find(s => s.name === appService.value);
 
-  await sb.from("appointments").insert({
-    client_id:client.id,
-    service_name:svc.name,
-    start_time:start,
-    end_time:end,
-    practitioner:appPractitioner.value,
-    remarks:appNotes.value,
-    amount:svc.price,
-    sst,
-    total
+  if (!client || !service) {
+    alert("Please select a client and service");
+    return;
+  }
+
+  if (!appTime.value) {
+    alert("Please enter appointment time");
+    return;
+  }
+
+  if (!appPractitioner.value || appPractitioner.value === "No practitioner on duty") {
+    alert("Please select a practitioner on duty");
+    return;
+  }
+
+  const start = new Date(`${appDate.value}T${appTime.value}`);
+  const end = new Date(start);
+  end.setMinutes(start.getMinutes() + service.duration);
+
+  const sst =
+    client.citizenship === "Foreigner"
+      ? +(service.price * 0.06).toFixed(2)
+      : 0;
+
+  const total = +(service.price + sst).toFixed(2);
+
+  const { error } = await sb.from("appointments").insert({
+    client_id: client.id,
+    service_name: service.name,
+    start_time: start,
+    end_time: end,
+    practitioner: appPractitioner.value,
+    remarks: appNotes.value,
+    amount: service.price,
+    sst: sst,
+    total: total
   });
+
+  if (error) {
+    alert("Failed to save appointment: " + error.message);
+    console.error(error);
+    return;
+  }
+
+  alert("Appointment saved");
   loadAppointments();
 }
+
 
 async function loadAppointments(){
   const {data}=await sb.from("appointments").select("*").order("start_time");
