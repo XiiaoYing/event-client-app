@@ -106,14 +106,19 @@
 
 <main>
 
-  <div class="toolbar">
-    <input
-      id="search"
-      placeholder="Search name / contact / IC"
-      oninput="filterClients()"
-    />
-    <button onclick="addClient()">➕ Add Client</button>
-  </div>
+<div class="toolbar">
+  <input
+    id="search"
+    placeholder="Search name / contact / IC"
+    oninput="filterClients()"
+  />
+
+  <button onclick="addClient()">➕ Add Client</button>
+
+  <button onclick="toggleMore()" id="toggleBtn">
+    👁 Show More
+  </button>
+</div>
 
   <table>
     <thead>
