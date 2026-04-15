@@ -5,14 +5,9 @@
 <title>Admin Dashboard</title>
 
 <!-- Google Font -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
-
-<!-- Supabase SDK -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<style>
+<link rel="preconnectpis.com
+<link rel="preconnect" href="httpsef="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" relDK -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2tyle>
 body {
   margin: 0;
   font-family: 'Montserrat', sans-serif;
@@ -53,8 +48,8 @@ header button.active {
 label {
   font-size: 12px;
   font-weight: 600;
-  display: block;
   margin-top: 10px;
+  display: block;
 }
 input, select, textarea {
   width: 100%;
@@ -88,10 +83,7 @@ th, td {
   border-bottom: 1px solid #ddd;
   font-size: 13px;
 }
-th {
-  background: #f0f0f0;
-  text-align: left;
-}
+th { background:#f0f0f0; }
 </style>
 </head>
 
@@ -105,12 +97,10 @@ th {
 
 <div class="container">
 
-<!-- ================= CLIENTS ================= -->
+<!-- CLIENTS -->
 <section id="clientsTab">
-
 <div class="card">
 <h3>Add Client</h3>
-
 <label>Name</label><input id="c_name">
 <label>DOB</label><input type="date" id="c_dob">
 <label>Gender</label>
@@ -128,19 +118,17 @@ th {
 <table>
 <thead>
 <tr>
-<th>Name</th><th>DOB</th><th>Age</th><th>Gender</th>
-<th>Citizen</th><th>Contact</th><th>Email</th><th>IC</th><th>Delete</th>
+<th>Name</th><th>DOB</th><th>Age</th><th>Citizen</th>
+<th>Contact</th><th>Email</th><th>IC</th><th>Delete</th>
 </tr>
 </thead>
 <tbody id="clientsTable"></tbody>
 </table>
 </div>
-
 </section>
 
-<!-- ================= PRACTITIONERS (LOCKED) ================= -->
+<!-- PRACTITIONERS (LOCKED) -->
 <section id="practitionersTab" class="hidden">
-
 <div class="card">
 <h3>Add Practitioner</h3>
 <input id="p_name">
@@ -149,20 +137,17 @@ th {
 
 <div class="card">
 <h3>Practitioners On Duty</h3>
-<label>Date</label>
-<input type="date" id="dutyDate">
+<label>Date</label><input type="date" id="dutyDate">
 <table>
 <thead><tr><th>Name</th><th>On Duty</th><th>Remove</th></tr></thead>
 <tbody id="practitionerTable"></tbody>
 </table>
 <button class="primary" onclick="saveDuty()">Save Duty</button>
 </div>
-
 </section>
 
-<!-- ================= APPOINTMENTS ================= -->
+<!-- APPOINTMENTS -->
 <section id="appointmentsTab" class="hidden">
-
 <div class="card">
 <h3>Add Appointment</h3>
 
@@ -170,7 +155,7 @@ th {
 <label>Client</label><select id="appClient"></select>
 <label>Service</label><select id="appService"></select>
 <label>Base Price (RM)</label><input id="appPrice" readonly>
-<label>SST (RM)</label><input id="appSst" readonly>
+<label>SST 6% (RM)</label><input id="appSst" readonly>
 <label>Total (RM)</label><input id="appTotal" readonly>
 <label>Time (HH:mm)</label><input id="appTime">
 <label>Practitioner</label><select id="appPractitioner"></select>
@@ -188,7 +173,6 @@ th {
 <tbody id="appointmentsTable"></tbody>
 </table>
 </div>
-
 </section>
 
 </div>
@@ -199,56 +183,51 @@ const sb = supabase.createClient(
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVvb2txaXVjdW5jb3Z2eHpkY21sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYxOTIwNDksImV4cCI6MjA5MTc2ODA0OX0.Bk9QU8CufXnyiavO35WWM3gj1GupNRBk3EJZx-tO9hU"
 );
 
+/* LOCKED SERVICES */
 const SERVICES = [
-  { id: "SM", name: "Sports Massage", price: 45, duration: 15 },
-  { id: "RCB", name: "Recovery Compression Boots", price: 25, duration: 10 },
-  { id: "AS", name: "Assisted Stretch Session", price: 20, duration: 10 },
-  { id: "PB", name: "Physio Bundle", price: 400, duration: 0 },
-  { id: "PKP", name: "Performance Kickstart Program", price: 261, duration: 0 },
-  { id: "SMFT", name: "Sports Massage - First Trial", price: 189, duration: 0 }
+  { id:"SM", name:"Sports Massage", price:45, duration:15 },
+  { id:"RCB", name:"Recovery Compression Boots", price:25, duration:10 },
+  { id:"AS", name:"Assisted Stretch Session", price:20, duration:10 },
+  { id:"PB", name:"Physio Bundle", price:400, duration:0 },
+  { id:"PKP", name:"Performance Kickstart Program", price:261, duration:0 },
+  { id:"SMFT", name:"Sports Massage - First Trial", price:189, duration:0 }
 ];
-
 
 let clientsCache = [];
 
-/* ================= TABS ================= */
-tabClients.onclick = () => showTab("clients");
-tabPractitioners.onclick = () => showTab("practitioners");
-tabAppointments.onclick = () => showTab("appointments");
+/* Tabs */
+tabClients.onclick=()=>showTab("clients");
+tabPractitioners.onclick=()=>showTab("practitioners");
+tabAppointments.onclick=()=>showTab("appointments");
 
-function showTab(tab){
+function showTab(t){
   clientsTab.classList.add("hidden");
   practitionersTab.classList.add("hidden");
   appointmentsTab.classList.add("hidden");
   tabClients.classList.remove("active");
   tabPractitioners.classList.remove("active");
   tabAppointments.classList.remove("active");
-  if(tab==="clients"){clientsTab.classList.remove("hidden");tabClients.classList.add("active");}
-  if(tab==="practitioners"){practitionersTab.classList.remove("hidden");tabPractitioners.classList.add("active");}
-  if(tab==="appointments"){appointmentsTab.classList.remove("hidden");tabAppointments.classList.add("active");loadOnDuty();}
+  if(t==="clients"){clientsTab.classList.remove("hidden");tabClients.classList.add("active");}
+  if(t==="practitioners"){practitionersTab.classList.remove("hidden");tabPractitioners.classList.add("active");}
+  if(t==="appointments"){appointmentsTab.classList.remove("hidden");tabAppointments.classList.add("active");loadOnDuty();}
 }
 
-/* ================= CLIENTS ================= */
-function calcAge(dob){
-  const d = new Date(dob);
-  const t = new Date();
-  let age = t.getFullYear() - d.getFullYear();
-  if (t < new Date(t.getFullYear(), d.getMonth(), d.getDate())) age--;
-  return age;
+/* Clients */
+function ageFromDOB(d){
+  const dob=new Date(d);const now=new Date();
+  let a=now.getFullYear()-dob.getFullYear();
+  if(now<new Date(now.getFullYear(),dob.getMonth(),dob.getDate())) a--;
+  return a;
 }
 
 async function addClient(){
-  if(c_citizen.value==="Malaysian" && !/^\d{12}$/.test(c_ic.value)){
-    alert("Malaysian IC must be exactly 12 digits"); return;
+  if(c_citizen.value==="Malaysian"&&!/^\d{12}$/.test(c_ic.value)){
+    alert("Malaysian IC must be exactly 12 digits");return;
   }
   await sb.from("clients").insert({
-    full_name:c_name.value,
-    date_of_birth:c_dob.value,
-    gender:c_gender.value,
-    citizenship:c_citizen.value,
-    contact:c_contact.value,
-    email:c_email.value,
-    ic_passport:c_ic.value
+    full_name:c_name.value,date_of_birth:c_dob.value,
+    gender:c_gender.value,citizenship:c_citizen.value,
+    contact:c_contact.value,email:c_email.value,ic_passport:c_ic.value
   });
   loadClients();
 }
@@ -256,15 +235,13 @@ async function addClient(){
 async function loadClients(){
   const {data}=await sb.from("clients").select("*");
   clientsCache=data||[];
-  clientsTable.innerHTML="";
-  appClient.innerHTML="";
+  clientsTable.innerHTML=""; appClient.innerHTML="";
   clientsCache.forEach(c=>{
     clientsTable.innerHTML+=`
       <tr>
         <td>${c.full_name}</td>
         <td>${c.date_of_birth}</td>
-        <td>${calcAge(c.date_of_birth)}</td>
-        <td>${c.gender}</td>
+        <td>${ageFromDOB(c.date_of_birth)}</td>
         <td>${c.citizenship}</td>
         <td>${c.contact||""}</td>
         <td>${c.email||""}</td>
@@ -282,11 +259,8 @@ async function deleteClient(id){
   }
 }
 
-/* ================= PRACTITIONERS (LOCKED) ================= */
-async function addPractitioner(){
-  await sb.from("practitioners").insert({name:p_name.value});
-  p_name.value=""; loadPractitioners();
-}
+/* Practitioners (LOCKED) */
+async function addPractitioner(){await sb.from("practitioners").insert({name:p_name.value});p_name.value="";loadPractitioners();}
 async function loadPractitioners(){
   const {data}=await sb.from("practitioners").select("*").eq("active",true);
   practitionerTable.innerHTML="";
@@ -299,10 +273,7 @@ async function loadPractitioners(){
       </tr>`;
   });
 }
-async function removePractitioner(id){
-  await sb.from("practitioners").update({active:false}).eq("id",id);
-  loadPractitioners();
-}
+async function removePractitioner(id){await sb.from("practitioners").update({active:false}).eq("id",id);loadPractitioners();}
 async function saveDuty(){
   await sb.from("practitioner_duty").delete().eq("duty_date",dutyDate.value);
   const rows=[];
@@ -313,29 +284,25 @@ async function saveDuty(){
   alert("Duty saved");
 }
 
-/* ================= APPOINTMENTS ================= */
-SERVICES.forEach(svc => {
-  const opt = document.createElement("option");
-  opt.value = svc.id;       // ✅ service_id
-  opt.textContent = svc.name;
-  appService.appendChild(opt);
+/* Appointments */
+SERVICES.forEach(s=>{
+  const o=document.createElement("option");
+  o.value=s.id; o.textContent=s.name;
+  appService.appendChild(o);
 });
 
-function recalcPrice(){
-  const svc=SERVICES.find(s=>s.name===appService.value);
-  if(!svc) return;
+function recalcAmount(){
+  const svc=SERVICES.find(s=>s.id===appService.value);
   const client=clientsCache.find(c=>c.id===appClient.value);
-  let sst=0;
-  if(client && client.citizenship==="Foreigner"){
-    sst=+(svc.price*0.06).toFixed(2);
-  }
+  if(!svc||!client) return;
+  let sst=client.citizenship==="Foreigner"?+(svc.price*0.06).toFixed(2):0;
   appPrice.value=svc.price.toFixed(2);
   appSst.value=sst.toFixed(2);
   appTotal.value=(svc.price+sst).toFixed(2);
 }
 
-appService.onchange=recalcPrice;
-appClient.onchange=recalcPrice;
+appService.onchange=recalcAmount;
+appClient.onchange=recalcAmount;
 
 async function loadOnDuty(){
   appPractitioner.innerHTML="";
@@ -344,7 +311,7 @@ async function loadOnDuty(){
     .eq("duty_date",appDate.value)
     .eq("on_duty",true);
   if(!data||!data.length){
-    appPractitioner.innerHTML="<option>No practitioner on duty</option>";
+    appPractitioner.innerHTML="<option disabled>No practitioner on duty</option>";
     return;
   }
   data.forEach(d=>{
@@ -352,76 +319,50 @@ async function loadOnDuty(){
   });
 }
 
-async function saveAppointment() {
-  const client = clientsCache.find(c => c.id === appClient.value);
-  const service = SERVICES.find(s => s.name === appService.value);
-
-  if (!client || !service) {
-    alert("Please select a client and service");
-    return;
+async function saveAppointment(){
+  const client=clientsCache.find(c=>c.id===appClient.value);
+  const svc=SERVICES.find(s=>s.id===appService.value);
+  if(!client||!svc||!appTime.value||!appPractitioner.value){
+    alert("Please fill all required fields");return;
   }
+  const start=new Date(`${appDate.value}T${appTime.value}`);
+  const end=new Date(start); end.setMinutes(start.getMinutes()+svc.duration);
+  const sst=client.citizenship==="Foreigner"?+(svc.price*0.06).toFixed(2):0;
+  const total=+(svc.price+sst).toFixed(2);
 
-  if (!appTime.value) {
-    alert("Please enter appointment time");
-    return;
-  }
-
-  if (!appPractitioner.value || appPractitioner.value === "No practitioner on duty") {
-    alert("Please select a practitioner on duty");
-    return;
-  }
-
-  const start = new Date(`${appDate.value}T${appTime.value}`);
-  const end = new Date(start);
-  end.setMinutes(start.getMinutes() + service.duration);
-
-  const sst =
-    client.citizenship === "Foreigner"
-      ? +(service.price * 0.06).toFixed(2)
-      : 0;
-
-  const total = +(service.price + sst).toFixed(2);
-
-  const { error } = await sb.from("appointments").insert({
-    client_id: client.id,
-    service_name: service.name,
-    start_time: start,
-    end_time: end,
-    practitioner: appPractitioner.value,
-    remarks: appNotes.value,
-    amount: service.price,
-    sst: sst,
-    total: total
+  await sb.from("appointments").insert({
+    client_id:client.id,
+    service_id:svc.id,
+    start_time:start,
+    end_time:end,
+    practitioner:appPractitioner.value,
+    remarks:appNotes.value,
+    amount:svc.price,
+    sst,
+    total
   });
-
-  if (error) {
-    alert("Failed to save appointment: " + error.message);
-    console.error(error);
-    return;
-  }
-
   alert("Appointment saved");
   loadAppointments();
 }
-
 
 async function loadAppointments(){
   const {data}=await sb.from("appointments").select("*").order("start_time");
   appointmentsTable.innerHTML="";
   data.forEach(a=>{
+    const svc=SERVICES.find(s=>s.id===a.service_id)?.name||a.service_id;
     appointmentsTable.innerHTML+=`
       <tr>
         <td>${a.start_time.split("T")[0]}</td>
         <td>${a.start_time.split("T")[1].slice(0,5)}</td>
         <td>${a.client_id}</td>
-        <td>${a.service_name}</td>
+        <td>${svc}</td>
         <td>RM ${a.total.toFixed(2)}</td>
-        <td>${a.practitioner||""}</td>
+        <td>${a.practitioner}</td>
       </tr>`;
   });
 }
 
-/* ================= INIT ================= */
+/* INIT */
 const today=new Date().toISOString().slice(0,10);
 dutyDate.value=today; appDate.value=today;
 loadClients(); loadPractitioners(); loadAppointments();
