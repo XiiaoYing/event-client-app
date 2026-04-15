@@ -4,184 +4,67 @@
 <meta charset="UTF-8">
 <title>Admin Dashboard</title>
 
-<!-- ✅ Google Font -->
-<link rel="preconnect" href="https://fonts.googleapis.com"https://fontss://fonts.googleapis.com/css2?family=Montserrat:wght@400;600=swap
-
-<!-- ✅ Supabase SDK -->
-<script/cdn.jsdelivr.net/npm/@supabase/supabase-js@2</script>
+<!-- Google Font -->
+<link rel="preconnect" hrefm
+<link rel="pregstatic.com
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&displaySupabase v2 -->
+<script src="https://cdn.jsdelivr.net/npmpabase-js@2</script>
 
 <style>
 body { margin:0; font-family:'Montserrat',sans-serif; background:#0b0b0b; color:#fff; }
-header {
-  display:flex; gap:10px; padding:16px;
-  background:#000; border-bottom:2px solid #ff7a00;
-}
-header button {
-  background:#1f1f1f; color:#fff; border:none;
-  padding:10px 14px; border-radius:6px; cursor:pointer;
-}
-header button.active {
-  background:#ff7a00; color:#000; font-weight:700;
-}
-.container { max-width:1200px; margin:auto; padding:24px; }
+header { display:flex; gap:10px; padding:16px; background:#000; border-bottom:2px solid #ff7a00; }
+header button { background:#1f1f1f; color:#fff; border:none; padding:10px 14px; border-radius:6px; cursor:pointer; }
+header button.active { background:#ff7a00; color:#000; font-weight:700; }
+.container { padding:24px; }
 .hidden { display:none; }
-
-input, select, textarea {
-  width:100%; padding:10px; margin-bottom:10px;
-  background:#1f1f1f; border:none; border-radius:6px; color:#fff;
-}
-
-button.primary {
-  background:#ff7a00; color:#000; border:none;
-  padding:10px; border-radius:6px; cursor:pointer; font-weight:700;
-}
-button.danger {
-  background:#ff4d4d; color:#fff; border:none;
-  padding:8px 10px; border-radius:6px; cursor:pointer;
-}
-
-table { width:100%; border-collapse:collapse; background:#151515; }
-th, td { padding:10px; border-bottom:1px solid #222; font-size:13px; }
-th { background:#111; color:#ffb366; font-size:12px; }
-
-.section-title { color:#ff7a00; margin:10px 0; }
+button.primary { background:#ff7a00; color:#000; padding:10px; border:none; border-radius:6px; cursor:pointer; }
 </style>
 </head>
 
 <body>
 
 <header>
-  <button class="active" onclick="switchTab('clients', this)">Clients</button>
-  <button onclick="switchTab('practitioners', this)">Practitioners</button>
-  <button onclick="switchTab('appointments', this)">Appointments</button>
+  <button class="active" onclick="showTab('clients', this)">Clients</button>
+  <button onclick="showTab('practitioners', this)">Practitioners</button>
+  <button onclick="showTab('appointments', this)">Appointments</button>
 </header>
 
 <div class="container">
 
-<!-- CLIENTS -->
 <div id="clientsTab">
-  <h2 class="section-title">Clients</h2>
-  <button class="primary" onclick="addClient()">➕ Add Client</button>
-  <table>
-    <thead>
-      <tr>
-        <th>Name</th><th>DOB</th><th>Age</th><th>Gender</th>
-        <th>Citizenship</th><th>Contact</th><th>Email</th>
-        <th>IC / Passport</th><th>Action</th>
-      </tr>
-    </thead>
-    <tbody id="clientsBody"></tbody>
-  </table>
+  <h2>Clients</h2>
+  <button class="primary" onclick="alert('Clients works ✅')">Test Client Button</button>
 </div>
 
-<!-- PRACTITIONERS -->
 <div id="practitionersTab" class="hidden">
-  <h2 class="section-title">Practitioners</h2>
-  <input id="practName" placeholder="Practitioner name">
-  <button class="primary" onclick="addPractitioner()">Add Practitioner</button>
-
-  <h3 class="section-title">On Duty (by date)</h3>
-  <input type="date" id="dutyDate">
-  <table>
-    <thead><tr><th>Name</th><th>On Duty</th></tr></thead>
-    <tbody id="dutyBody"></tbody>
-  </table>
-  <button class="primary" onclick="saveDuty()">Save Duty</button>
+  <h2>Practitioners</h2>
+  <button class="primary" onclick="alert('Practitioners works ✅')">Test Practitioner Button</button>
 </div>
 
-<!-- APPOINTMENTS -->
 <div id="appointmentsTab" class="hidden">
-  <h2 class="section-title">New Appointment</h2>
-
-  <label>Date</label>
-  <input type="date" id="appDate">
-
-  <label>Client</label>
-  <select id="appClient"></select>
-
-  <label>Service</label>
-  <select id="appService"></select>
-
-  <label>Price (RM)</label>
-  <input id="appPrice" readonly>
-
-  <label>Start Time (HH:mm)</label>
-  <input id="appTime">
-
-  <label>Practitioner (on duty)</label>
-  <select id="appPractitioner"></select>
-
-  <label>Session Notes</label>
-  <textarea id="appNotes"></textarea>
-
-  <label>Payment Method</label>
-  <select id="appPayment">
-    <option>Cash</option>
-    <option>Card</option>
-    <option>E-wallet</option>
-  </select>
-
-  <button class="primary" onclick="saveAppointment()">Save Appointment & Payment</button>
+  <h2>Appointments</h2>
+  <button class="primary" onclick="alert('Appointments works ✅')">Test Appointment Button</button>
 </div>
 
 </div>
 
 <script>
-/* INIT */
-const supabase = supabaseJs.createClient(
+/* ✅ CORRECT SUPABASE INITIALIZATION */
+const sb = supabase.createClient(
   "https://eookqiucuncovvxzdcml.supabase.co",
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVvb2txaXVjdW5jb3Z2eHpkY21sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYxOTIwNDksImV4cCI6MjA5MTc2ODA0OX0.Bk9QU8CufXnyiavO35WWM3gj1GupNRBk3EJZx-tO9hU"
 );
 
-const SERVICES = [
-  { name:"Sports Massage", price:45, duration:15 },
-  { name:"Recovery Compression Boots", price:25, duration:10 },
-  { name:"Assisted Stretch Session", price:20, duration:10 }
-];
-
-let clients=[], practitioners=[];
-
-function switchTab(tab, btn){
-  ["clients","practitioners","appointments"].forEach(t=>{
-    document.getElementById(t+"Tab").classList.add("hidden");
+/* ✅ TAB SWITCHING */
+function showTab(tab, btn){
+  ['clients','practitioners','appointments'].forEach(t=>{
+    document.getElementById(t+'Tab').classList.add('hidden');
   });
-  document.getElementById(tab+"Tab").classList.remove("hidden");
-  document.querySelectorAll("header button").forEach(b=>b.classList.remove("active"));
-  btn.classList.add("active");
+  document.getElementById(tab+'Tab').classList.remove('hidden');
+  document.querySelectorAll('header button').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
 }
+</script>
 
-/* CLIENTS */
-async function loadClients(){
-  const {data}=await supabase.from("clients").select("*");
-  clients=data||[];
-  clientsBody.innerHTML="";
-  appClient.innerHTML="";
-  clients.forEach(c=>{
-    const age = new Date().getFullYear() - new Date(c.date_of_birth).getFullYear();
-    clientsBody.innerHTML += `
-      <tr>
-        <td>${c.full_name}</td>
-        <td>${c.date_of_birth}</td>
-        <td>${age}</td>
-        <td>${c.gender}</td>
-        <td>${c.citizenship}</td>
-        <td>${c.contact||""}</td>
-        <td>${c.email||""}</td>
-        <td>${c.ic_passport}</td>
-        <td><button class="danger" onclick="deleteClient('${c.id}')">Delete</button></td>
-      </tr>`;
-    appClient.innerHTML += `<option value="${c.id}">${c.full_name}</option>`;
-  });
-}
-function addClient(){
-  const name=prompt("Name");
-  const dob=prompt("DOB YYYY-MM-DD");
-  if(!name||!dob)return;
-  supabase.from("clients").insert({full_name:name,date_of_birth:dob}).then(loadClients);
-}
-function deleteClient(id){
-  if(confirm("Delete client?")) supabase.from("clients").delete().eq("id",id).then(loadClients);
-}
-
-/* PRACTITIONERS */
-async function loadPractitioners(){
+</body>
+</html>
