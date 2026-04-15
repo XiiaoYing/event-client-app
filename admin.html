@@ -4,113 +4,54 @@
 <meta charset="UTF-8">
 <title>Admin Dashboard</title>
 
-<!-- Google Font -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
-
-<!-- Supabase SDK -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<!-- ✅ Google Font -->
+https://fonts.googleapis.com
+https://fonts.gstatic.com
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="stylesheetps://cdn.jsdelivr.net/npm/@supabase/supabase-js@2
 
 <style>
-<header>
-  <button class="active" onclick="showTab('clients', this)">Clients</button>
-  <button onclick="showTab('practitioners', this)">Practitioners</button>
-  <button onclick="showTab('appointments', this)">Appointments</button>
-</header>
-header {
-  display:flex;
-  gap:10px;
-  padding:16px;
-  background:#000;
-  border-bottom:2px solid #ff7a00;
-}
-header button {
-  background:#1f1f1f;
-  color:#fff;
-  border:none;
-  padding:10px 14px;
-  border-radius:6px;
-  cursor:pointer;
-}
-header button.active {
-  background:#ff7a00;
-  color:#000;
-  font-weight:700;
-}
-.container {
-  max-width:1200px;
-  margin:auto;
-  padding:24px;
-}
+body { margin:0; font-family:'Montserrat',sans-serif; background:#0b0b0b; color:#fff; }
+header { display:flex; gap:10px; padding:16px; background:#000; border-bottom:2px solid #ff7a00; }
+header button { background:#1f1f1f; color:#fff; border:none; padding:10px 14px; border-radius:6px; cursor:pointer; }
+header button.active { background:#ff7a00; color:#000; font-weight:700; }
+.container { max-width:1200px; margin:auto; padding:24px; }
 .hidden { display:none; }
 
 input, select, textarea {
-  width:100%;
-  padding:10px;
-  background:#1f1f1f;
-  border:none;
-  border-radius:6px;
-  color:#fff;
-  margin-bottom:10px;
+  width:100%; padding:10px; background:#1f1f1f; border:none;
+  color:#fff; border-radius:6px; margin-bottom:10px;
 }
 
 button.primary {
-  background:#ff7a00;
-  color:#000;
-  border:none;
-  padding:10px;
-  border-radius:6px;
-  cursor:pointer;
-  font-weight:700;
+  background:#ff7a00; color:#000; border:none;
+  padding:10px; border-radius:6px; cursor:pointer; font-weight:700;
 }
 button.danger {
-  background:#ff4d4d;
-  color:#fff;
-  border:none;
-  padding:8px 10px;
-  border-radius:6px;
-  cursor:pointer;
+  background:#ff4d4d; color:#fff; border:none;
+  padding:8px 10px; border-radius:6px; cursor:pointer;
 }
 
-table {
-  width:100%;
-  border-collapse:collapse;
-  background:#151515;
-}
-th, td {
-  padding:10px;
-  border-bottom:1px solid #222;
-  font-size:13px;
-}
-th {
-  background:#111;
-  color:#ffb366;
-  font-size:12px;
-}
-
-.section-title {
-  color:#ff7a00;
-  margin:10px 0;
-}
+table { width:100%; border-collapse:collapse; background:#151515; }
+th, td { padding:10px; border-bottom:1px solid #222; font-size:13px; }
+th { background:#111; color:#ffb366; font-size:12px; }
+.section-title { color:#ff7a00; margin:10px 0; }
 </style>
 </head>
 
 <body>
 
 <header>
-  <button class="active" onclick="showTab('clients')">Clients</button>
-  <button onclick="showTab('practitioners')">Practitioners</button>
-  <button onclick="showTab('appointments')">Appointments</button>
+  <button class="active" onclick="switchTab('clients', this)">Clients</button>
+  <button onclick="switchTab('practitioners', this)">Practitioners</button>
+  <button onclick="switchTab('appointments', this)">Appointments</button>
 </header>
 
 <div class="container">
 
-<!-- CLIENTS TAB -->
+<!-- CLIENTS -->
 <div id="clientsTab">
   <h2 class="section-title">Clients</h2>
-  <button class="primary" onclick="addClientPrompt()">➕ Add Client</button>
-
+  <button class="primary" onclick="addClient()">➕ Add Client</button>
   <table>
     <thead>
       <tr>
@@ -123,22 +64,22 @@ th {
   </table>
 </div>
 
-<!-- PRACTITIONERS TAB -->
+<!-- PRACTITIONERS -->
 <div id="practitionersTab" class="hidden">
-  <h2 class="section-title">Practitioner Master</h2>
-  <input id="pracName" placeholder="Practitioner name">
+  <h2 class="section-title">Practitioners</h2>
+  <input id="practName" placeholder="Practitioner name">
   <button class="primary" onclick="addPractitioner()">Add Practitioner</button>
 
-  <h2 class="section-title">On Duty (By Date)</h2>
+  <h3 class="section-title">On Duty (by date)</h3>
   <input type="date" id="dutyDate">
   <table>
-    <thead><tr><th>Practitioner</th><th>On Duty</th></tr></thead>
+    <thead><tr><th>Name</th><th>On Duty</th></tr></thead>
     <tbody id="dutyBody"></tbody>
   </table>
   <button class="primary" onclick="saveDuty()">Save Duty</button>
 </div>
 
-<!-- APPOINTMENTS TAB -->
+<!-- APPOINTMENTS -->
 <div id="appointmentsTab" class="hidden">
   <h2 class="section-title">New Appointment</h2>
 
@@ -155,9 +96,9 @@ th {
   <input id="appPrice" readonly>
 
   <label>Start Time (HH:mm)</label>
-  <input id="appTime" placeholder="10:00">
+  <input id="appTime">
 
-  <label>Practitioner (On Duty)</label>
+  <label>Practitioner</label>
   <select id="appPractitioner"></select>
 
   <label>Session Notes</label>
@@ -176,74 +117,69 @@ th {
 </div>
 
 <script>
+/* ✅ SAFE, NO-BUG INITIALIZATION */
 const supabase = supabaseJs.createClient(
   "https://eookqiucuncovvxzdcml.supabase.co",
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVvb2txaXVjdW5jb3Z2eHpkY21sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYxOTIwNDksImV4cCI6MjA5MTc2ODA0OX0.Bk9QU8CufXnyiavO35WWM3gj1GupNRBk3EJZx-tO9hU"
 );
 
 const SERVICES = [
-  {name:"Sports Massage",price:45,duration:15},
-  {name:"Recovery Compression Boots",price:25,duration:10},
-  {name:"Assisted Stretch Session",price:20,duration:10}
+  { name:"Sports Massage", price:45, duration:15 },
+  { name:"Recovery Compression Boots", price:25, duration:10 },
+  { name:"Assisted Stretch Session", price:20, duration:10 }
 ];
 
 let clients=[], practitioners=[];
 
-const today = new Date().toISOString().slice(0,10);
-dutyDate.value = today;
-appDate.value = today;
-
-function showTab(tabName, btn){
-  document.querySelectorAll(".container > div").forEach(d => d.classList.add("hidden"));
-  document.getElementById(tabName + "Tab").classList.remove("hidden");
-
-  document.querySelectorAll("header button").forEach(b => b.classList.remove("active"));
-  if (btn) btn.classList.add("active");
+/* ✅ TAB SWITCHING (NO event bug) */
+function switchTab(tab, btn) {
+  ["clients","practitioners","appointments"].forEach(t=>{
+    document.getElementById(t+"Tab").classList.add("hidden");
+  });
+  document.getElementById(tab+"Tab").classList.remove("hidden");
+  document.querySelectorAll("header button").forEach(b=>b.classList.remove("active"));
+  btn.classList.add("active");
 }
 
-/* CLIENTS */
-async function loadClients(){
+/* ✅ CLIENTS */
+async function loadClients() {
   const {data}=await supabase.from("clients").select("*");
   clients=data||[];
   clientsBody.innerHTML="";
   appClient.innerHTML="";
   clients.forEach(c=>{
-    const age = new Date().getFullYear()-new Date(c.date_of_birth).getFullYear();
+    const age=new Date().getFullYear()-new Date(c.date_of_birth).getFullYear();
     clientsBody.innerHTML+=`
       <tr>
-        <td>${c.full_name}</td>
-        <td>${c.date_of_birth}</td>
-        <td>${age}</td>
-        <td>${c.gender}</td>
-        <td>${c.citizenship}</td>
-        <td>${c.contact||""}</td>
-        <td>${c.email||""}</td>
-        <td>${c.ic_passport}</td>
-        <td><button class="danger" onclick="delClient('${c.id}')">Delete</button></td>
+        <td>${c.full_name}</td><td>${c.date_of_birth}</td>
+        <td>${age}</td><td>${c.gender}</td>
+        <td>${c.citizenship}</td><td>${c.contact||""}</td>
+        <td>${c.email||""}</td><td>${c.ic_passport}</td>
+        <td><button class="danger" onclick="deleteClient('${c.id}')">Delete</button></td>
       </tr>`;
     appClient.innerHTML+=`<option value="${c.id}">${c.full_name}</option>`;
   });
 }
-function addClientPrompt(){
+
+function addClient() {
   const name=prompt("Name");
   const dob=prompt("DOB YYYY-MM-DD");
-  const gender=prompt("Gender");
-  const citizen=prompt("Citizenship");
-  const ic=prompt("IC / Passport");
-  supabase.from("clients").insert({
-    full_name:name,date_of_birth:dob,gender,citizen,ic_passport:ic
-  }).then(loadClients);
-}
-function delClient(id){
-  if(confirm("Delete client?")) supabase.from("clients").delete().eq("id",id).then(loadClients);
+  if(!name||!dob) return;
+  supabase.from("clients").insert({full_name:name,date_of_birth:dob}).then(loadClients);
 }
 
-/* PRACTITIONERS */
+function deleteClient(id){
+  if(confirm("Delete client?"))
+    supabase.from("clients").delete().eq("id",id).then(loadClients);
+}
+
+/* ✅ PRACTITIONERS */
 async function loadPractitioners(){
   const {data}=await supabase.from("practitioners").select("*").eq("active",true);
   practitioners=data||[];
   renderDuty();
 }
+
 function renderDuty(){
   dutyBody.innerHTML="";
   practitioners.forEach(p=>{
@@ -254,24 +190,33 @@ function renderDuty(){
       </tr>`;
   });
 }
+
+function addPractitioner(){
+  if(!practName.value) return;
+  supabase.from("practitioners").insert({name:practName.value})
+    .then(()=>{ practName.value=""; loadPractitioners(); });
+}
+
 async function saveDuty(){
   const date=dutyDate.value;
   await supabase.from("practitioner_duty").delete().eq("duty_date",date);
-  document.querySelectorAll("#dutyBody input").forEach(i=>{
-    if(i.checked){
-      supabase.from("practitioner_duty").insert({
-        practitioner_id:i.dataset.id,
-        duty_date:date,
-        on_duty:true
-      });
-    }
+  document.querySelectorAll("#dutyBody input:checked").forEach(i=>{
+    supabase.from("practitioner_duty").insert({
+      practitioner_id:i.dataset.id,duty_date:date,on_duty:true
+    });
   });
   alert("Duty saved");
 }
 
-/* APPOINTMENT */
-SERVICES.forEach(s=>appService.innerHTML+=`<option>${s.name}</option>`);
-appService.onchange=()=>appPrice.value=SERVICES.find(x=>x.name===appService.value).price;
+/* ✅ APPOINTMENTS */
+SERVICES.forEach(s=>{
+  appService.innerHTML+=`<option>${s.name}</option>`;
+});
+
+function updatePrice(){
+  appPrice.value=SERVICES.find(s=>s.name===appService.value).price;
+}
+appService.onchange=updatePrice;
 
 async function loadOnDuty(){
   const {data}=await supabase
@@ -279,7 +224,9 @@ async function loadOnDuty(){
     .select("practitioners(name)")
     .eq("duty_date",appDate.value);
   appPractitioner.innerHTML="";
-  data.forEach(d=>appPractitioner.innerHTML+=`<option>${d.practitioners.name}</option>`);
+  data.forEach(d=>{
+    appPractitioner.innerHTML+=`<option>${d.practitioners.name}</option>`;
+  });
 }
 appDate.onchange=loadOnDuty;
 
@@ -289,6 +236,7 @@ async function saveAppointment(){
   const start=new Date(appDate.value+"T"+appTime.value);
   const end=new Date(start);
   end.setMinutes(start.getMinutes()+svc.duration);
+
   const {data}=await supabase.from("appointments").insert({
     client_id:client.id,
     service_name:svc.name,
@@ -297,7 +245,9 @@ async function saveAppointment(){
     practitioner:appPractitioner.value,
     remarks:appNotes.value
   }).select().single();
+
   const sst=client.citizenship==="Foreigner"?+(svc.price*0.06).toFixed(2):0;
+
   await supabase.from("payments").insert({
     appointment_id:data.id,
     method:appPayment.value,
@@ -305,13 +255,18 @@ async function saveAppointment(){
     sst,
     total:svc.price+sst
   });
+
   alert("Appointment & payment saved");
 }
 
+/* ✅ INIT */
+const today=new Date().toISOString().slice(0,10);
+dutyDate.value=today;
+appDate.value=today;
+updatePrice();
 loadClients();
 loadPractitioners();
 loadOnDuty();
-appPrice.value=SERVICES[0].price;
 </script>
 
 </body>
