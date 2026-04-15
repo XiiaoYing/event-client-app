@@ -2,61 +2,202 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Register</title>
+  <title>Client Registration</title>
+
+  <!-- Google Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
+
+  <!-- Supabase JS -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
     body {
+      margin: 0;
       background: #0b0b0b;
       color: #ffffff;
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 20px;
+      font-family: 'Montserrat', sans-serif;
     }
 
     .container {
       max-width: 480px;
       margin: auto;
+      padding: 28px 20px 40px;
     }
 
     h1 {
-      color: #ff7a00;
       text-align: center;
+      color: #ff7a00;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #ccc;
+      font-size: 14px;
+      margin-bottom: 24px;
     }
 
     .card {
       background: #151515;
-      padding: 20px;
-      border-radius: 10px;
-      margin-top: 20px;
+      padding: 24px;
+      border-radius: 14px;
+      box-shadow: 0 0 25px rgba(255,122,0,0.15);
     }
 
-    input, select, textarea, button {
+    label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: #ffb366;
+      margin-top: 12px;
+    }
+
+    input, select, textarea {
       width: 100%;
-      padding: 10px;
-      margin-bottom: 12px;
-      border-radius: 6px;
+      padding: 12px;
+      margin-top: 6px;
+      background: #1f1f1f;
       border: none;
+      border-radius: 8px;
+      color: #fff;
+      font-size: 14px;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      outline: 2px solid #ff7a00;
+      background: #242424;
+    }
+
+    .age {
+      margin-top: 10px;
+      font-size: 13px;
+      color: #ffb366;
+    }
+
+    .error {
+      margin-top: 10px;
+      color: #ff4d4d;
+      font-size: 13px;
     }
 
     button {
-      background: #ff7a00;
+      width: 100%;
+      margin-top: 20px;
+      padding: 14px;
+      background: linear-gradient(135deg, #ff7a00, #ff9500);
+      border: none;
+      border-radius: 10px;
       color: #000;
-      font-weight: bold;
+      font-weight: 800;
+      font-size: 15px;
       cursor: pointer;
     }
   </style>
 </head>
 
 <body>
-  <div class="container">
-    <h1>✅ STYLED PAGE WORKS</h1>
 
-    <div class="card">
-      <p>If you see this card on a black background, CSS is safe.</p>
-
-      <input placeholder="Example input">
-      <button>Test Button</button>
-    </div>
+<div class="container">
+  <h1>REGISTER NOW</h1>
+  <div class="subtitle">
+    Secure your slot and keep your body feeling loose,
+    refreshed and competition‑ready.
   </div>
+
+  <div class="card">
+    <form id="form">
+
+      <label>FULL NAME</label>
+      <input name="full_name" required>
+
+      <label>DATE OF BIRTH</label>
+      <input type="date" id="dob" required>
+      <div class="age">Age: <span id="age"></span></div>
+
+      <label>GENDER</label>
+      <select name="gender" required>
+        <option value="">Select</option>
+        <option>Male</option>
+        <option>Female</option>
+      </select>
+
+      <label>CITIZENSHIP</label>
+      <select id="citizenship">
+        <option>Malaysian</option>
+        <option>Foreigner</option>
+      </select>
+
+      <label>IC / PASSPORT NUMBER</label>
+      <input name="ic_passport" required>
+
+      <label>CONTACT NUMBER</label>
+      <input name="contact">
+
+      <label>EMAIL</label>
+      <input name="email">
+
+      <label>ADDRESS (OPTIONAL)</label>
+      <textarea name="address"></textarea>
+
+      <div class="error" id="error"></div>
+
+      <button type="submit">SUBMIT REGISTRATION</button>
+    </form>
+  </div>
+</div>
+
+<script>
+  const supabase = supabaseJs.createClient(
+    "https://eookqiucuncovvxzdcml.supabase.co",
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVvb2txaXVjdW5jb3Z2eHpkY21sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYxOTIwNDksImV4cCI6MjA5MTc2ODA0OX0.Bk9QU8CufXnyiavO35WWM3gj1GupNRBk3EJZx-tO9hU"
+  );
+
+  const dob = document.getElementById("dob");
+  const ageSpan = document.getElementById("age");
+  const errorDiv = document.getElementById("error");
+
+  dob.addEventListener("change", () => {
+    const year = new Date(dob.value).getFullYear();
+    ageSpan.textContent = new Date().getFullYear() - year;
+  });
+
+  document.getElementById("form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    errorDiv.textContent = "";
+
+    const form = e.target;
+    const ctz = document.getElementById("citizenship").value;
+    const ic = form.ic_passport.value.trim();
+
+    if (ctz === "Malaysian" && !/^\d{12}$/.test(ic)) {
+      errorDiv.textContent = "Malaysian IC must be exactly 12 digits.";
+      return;
+    }
+
+    const { error } = await supabase.from("clients").insert({
+      full_name: form.full_name.value,
+      date_of_birth: dob.value,
+      gender: form.gender.value,
+      citizenship: ctz,
+      ic_passport: ic,
+      contact: form.contact.value,
+      email: form.email.value,
+      address: form.address.value
+    });
+
+    if (error) {
+      errorDiv.textContent = error.message;
+    } else {
+      alert("Registration successful!");
+      form.reset();
+      ageSpan.textContent = "";
+    }
+  });
+</script>
+
 </body>
 </html>
+``
