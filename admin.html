@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <title>Admin Dashboard</title>
 
-<!-- Fonts -->
+<!-- Google Font -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
@@ -14,98 +14,87 @@
 
 <style>
 body {
-  margin:0;
-  font-family:'Montserrat',sans-serif;
-  background:#0b0b0b;
-  color:#fff;
+  margin: 0;
+  font-family: 'Montserrat', sans-serif;
+  background: #0b0b0b;
+  color: #fff;
 }
-
 header {
-  display:flex;
-  gap:10px;
-  padding:16px;
-  background:#000;
-  border-bottom:2px solid #ff7a00;
+  display: flex;
+  gap: 10px;
+  padding: 16px;
+  background: #000;
+  border-bottom: 2px solid #ff7a00;
 }
-
 header button {
-  background:#1f1f1f;
-  color:#fff;
-  border:none;
-  padding:10px 14px;
-  border-radius:6px;
-  cursor:pointer;
+  background: #1f1f1f;
+  color: #fff;
+  border: none;
+  padding: 10px 14px;
+  border-radius: 6px;
+  cursor: pointer;
 }
-
 header button.active {
-  background:#ff7a00;
-  color:#000;
-  font-weight:700;
+  background: #ff7a00;
+  color: #000;
+  font-weight: 700;
 }
-
 .container {
-  max-width:1200px;
-  margin:auto;
-  padding:24px;
+  max-width: 1200px;
+  margin: auto;
+  padding: 24px;
 }
-
-.hidden { display:none; }
+.hidden { display: none; }
 
 input, select, textarea {
-  width:100%;
-  padding:10px;
-  background:#1f1f1f;
-  border:none;
-  border-radius:6px;
-  color:#fff;
-  margin-bottom:10px;
+  width: 100%;
+  padding: 10px;
+  background: #1f1f1f;
+  border: none;
+  border-radius: 6px;
+  color: #fff;
+  margin-bottom: 10px;
 }
 
 button.primary {
-  background:#ff7a00;
-  color:#000;
-  border:none;
-  padding:10px;
-  border-radius:6px;
-  cursor:pointer;
-  font-weight:700;
+  background: #ff7a00;
+  color: #000;
+  border: none;
+  padding: 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 700;
 }
-
 button.danger {
-  background:#ff4d4d;
-  color:#fff;
-  border:none;
-  padding:8px 10px;
-  border-radius:6px;
-  cursor:pointer;
+  background: #ff4d4d;
+  color: #fff;
+  border: none;
+  padding: 8px 10px;
+  border-radius: 6px;
+  cursor: pointer;
 }
 
 table {
-  width:100%;
-  border-collapse:collapse;
-  background:#151515;
-  margin-top:10px;
+  width: 100%;
+  border-collapse: collapse;
+  background: #151515;
+  margin-top: 10px;
 }
-
 th, td {
-  padding:10px;
-  border-bottom:1px solid #222;
-  font-size:13px;
+  padding: 10px;
+  border-bottom: 1px solid #222;
+  font-size: 13px;
 }
-
 th {
-  background:#111;
-  color:#ffb366;
-  font-size:12px;
+  background: #111;
+  color: #ffb366;
+  font-size: 12px;
 }
 
 .section {
-  margin-top:20px;
+  margin-top: 20px;
 }
-
-h2 {
-  color:#ff7a00;
-}
+h2 { color:#ff7a00; }
 </style>
 </head>
 
@@ -119,7 +108,7 @@ h2 {
 
 <div class="container">
 
-<!-- CLIENTS TAB -->
+<!-- CLIENTS -->
 <div id="clientsTab">
   <h2>Clients</h2>
   <button class="primary" onclick="addClient()">➕ Add Client</button>
@@ -131,56 +120,12 @@ h2 {
         <th>Citizenship</th><th>Contact</th><th>Email</th>
         <th>IC / Passport</th><th>Action</th>
       </tr>
-      <td>
-  <button class="primary" onclick="editClient('${c.id}')">Edit</button>
-  <button class="danger" onclick="deleteClient('${c.id}')">Delete</button>
-
-        window.editClient = async (clientId) => {
-  const client = clients.find(c => c.id === clientId);
-  if (!client) {
-    alert("Client not found");
-    return;
-  }
-
-  const name = prompt("Full Name:", client.full_name);
-  const dob = prompt("DOB (YYYY-MM-DD):", client.date_of_birth);
-  const gender = prompt("Gender (Male / Female):", client.gender);
-  const citizenship = prompt("Citizenship (Malaysian / Foreigner):", client.citizenship);
-  const contact = prompt("Contact Number:", client.contact || "");
-  const email = prompt("Email:", client.email || "");
-  const ic = prompt("IC / Passport:", client.ic_passport);
-
-  if (!name || !dob || !gender || !citizenship || !ic) {
-    alert("Required fields cannot be empty");
-    return;
-  }
-
-  const { error } = await sb.from("clients")
-    .update({
-      full_name: name,
-      date_of_birth: dob,
-      gender: gender,
-      citizenship: citizenship,
-      contact: contact,
-      email: email,
-      ic_passport: ic
-    })
-    .eq("id", clientId);
-
-  if (error) {
-    alert("Update failed: " + error.message);
-  } else {
-    alert("Client updated");
-    loadClients();
-  }
-};
-</td>
     </thead>
     <tbody id="clientsBody"></tbody>
   </table>
 </div>
 
-<!-- PRACTITIONERS TAB -->
+<!-- PRACTITIONERS -->
 <div id="practitionersTab" class="hidden">
   <h2>Practitioners</h2>
 
@@ -198,7 +143,7 @@ h2 {
   </div>
 </div>
 
-<!-- APPOINTMENTS TAB -->
+<!-- APPOINTMENTS -->
 <div id="appointmentsTab" class="hidden">
   <h2>New Appointment</h2>
 
@@ -277,40 +222,43 @@ window.onload = () => {
           <td>${c.contact||""}</td>
           <td>${c.email||""}</td>
           <td>${c.ic_passport}</td>
-          <td><button class="danger" onclick="deleteClient('${c.id}')">Delete</button></td>
+          <td>
+            <button class="primary" onclick="editClient('${c.id}')">Edit</button>
+            <button class="danger" onclick="deleteClient('${c.id}')">Delete</button>
+          </td>
         </tr>`;
       appClient.innerHTML+=`<option value="${c.id}">${c.full_name}</option>`;
     });
   }
 
- window.addClient = () => {
-  const name = prompt("Full name:");
-  const dob = prompt("DOB (YYYY-MM-DD):");
-  const gender = prompt("Gender (Male / Female):");
-  const citizenship = prompt("Citizenship (Malaysian / Foreigner):");
-  const ic = prompt("IC / Passport:");
+  window.addClient = () => {
+    const name = prompt("Full Name:");
+    const dob = prompt("DOB (YYYY-MM-DD):");
+    const gender = prompt("Gender:");
+    const citizenship = prompt("Citizenship:");
+    const ic = prompt("IC / Passport:");
+    if (!name||!dob||!gender||!citizenship||!ic) return;
+    sb.from("clients").insert({
+      full_name:name,date_of_birth:dob,gender,citizenship,ic_passport:ic
+    }).then(loadClients);
+  };
 
-  if (!name || !dob || !gender || !citizenship || !ic) {
-    alert("All fields are required");
-    return;
-  }
+  window.editClient = async (id) => {
+    const c = clients.find(x=>x.id===id);
+    const name = prompt("Full Name", c.full_name);
+    const dob = prompt("DOB", c.date_of_birth);
+    const gender = prompt("Gender", c.gender);
+    const citizenship = prompt("Citizenship", c.citizenship);
+    const contact = prompt("Contact", c.contact||"");
+    const email = prompt("Email", c.email||"");
+    const ic = prompt("IC / Passport", c.ic_passport);
+    sb.from("clients").update({
+      full_name:name,date_of_birth:dob,gender,citizenship,
+      contact,email,ic_passport:ic
+    }).eq("id",id).then(loadClients);
+  };
 
-  sb.from("clients").insert({
-    full_name: name,
-    date_of_birth: dob,
-    gender: gender,
-    citizenship: citizenship,
-    ic_passport: ic
-  }).then(({ error }) => {
-    if (error) {
-      alert("Insert failed: " + error.message);
-    } else {
-      loadClients();
-    }
-  });
-};
-
-  window.deleteClient = id => {
+  window.deleteClient=id=>{
     if(confirm("Delete client?")) sb.from("clients").delete().eq("id",id).then(loadClients);
   };
 
@@ -331,31 +279,24 @@ window.onload = () => {
     });
   }
 
-  window.addPractitioner = () => {
-    if(!pracName.value)return;
+  window.addPractitioner=()=>{
+    if(!pracName.value) return;
     sb.from("practitioners").insert({name:pracName.value})
-      .then(()=>{pracName.value=""; loadPractitioners();});
+      .then(()=>{pracName.value="";loadPractitioners();});
   };
 
-  window.saveDuty = async () => {
-    const date=dutyDate.value;
-    await sb.from("practitioner_duty").delete().eq("duty_date",date);
+  window.saveDuty=async()=>{
+    await sb.from("practitioner_duty").delete().eq("duty_date",dutyDate.value);
     document.querySelectorAll("#dutyBody input:checked").forEach(i=>{
       sb.from("practitioner_duty").insert({
-        practitioner_id:i.dataset.id,
-        duty_date:date,
-        on_duty:true
+        practitioner_id:i.dataset.id,duty_date:dutyDate.value,on_duty:true
       });
     });
     alert("Duty saved");
   };
 
   SERVICES.forEach(s=>appService.innerHTML+=`<option>${s.name}</option>`);
-
-  function updatePrice(){
-    appPrice.value=SERVICES.find(s=>s.name===appService.value).price;
-  }
-  appService.onchange=updatePrice;
+  appService.onchange=()=>appPrice.value=SERVICES.find(s=>s.name===appService.value).price;
 
   async function loadOnDuty(){
     const {data}=await sb.from("practitioner_duty")
@@ -366,37 +307,30 @@ window.onload = () => {
   }
   appDate.onchange=loadOnDuty;
 
-  window.saveAppointment = async () => {
-    const client=clients.find(c=>c.id===appClient.value);
-    const svc=SERVICES.find(s=>s.name===appService.value);
+  window.saveAppointment=async()=>{
+    const c=clients.find(x=>x.id===appClient.value);
+    const s=SERVICES.find(x=>x.name===appService.value);
     const start=new Date(appDate.value+"T"+appTime.value);
-    const end=new Date(start); end.setMinutes(start.getMinutes()+svc.duration);
-
+    const end=new Date(start); end.setMinutes(start.getMinutes()+s.duration);
     const {data}=await sb.from("appointments").insert({
-      client_id:client.id,
-      service_name:svc.name,
-      start_time:start,
-      end_time:end,
+      client_id:c.id,service_name:s.name,
+      start_time:start,end_time:end,
       practitioner:appPractitioner.value,
       remarks:appNotes.value
     }).select().single();
-
-    const sst=client.citizenship==="Foreigner"?+(svc.price*0.06).toFixed(2):0;
+    const sst=c.citizenship==="Foreigner"?+(s.price*0.06).toFixed(2):0;
     await sb.from("payments").insert({
-      appointment_id:data.id,
-      method:appPayment.value,
-      amount:svc.price,
-      sst,
-      total:svc.price+sst
+      appointment_id:data.id,method:appPayment.value,
+      amount:s.price,sst,total:s.price+sst
     });
-
     alert("Appointment & payment saved");
   };
 
   const today=new Date().toISOString().slice(0,10);
   dutyDate.value=today;
   appDate.value=today;
-  updatePrice();
+  appPrice.value=SERVICES[0].price;
+
   loadClients();
   loadPractitioners();
   loadOnDuty();
