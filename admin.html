@@ -164,16 +164,23 @@
     data.forEach(client => {
       const tr = document.createElement("tr");
 
-      tr.innerHTML = `
-        <td>${client.full_name}</td>
-        <td>${calculateAge(client.date_of_birth)}</td>
-        <td>${client.gender}</td>
-        <td>${client.citizenship}</td>
-        <td>${client.contact || "-"}</td>
-        <td>${client.ic_passport}</td>
-        <td>${new Date(client.created_at).toLocaleString()}</td>
-      `;
-
+tr.innerHTML = `
+  <td>${client.full_name}</td>
+  <td>${calculateAge(client.date_of_birth)}</td>
+  <td>${client.gender}</td>
+  <td>${client.citizenship}</td>
+  <td>${client.contact || "-"}</td>
+  <td>${client.ic_passport}</td>
+  <td>${new Date(client.created_at).toLocaleString()}</td>
+  <td>
+    <button
+      style="background:#ff4d4d;border:none;color:white;padding:6px 10px;border-radius:4px;cursor:pointer"
+      onclick="deleteClient('${client.id}')"
+    >
+      Delete
+    </button>
+  </td>
+`;
       tr.onclick = () => viewClient(client);
 
       tbody.appendChild(tr);
