@@ -1,70 +1,63 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Admin Dashboard</title>
+  <meta charset="UTF-8">
+  <title>Admin Dashboard – Safe Boot</title>
 
-<!-- Google Font -->
-<link rel="preconnect" hrefm
-<link rel="pregstatic.com
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&displaySupabase v2 -->
-<script src="https://cdn.jsdelivr.net/npmpabase-js@2</script>
-
-<style>
-body { margin:0; font-family:'Montserrat',sans-serif; background:#0b0b0b; color:#fff; }
-header { display:flex; gap:10px; padding:16px; background:#000; border-bottom:2px solid #ff7a00; }
-header button { background:#1f1f1f; color:#fff; border:none; padding:10px 14px; border-radius:6px; cursor:pointer; }
-header button.active { background:#ff7a00; color:#000; font-weight:700; }
-.container { padding:24px; }
-.hidden { display:none; }
-button.primary { background:#ff7a00; color:#000; padding:10px; border:none; border-radius:6px; cursor:pointer; }
-</style>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #0b0b0b;
+      color: #ffffff;
+      padding: 40px;
+    }
+    button {
+      padding: 12px 18px;
+      margin-right: 10px;
+      font-size: 16px;
+      cursor: pointer;
+      border-radius: 6px;
+      border: none;
+    }
+    .ok { background: #ff7a00; color: #000; }
+    .box {
+      background: #151515;
+      padding: 20px;
+      margin-top: 20px;
+      border-radius: 10px;
+    }
+  </style>
 </head>
 
 <body>
 
-<header>
-  <button class="active" onclick="showTab('clients', this)">Clients</button>
-  <button onclick="showTab('practitioners', this)">Practitioners</button>
-  <button onclick="showTab('appointments', this)">Appointments</button>
-</header>
+  <h1>✅ Admin Page Loaded</h1>
+  <p>If you can see this text, the page is NOT broken.</p>
 
-<div class="container">
+  <div class="box">
+    <button class="ok" onclick="alert('Button works')">Test Button</button>
+    <p id="msg"></p>
+  </div>
 
-<div id="clientsTab">
-  <h2>Clients</h2>
-  <button class="primary" onclick="alert('Clients works ✅')">Test Client Button</button>
-</div>
+  <!-- Load Supabase AFTER page render -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-<div id="practitionersTab" class="hidden">
-  <h2>Practitioners</h2>
-  <button class="primary" onclick="alert('Practitioners works ✅')">Test Practitioner Button</button>
-</div>
-
-<div id="appointmentsTab" class="hidden">
-  <h2>Appointments</h2>
-  <button class="primary" onclick="alert('Appointments works ✅')">Test Appointment Button</button>
-</div>
-
-</div>
-
-<script>
-/* ✅ CORRECT SUPABASE INITIALIZATION */
-const sb = supabase.createClient(
-  "https://eookqiucuncovvxzdcml.supabase.co",
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVvb2txaXVjdW5jb3Z2eHpkY21sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYxOTIwNDksImV4cCI6MjA5MTc2ODA0OX0.Bk9QU8CufXnyiavO35WWM3gj1GupNRBk3EJZx-tO9hU"
-);
-
-/* ✅ TAB SWITCHING */
-function showTab(tab, btn){
-  ['clients','practitioners','appointments'].forEach(t=>{
-    document.getElementById(t+'Tab').classList.add('hidden');
-  });
-  document.getElementById(tab+'Tab').classList.remove('hidden');
-  document.querySelectorAll('header button').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-}
-</script>
+  <script>
+    window.onload = () => {
+      try {
+        const sb = supabase.createClient(
+          "https://eookqiucuncovvxzdcml.supabase.co",
+          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVvb2txaXVjdW5jb3Z2eHpkY21sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYxOTIwNDksImV4cCI6MjA5MTc2ODA0OX0.Bk9QU8CufXnyiavO35WWM3gj1GupNRBk3EJZx-tO9hU"
+        );
+        document.getElementById("msg").innerText =
+          "✅ JavaScript + Supabase loaded successfully";
+      } catch (e) {
+        document.getElementById("msg").innerText =
+          "❌ JS error: " + e.message;
+      }
+    };
+  </script>
 
 </body>
 </html>
