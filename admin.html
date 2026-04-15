@@ -1,7 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Client Management</title>
+
+  <!-- Google Font -->
+  <link rel="preconnect" href="https://rel="preconnect" href="link
+    href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap"
+    rel="stylesheetrc="https://cdn.jsdelivr.net/npmpabase-js@2
+
+  <style>
+    body {
+      margin: 0;
+      background: #0b0b0b;
+      color: #ffffff;
+      font-family: 'Montserrat', sans-serif;
+    }
+
+    header {
+      padding: 16px 20px;
+      background: #000;
+      border-bottom: 2px solid #ff7a00;
+    }
+
+    header h1 {
+      margin: 0;
+      color: #ff7a00;
+      font-weight: 800;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: auto;
+      padding: 24px;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    input {
+      padding: 10px;
+      border-radius: 6px;
+      border: none;
+      background: #1f1f1f;
+      color: #fff;
+      width: 260px;
+    }
+
+    button {
+      padding: 10px 14px;
+      background: #ff7a00;
+      border: none;
+      border-radius: 6px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #151515;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    th, td {
+      padding: 12px;
+      border-bottom: 1px solid #222;
+      text-align: left;
+      font-size: 14px;
+    }
+
+    th {
+      background: #111;
+      color: #ffb366;
+      font-size: 12px;
+    }
+
+    tr:hover {
+      background: #202020;
+    }
+
+    .delete {
+      background: #ff4d4d;
+      color: white;
+      padding: 6px 10px;
+    }
+
+    .empty {
+      margin-top: 16px;
+      color: #aaa;
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <h1>CLIENT MANAGEMENT</h1>
+</header>
+
+<div class="container">
+
+  <div class="actions">
+    <input
+      id="search"
+      placeholder="Search name / contact / IC"
+      oninput="filterClients()"
+    />
+    <button onclick="addClient()">➕ Add Client</button>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>NAME</th>
+        <th>AGE</th>
+        <th>GENDER</th>
+        <th>CITIZENSHIP</th>
+        <th>CONTACT</th>
+        <th>IC / PASSPORT</th>
+        <th>ACTION</th>
+      </tr>
+    </thead>
+    <tbody id="tbody"></tbody>
+  </table>
+
+  <div id="empty" class="empty"></div>
+</div>
+
 <script>
-  // =============================
-  // SUPABASE CONNECTION
-  // =============================
   const supabase = supabaseJs.createClient(
     "https://eookqiucuncovvxzdcml.supabase.co",
     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVvb2txaXVjdW5jb3Z2eHpkY21sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYxOTIwNDksImV4cCI6MjA5MTc2ODA0OX0.Bk9QU8CufXnyiavO35WWM3gj1GupNRBk3EJZx-tO9hU"
@@ -9,9 +140,10 @@
 
   let clients = [];
 
-  // =============================
-  // LOAD CLIENTS FROM DATABASE
-  // =============================
+  function age(dob) {
+    return new Date().getFullYear() - new Date(dob).getFullYear();
+  }
+
   async function loadClients() {
     const { data, error } = await supabase
       .from("clients")
@@ -19,148 +151,83 @@
       .order("created_at", { ascending: false });
 
     if (error) {
-      alert("Failed to load clients: " + error.message);
+      document.getElementById("empty").textContent = error.message;
       return;
     }
 
     clients = data;
-    renderTable(data);
+    render(data);
   }
 
-  // =============================
-  // CALCULATE AGE
-  // =============================
-  function calculateAge(dob) {
-    if (!dob) return "-";
-    return new Date().getFullYear() - new Date(dob).getFullYear();
-  }
-
-  // =============================
-  // RENDER CLIENT TABLE
-  // =============================
-  function renderTable(data) {
-    const tbody = document.querySelector("#clientTable tbody");
+  function render(data) {
+    const tbody = document.getElementById("tbody");
     tbody.innerHTML = "";
 
-    if (data.length === 0) {
-      document.getElementById("empty").textContent = "No clients found.";
+    if (!data.length) {
+      document.getElementById("empty").textContent = "No clients";
       return;
     }
 
     document.getElementById("empty").textContent = "";
 
-    data.forEach((client) => {
+    data.forEach(c => {
       const tr = document.createElement("tr");
-
       tr.innerHTML = `
-        <td>${client.full_name}</td>
-        <td>${calculateAge(client.date_of_birth)}</td>
-        <td>${client.gender}</td>
-        <td>${client.citizenship}</td>
-        <td>${client.contact || "-"}</td>
-        <td>${client.ic_passport}</td>
-        <td>${new Date(client.created_at).toLocaleString()}</td>
+        <td>${c.full_name}</td>
+        <td>${age(c.date_of_birth)}</td>
+        <td>${c.gender}</td>
+        <td>${c.citizenship}</td>
+        <td>${c.contact || "-"}</td>
+        <td>${c.ic_passport}</td>
         <td>
-          <button
-            style="background:#ff4d4d;border:none;color:white;padding:6px 10px;border-radius:4px;cursor:pointer"
-            onclick="deleteClient('${client.id}')"
-          >
+          <button class="delete" onclick="removeClient('${c.id}')">
             Delete
           </button>
-        </td>
-      `;
-
+        </td>`;
       tbody.appendChild(tr);
     });
   }
 
-  // =============================
-  // SEARCH / FILTER CLIENTS
-  // =============================
   function filterClients() {
-    const q = document.getElementById("search").value.toLowerCase();
-
-    const filtered = clients.filter((c) =>
+    const q = search.value.toLowerCase();
+    render(clients.filter(c =>
       c.full_name.toLowerCase().includes(q) ||
-      (c.contact || "").toLowerCase().includes(q) ||
-      c.ic_passport.toLowerCase().includes(q)
-    );
-
-    renderTable(filtered);
+      (c.contact || "").includes(q) ||
+      c.ic_passport.includes(q)
+    ));
   }
 
-  // =============================
-  // MANUAL ADD CLIENT (STAFF)
-  // =============================
   async function addClient() {
     const full_name = prompt("Full Name:");
     if (!full_name) return;
 
-    const dob = prompt("Date of Birth (YYYY-MM-DD):");
-    if (!dob) return;
-
-    const gender = prompt("Gender (Male / Female):");
-    if (!gender) return;
-
+    const date_of_birth = prompt("DOB (YYYY-MM-DD):");
+    const gender = prompt("Gender:");
     const citizenship = prompt("Citizenship (Malaysian / Foreigner):");
-    if (!citizenship) return;
+    const ic_passport = prompt("IC / Passport:");
 
-    const ic_passport = prompt("IC / Passport Number:");
-    if (!ic_passport) return;
-
-    // Malaysian IC validation
     if (citizenship === "Malaysian" && !/^\d{12}$/.test(ic_passport)) {
-      alert("Malaysian IC must be exactly 12 digits.");
+      alert("Malaysian IC must be 12 digits");
       return;
     }
 
-    const contact = prompt("Contact Number (optional):");
-    const email = prompt("Email (optional):");
-    const address = prompt("Address (optional):");
-
-    const { error } = await supabase.from("clients").insert({
-      full_name,
-      date_of_birth: dob,
-      gender,
-      citizenship,
-      ic_passport,
-      contact,
-      email,
-      address
+    await supabase.from("clients").insert({
+      full_name, date_of_birth, gender,
+      citizenship, ic_passport
     });
 
-    if (error) {
-      alert("Failed to add client: " + error.message);
-    } else {
-      alert("Client added successfully.");
-      loadClients();
-    }
+    loadClients();
   }
 
-  // =============================
-  // DELETE CLIENT (STAFF)
-  // =============================
-  async function deleteClient(clientId) {
-    const confirmDelete = confirm(
-      "Are you sure you want to permanently delete this client?"
-    );
-    if (!confirmDelete) return;
-
-    const { error } = await supabase
-      .from("clients")
-      .delete()
-      .eq("id", clientId);
-
-    if (error) {
-      alert("Failed to delete client: " + error.message);
-    } else {
-      alert("Client deleted.");
-      loadClients();
-    }
+  async function removeClient(id) {
+    if (!confirm("Delete client permanently?")) return;
+    await supabase.from("clients").delete().eq("id", id);
+    loadClients();
   }
 
-  // =============================
-  // INIT
-  // =============================
   loadClients();
 </script>
+
+</body>
+</html>
+``
