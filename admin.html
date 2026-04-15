@@ -5,97 +5,97 @@
   <title>Client Management</title>
 
   <!-- Google Font -->
-  <link rel="preconnect" href="https://rel="preconnect" href="link
-    href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap"
-    rel="stylesheetrc="https://cdn.jsdelivr.net/npmpabase-js@2
+  <link rel="preconnect" href="  <link rel="preconnect" href="https://fonts.gstatic//fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap"
+    rel="stylesheet"
+="https://cdn/npm/@supabase/supabase-js@2</script>
 
-<style>
-  body {
-    margin: 0;
-    background: #0b0b0b;
-    color: #ffffff;
-    font-family: 'Montserrat', sans-serif;
-  }
+  <style>
+    body {
+      margin: 0;
+      background: #0b0b0b;
+      color: #ffffff;
+      font-family: 'Montserrat', sans-serif;
+    }
 
-  header {
-    padding: 16px 20px;
-    background: #000;
-    border-bottom: 2px solid #ff7a00;
-  }
+    header {
+      padding: 16px 20px;
+      background: #000;
+      border-bottom: 2px solid #ff7a00;
+    }
 
-  header h1 {
-    margin: 0;
-    color: #ff7a00;
-    font-weight: 800;
-  }
+    header h1 {
+      margin: 0;
+      color: #ff7a00;
+      font-weight: 800;
+    }
 
-  .container {
-    max-width: 1100px;
-    margin: auto;
-    padding: 24px;
-  }
+    main {
+      max-width: 1200px;
+      margin: auto;
+      padding: 24px;
+    }
 
-  .actions {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 16px;
-  }
+    .toolbar {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
 
-  input {
-    padding: 10px;
-    border-radius: 6px;
-    border: none;
-    background: #1f1f1f;
-    color: #fff;
-    width: 260px;
-  }
+    input {
+      padding: 10px;
+      border-radius: 6px;
+      border: none;
+      background: #1f1f1f;
+      color: white;
+      width: 260px;
+    }
 
-  button {
-    padding: 10px 14px;
-    background: #ff7a00;
-    border: none;
-    border-radius: 6px;
-    font-weight: 700;
-    cursor: pointer;
-  }
+    button {
+      padding: 10px 14px;
+      background: #ff7a00;
+      border: none;
+      border-radius: 6px;
+      font-weight: 700;
+      cursor: pointer;
+    }
 
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    background: #151515;
-    border-radius: 10px;
-    overflow: hidden;
-  }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #151515;
+      border-radius: 10px;
+      overflow: hidden;
+    }
 
-  th, td {
-    padding: 12px;
-    border-bottom: 1px solid #222;
-    text-align: left;
-    font-size: 14px;
-  }
+    th, td {
+      padding: 12px;
+      border-bottom: 1px solid #222;
+      text-align: left;
+      font-size: 14px;
+    }
 
-  th {
-    background: #111;
-    color: #ffb366;
-    font-size: 12px;
-  }
+    th {
+      background: #111;
+      color: #ffb366;
+      font-size: 12px;
+      text-transform: uppercase;
+    }
 
-  tr:hover {
-    background: #202020;
-  }
+    tr:hover {
+      background: #202020;
+    }
 
-  .delete {
-    background: #ff4d4d;
-    color: white;
-    padding: 6px 10px;
-  }
+    .danger {
+      background: #ff4d4d;
+      color: white;
+      padding: 6px 10px;
+    }
 
-  .empty {
-    margin-top: 16px;
-    color: #aaa;
-  }
-</style>
-
+    .empty {
+      margin-top: 20px;
+      color: #aaa;
+    }
+  </style>
 </head>
 
 <body>
@@ -104,9 +104,9 @@
   <h1>CLIENT MANAGEMENT</h1>
 </header>
 
-<div class="container">
+<main>
 
-  <div class="actions">
+  <div class="toolbar">
     <input
       id="search"
       placeholder="Search name / contact / IC"
@@ -118,20 +118,21 @@
   <table>
     <thead>
       <tr>
-        <th>NAME</th>
-        <th>AGE</th>
-        <th>GENDER</th>
-        <th>CITIZENSHIP</th>
-        <th>CONTACT</th>
-        <th>IC / PASSPORT</th>
-        <th>ACTION</th>
+        <th>Name</th>
+        <th>Age</th>
+        <th>Gender</th>
+        <th>Citizenship</th>
+        <th>Contact</th>
+        <th>IC / Passport</th>
+        <th>Action</th>
       </tr>
     </thead>
     <tbody id="tbody"></tbody>
   </table>
 
   <div id="empty" class="empty"></div>
-</div>
+
+</main>
 
 <script>
   const supabase = supabaseJs.createClient(
@@ -165,7 +166,7 @@
     tbody.innerHTML = "";
 
     if (!data.length) {
-      document.getElementById("empty").textContent = "No clients";
+      document.getElementById("empty").textContent = "No clients found";
       return;
     }
 
@@ -181,7 +182,7 @@
         <td>${c.contact || "-"}</td>
         <td>${c.ic_passport}</td>
         <td>
-          <button class="delete" onclick="removeClient('${c.id}')">
+          <button class="danger" onclick="removeClient('${c.id}')">
             Delete
           </button>
         </td>`;
@@ -191,11 +192,13 @@
 
   function filterClients() {
     const q = search.value.toLowerCase();
-    render(clients.filter(c =>
-      c.full_name.toLowerCase().includes(q) ||
-      (c.contact || "").includes(q) ||
-      c.ic_passport.includes(q)
-    ));
+    render(
+      clients.filter(c =>
+        c.full_name.toLowerCase().includes(q) ||
+        (c.contact || "").includes(q) ||
+        c.ic_passport.includes(q)
+      )
+    );
   }
 
   async function addClient() {
@@ -204,7 +207,7 @@
 
     const date_of_birth = prompt("DOB (YYYY-MM-DD):");
     const gender = prompt("Gender:");
-    const citizenship = prompt("Citizenship (Malaysian / Foreigner):");
+    const citizenship = prompt("Citizenship:");
     const ic_passport = prompt("IC / Passport:");
 
     if (citizenship === "Malaysian" && !/^\d{12}$/.test(ic_passport)) {
@@ -231,4 +234,3 @@
 
 </body>
 </html>
-``
