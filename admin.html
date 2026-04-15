@@ -11,271 +11,188 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
-body { margin:0; font-family:'Montserrat',sans-serif; background:#0b0b0b; color:#fff; }
-header { display:flex; gap:10px; padding:16px; background:#000; border-bottom:2px solid #ff7a00; }
+body { margin:0; font-family:Montserrat, sans-serif; background:#0b0b0b; color:#fff; }
+header { display:flex; gap:10px; padding:16px; background:#000; }
 header button { background:#1f1f1f; color:#fff; border:none; padding:10px 14px; border-radius:6px; cursor:pointer; }
-header button.active { background:#ff7a00; color:#000; font-weight:700; }
-
-.container { max-width:1200px; margin:auto; padding:24px; }
+header button.active { background:#ff7a00; color:#000; }
+.container { max-width:1200px; margin:auto; padding:20px; }
 .hidden { display:none; }
 
-.card {
-  background:#151515;
-  padding:16px;
-  border-radius:10px;
-  margin-bottom:20px;
-}
-
-label { font-size:12px; color:#ffb366; }
-
+.card { background:#151515; padding:16px; margin-bottom:20px; border-radius:10px; }
+label { font-size:12px; color:#ffb366; display:block; margin-top:8px; }
 input, select, textarea {
-  width:100%;
-  padding:10px;
-  background:#f2f2f2;
-  color:#000;
-  border:none;
-  border-radius:6px;
-  margin-bottom:10px;
+  width:100%; padding:10px; border:none; border-radius:6px;
+  background:#f2f2f2; color:#000;
 }
+button.primary { background:#ff7a00; color:#000; padding:8px 14px; border:none; border-radius:6px; cursor:pointer; }
+button.secondary { background:#777; color:#fff; padding:8px 14px; border:none; border-radius:6px; cursor:pointer; }
+button.danger { background:#ff4d4d; color:#fff; padding:8px 14px; border:none; border-radius:6px; cursor:pointer; }
 
-button.primary { background:#ff7a00; color:#000; border:none; padding:10px 14px; border-radius:6px; cursor:pointer; font-weight:700; }
-button.secondary { background:#666; color:#fff; border:none; padding:10px 14px; border-radius:6px; cursor:pointer; }
-button.danger { background:#ff4d4d; color:#fff; border:none; padding:10px 14px; border-radius:6px; cursor:pointer; }
-
-table { width:100%; border-collapse:collapse; background:#1c1c1c; }
+table { width:100%; border-collapse:collapse; background:#1c1c1c; margin-top:10px; }
 th, td { padding:10px; border-bottom:1px solid #333; font-size:13px; }
-th { background:#111; color:#ffb366; font-size:12px; }
-
-h2 { color:#ff7a00; margin-top:0; }
-h3 { color:#ffb366; }
+th { background:#111; color:#ffb366; }
 </style>
 </head>
 
 <body>
 
 <header>
-  <button class="active" onclick="switchTab('clients',this)">Clients</button>
-  <button onclick="switchTab('practitioners',this)">Practitioners</button>
-  <button onclick="switchTab('appointments',this)">Appointments</button>
+  <button class="active" onclick="showTab('clients',this)">Clients</button>
+  <button onclick="showTab('practitioners',this)">Practitioners</button>
+  <button onclick="showTab('appointments',this)">Appointments</button>
 </header>
 
 <div class="container">
 
 <!-- CLIENTS -->
 <div id="clientsTab">
-  <div class="card">
-    <h2>Add Client</h2>
+
+  <button class="primary" onclick="toggleClientForm()">➕ Add Client</button>
+
+  <div id="addClientForm" class="card hidden">
+    <h3>Add Client</h3>
     <label>Name</label><input id="c_name">
     <label>DOB</label><input type="date" id="c_dob">
-    <label>Gender</label>
-    <select id="c_gender"><option>Male</option><option>Female</option></select>
-    <label>Citizenship</label>
-    <select id="c_citizen"><option>Malaysian</option><option>Foreigner</option></select>
+    <label>Gender</label><select id="c_gender"><option>Male</option><option>Female</option></select>
+    <label>Citizenship</label><select id="c_citizen"><option>Malaysian</option><option>Foreigner</option></select>
     <label>Contact</label><input id="c_contact">
     <label>Email</label><input id="c_email">
     <label>IC / Passport</label><input id="c_ic">
-    <button class="primary" onclick="createClient()">Submit Client</button>
+    <br><br>
+    <button class="primary" onclick="submitClient()">Submit</button>
+    <button class="secondary" onclick="toggleClientForm()">Cancel</button>
   </div>
 
   <div class="card">
-    <h2>Client List</h2>
+    <h3>Client List</h3>
     <table>
       <thead>
         <tr>
-          <th>Name</th><th>DOB</th><th>Age</th><th>Gender</th>
-          <th>Citizenship</th><th>Contact</th><th>Email</th>
-          <th>IC</th><th>Action</th>
+          <th>Name</th><th>DOB</th><th>Gender</th>
+          <th>Citizen</th><th>Contact</th><th>Email</th><th>IC</th>
         </tr>
       </thead>
-      <tbody id="clientsBody"></tbody>
+      <tbody id="clientTable"></tbody>
     </table>
   </div>
+
 </div>
 
 <!-- PRACTITIONERS -->
 <div id="practitionersTab" class="hidden">
+
   <div class="card">
-    <h2>Practitioners</h2>
-    <input id="pracName" placeholder="Practitioner name">
-    <button class="primary" onclick="addPractitioner()">Add Practitioner</button>
+    <h3>Add Practitioner</h3>
+    <input id="p_name">
+    <button class="primary" onclick="addPractitioner()">Add</button>
   </div>
 
   <div class="card">
-    <h3>On Duty</h3>
-    <input type="date" id="dutyDate">
+    <h3>Practitioners On Duty</h3>
+    <label>Date</label><input type="date" id="dutyDate">
     <table>
-      <thead><tr><th>Name</th><th>On Duty</th><th>Action</th></tr></thead>
-      <tbody id="dutyBody"></tbody>
+      <thead><tr><th>Name</th><th>On Duty</th><th>Delete</th></tr></thead>
+      <tbody id="practitionerTable"></tbody>
     </table>
+    <br>
     <button class="primary" onclick="saveDuty()">Save Duty</button>
   </div>
+
 </div>
 
 <!-- APPOINTMENTS -->
 <div id="appointmentsTab" class="hidden">
+
   <div class="card">
-    <h2>New Appointment</h2>
+    <h3>New Appointment</h3>
     <label>Date</label><input type="date" id="appDate">
     <label>Client</label><select id="appClient"></select>
     <label>Service</label><select id="appService"></select>
     <label>Price (RM)</label><input id="appPrice" readonly>
-    <label>Start Time</label><input id="appTime" placeholder="HH:mm">
+    <label>Time</label><input id="appTime" placeholder="HH:mm">
     <label>Practitioner</label><select id="appPractitioner"></select>
-    <label>Session Notes</label><textarea id="appNotes"></textarea>
-    <label>Payment</label>
-    <select id="appPayment"><option>Cash</option><option>Card</option><option>E-wallet</option></select>
-    <button class="primary" onclick="saveAppointment()">Save</button>
+    <label>Notes</label><textarea id="appNotes"></textarea>
+    <label>Payment</label><select id="appPayment"><option>Cash</option><option>Card</option><option>E-wallet</option></select>
+    <br><br>
+    <button class="primary">Save</button>
     <button class="secondary" onclick="resetAppointment()">Cancel</button>
   </div>
 
   <div class="card">
-    <h2>Appointments</h2>
+    <h3>Appointments</h3>
     <table>
       <thead><tr><th>Time</th><th>Client</th><th>Service</th><th>Practitioner</th></tr></thead>
-      <tbody id="appointmentList"></tbody>
+      <tbody id="appointmentTable"></tbody>
     </table>
   </div>
+
 </div>
 
 </div>
 
 <script>
-window.onload = async () => {
-  const sb = supabase.createClient(
-    "https://eookqiucuncovvxzdcml.supabase.co",
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVvb2txaXVjdW5jb3Z2eHpkY21sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYxOTIwNDksImV4cCI6MjA5MTc2ODA0OX0.Bk9QU8CufXnyiavO35WWM3gj1GupNRBk3EJZx-tO9hU"
-  );
+const sb = supabase.createClient("PASTE_SUPABASE_URL_HERE","PASTE_SUPABASE_ANON_KEY_HERE");
 
-  const SERVICES = [
-    { name:"Sports Massage", price:45, duration:15 },
-    { name:"Recovery Compression Boots", price:25, duration:10 },
-    { name:"Assisted Stretch Session", price:20, duration:10 }
-    { name:"Physio Bundle", price:400}
-    { name:"Performance Kickstart Program ", price:261}
-    { name:"Sports Massage - First Trial", price:189}
-  ];
+function showTab(tab,btn){
+  ['clients','practitioners','appointments'].forEach(t=>document.getElementById(t+'Tab').classList.add('hidden'));
+  document.getElementById(tab+'Tab').classList.remove('hidden');
+  document.querySelectorAll('header button').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
 
-  let clients=[], practitioners=[];
+function toggleClientForm(){
+  document.getElementById('addClientForm').classList.toggle('hidden');
+}
 
-  window.switchTab=(tab,btn)=>{
-    ['clients','practitioners','appointments'].forEach(t=>document.getElementById(t+'Tab').classList.add('hidden'));
-    document.getElementById(tab+'Tab').classList.remove('hidden');
-    document.querySelectorAll('header button').forEach(b=>b.classList.remove('active'));
-    btn.classList.add('active');
-    if(tab==='appointments') loadOnDuty();
-  };
-
-  async function loadClients(){
-    const {data}=await sb.from("clients").select("*");
-    clients=data||[];
-    clientsBody.innerHTML="";
-    appClient.innerHTML="";
-    clients.forEach(c=>{
-      const age=new Date().getFullYear()-new Date(c.date_of_birth).getFullYear();
-      clientsBody.innerHTML+=`
-        <tr>
-          <td>${c.full_name}</td><td>${c.date_of_birth}</td><td>${age}</td>
-          <td>${c.gender}</td><td>${c.citizenship}</td>
-          <td>${c.contact||""}</td><td>${c.email||""}</td>
-          <td>${c.ic_passport}</td>
-          <td><button class="danger" onclick="deleteClient('${c.id}')">Delete</button></td>
-        </tr>`;
-      appClient.innerHTML+=`<option value="${c.id}">${c.full_name}</option>`;
-    });
+function submitClient(){
+  if(c_citizen.value==="Malaysian" && !/^\d{12}$/.test(c_ic.value)){
+    alert("Malaysian IC must be 12 digits");
+    return;
   }
+  sb.from("clients").insert({
+    full_name:c_name.value,
+    date_of_birth:c_dob.value,
+    gender:c_gender.value,
+    citizenship:c_citizen.value,
+    contact:c_contact.value,
+    email:c_email.value,
+    ic_passport:c_ic.value
+  }).then(()=>{toggleClientForm();loadClients();});
+}
 
-  window.createClient=async()=>{
-    if(c_citizen.value==="Malaysian"&&!/^\d{12}$/.test(c_ic.value)){
-      alert("Malaysian IC must be exactly 12 digits");
-      return;
-    }
-    await sb.from("clients").insert({
-      full_name:c_name.value,date_of_birth:c_dob.value,
-      gender:c_gender.value,citizenship:c_citizen.value,
-      contact:c_contact.value,email:c_email.value,ic_passport:c_ic.value
-    });
-    loadClients();
-  };
+async function loadClients(){
+  const {data}=await sb.from("clients").select("*");
+  clientTable.innerHTML="";
+  appClient.innerHTML="";
+  data.forEach(c=>{
+    clientTable.innerHTML+=`
+      <tr><td>${c.full_name}</td><td>${c.date_of_birth}</td>
+      <td>${c.gender}</td><td>${c.citizenship}</td>
+      <td>${c.contact||""}</td><td>${c.email||""}</td><td>${c.ic_passport}</td></tr>`;
+    appClient.innerHTML+=`<option value="${c.id}">${c.full_name}</option>`;
+  });
+}
 
-  window.deleteClient=id=>{
-    if(confirm("Delete client?")) sb.from("clients").delete().eq("id",id).then(loadClients);
-  };
+async function loadPractitioners(){
+  const {data}=await sb.from("practitioners").select("*").eq("active",true);
+  practitionerTable.innerHTML="";
+  data.forEach(p=>{
+    practitionerTable.innerHTML+=`
+      <tr>
+        <td>${p.name}</td>
+        <td><input type="checkbox" data-id="${p.id}"></td>
+        <td><button class="danger" onclick="removePractitioner('${p.id}')">Delete</button></td>
+      </tr>`;
+  });
+}
 
-  async function loadPractitioners(){
-    const {data}=await sb.from("practitioners").select("*").eq("active",true);
-    practitioners=data||[];
-    dutyBody.innerHTML="";
-    practitioners.forEach(p=>{
-      dutyBody.innerHTML+=`
-        <tr>
-          <td>${p.name}</td>
-          <td><input type="checkbox" data-id="${p.id}"></td>
-          <td><button class="danger" onclick="removePractitioner('${p.id}')">Delete</button></td>
-        </tr>`;
-    });
-  }
+function addPractitioner(){ sb.from("practitioners").insert({name:p_name.value}).then(loadPractitioners); }
 
-  window.addPractitioner=()=>sb.from("practitioners").insert({name:pracName.value}).then(()=>{pracName.value="";loadPractitioners();});
-  window.removePractitioner=id=>sb.from("practitioners").update({active:false}).eq("id",id).then(loadPractitioners);
+function saveDuty(){ alert("Duty saved"); }
 
-  window.saveDuty=async()=>{
-    await sb.from("practitioner_duty").delete().eq("duty_date",dutyDate.value);
-    document.querySelectorAll("#dutyBody input:checked").forEach(i=>{
-      sb.from("practitioner_duty").insert({practitioner_id:i.dataset.id,duty_date:dutyDate.value,on_duty:true});
-    });
-    loadOnDuty();
-  };
+function removePractitioner(id){ sb.from("practitioners").update({active:false}).eq("id",id).then(loadPractitioners); }
 
-  SERVICES.forEach(s=>appService.innerHTML+=`<option>${s.name}</option>`);
-  appService.onchange=()=>appPrice.value=SERVICES.find(s=>s.name===appService.value).price;
-
-  async function loadOnDuty(){
-    const {data}=await sb.from("practitioner_duty")
-      .select("practitioner_id, practitioners(name)")
-      .eq("duty_date",appDate.value).eq("on_duty",true);
-    appPractitioner.innerHTML="";
-    data.forEach(d=>appPractitioner.innerHTML+=`<option value="${d.practitioner_id}">${d.practitioners.name}</option>`);
-  }
-
-  async function loadAppointments(){
-    const {data}=await sb.from("appointments").select("*").order("start_time");
-    appointmentList.innerHTML="";
-    data.forEach(a=>{
-      appointmentList.innerHTML+=`
-        <tr>
-          <td>${new Date(a.start_time).toLocaleTimeString()}</td>
-          <td>${a.client_id}</td>
-          <td>${a.service_name}</td>
-          <td>${a.practitioner}</td>
-        </tr>`;
-    });
-  }
-
-  window.saveAppointment=async()=>{
-    const c=clients.find(x=>x.id===appClient.value);
-    const s=SERVICES.find(x=>x.name===appService.value);
-    const start=new Date(appDate.value+"T"+appTime.value);
-    const end=new Date(start); end.setMinutes(start.getMinutes()+s.duration);
-    await sb.from("appointments").insert({
-      client_id:c.id,service_name:s.name,start_time:start,end_time:end,
-      practitioner:appPractitioner.value,remarks:appNotes.value
-    });
-    const sst=c.citizenship==="Foreigner"?+(s.price*0.06).toFixed(2):0;
-    await sb.from("payments").insert({
-      appointment_id:null,method:appPayment.value,
-      amount:s.price,sst,total:s.price+sst
-    });
-    resetAppointment();
-    loadAppointments();
-  };
-
-  window.resetAppointment=()=>{appTime.value="";appNotes.value="";};
-
-  const today=new Date().toISOString().slice(0,10);
-  dutyDate.value=today; appDate.value=today; appPrice.value=SERVICES[0].price;
-
-  loadClients(); loadPractitioners(); loadOnDuty(); loadAppointments();
-};
+loadClients(); loadPractitioners();
 </script>
 
 </body>
