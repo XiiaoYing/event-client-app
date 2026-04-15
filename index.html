@@ -281,24 +281,40 @@ async function saveAppointment(){
   alert("Appointment saved");
   loadAppointments();
 }
+  function getServiceName(serviceId) {
+  return SERVICES.find(s => s.id === serviceId)?.name || serviceId;
+}
+
+function getClientName(clientId) {
+  return clientsCache.find(c => c.id === clientId)?.full_name || clientId;
+}
 
 async function loadAppointments(){
-  const {data}=await sb.from("appointments").select("*").order("start_time");
-  appointmentsTable.innerHTML="";
-  data.forEach(a=>{
-    const svc=SERVICES.find(s=>s.id===a.service_id)?.name||a.service_id;
-    appointmentsTable.innerHTML+=`
+  const { data, error } = await sb
+    .from("appointments")
+    .select("*")
+    .order("start_time", { ascending: true });
+
+  if (error) {
+    console.error("Load appointments error:", error);
+    return;
+  }
+
+  appointmentsTable.innerHTML = "";
+
+  data.forEach(a => {
+    appointmentsTable.innerHTML += `
       <tr>
         <td>${a.start_time.split("T")[0]}</td>
         <td>${a.start_time.split("T")[1].slice(0,5)}</td>
-        <td>${a.client_id}</td>
-        <td>${svc}</td>
-        <td>RM ${a.total.toFixed(2)}</td>
-        <td>${a.practitioner}</td>
-      </tr>`;
+        <td>${getClientName(a.client_id)}</td>
+        <td>${getServiceName(a.service_id)}</td>
+        <td>RM ${Number(a.total).toFixed(2)}</td>
+        <td>${a.practitioner || ""}</td>
+      </tr>
+    `;
   });
 }
-
 /* INIT */
 const today=new Date().toISOString().slice(0,10);
 dutyDate.value=today; appDate.value=today;
