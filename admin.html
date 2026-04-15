@@ -9,16 +9,15 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
 
-<!-- Supabase -->
+<!-- Supabase SDK -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
-body {
-  margin:0;
-  font-family:'Montserrat',sans-serif;
-  background:#0b0b0b;
-  color:#fff;
-}
+<header>
+  <button class="active" onclick="showTab('clients', this)">Clients</button>
+  <button onclick="showTab('practitioners', this)">Practitioners</button>
+  <button onclick="showTab('appointments', this)">Appointments</button>
+</header>
 header {
   display:flex;
   gap:10px;
@@ -194,11 +193,12 @@ const today = new Date().toISOString().slice(0,10);
 dutyDate.value = today;
 appDate.value = today;
 
-function showTab(t){
-  document.querySelectorAll(".container > div").forEach(d=>d.classList.add("hidden"));
-  document.getElementById(t+"Tab").classList.remove("hidden");
-  document.querySelectorAll("header button").forEach(b=>b.classList.remove("active"));
-  event.target.classList.add("active");
+function showTab(tabName, btn){
+  document.querySelectorAll(".container > div").forEach(d => d.classList.add("hidden"));
+  document.getElementById(tabName + "Tab").classList.remove("hidden");
+
+  document.querySelectorAll("header button").forEach(b => b.classList.remove("active"));
+  if (btn) btn.classList.add("active");
 }
 
 /* CLIENTS */
