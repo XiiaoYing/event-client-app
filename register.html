@@ -1,11 +1,111 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="utf-8" />
-  <title>Registration</title>
+  <meta charset="utf-8">
+  <title>Client Registration</title>
+
+  <!-- Supabase JS SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 500px;
+      margin: auto;
+      padding: 20px;
+    }
+    h1 {
+      color: orange;
+    }
+    input, select, textarea, button {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 12px;
+    }
+    button {
+      background: orange;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background: darkorange;
+    }
+    .error {
+      color: red;
+    }
+  </style>
 </head>
-<body style="padding:20px">
-  <h1>✅ Registration Page Loaded</h1>
-  <p>If you see this page, routing is solved.</p>
-</body>
-</html>
+
+<body>
+
+  <h1>Client Registration</h1>
+  <p>Register now to secure your slot and keep your body feeling fresh.</p>
+
+  <form id="registrationForm">
+
+    <input name="full_name" placeholder="Full Name" required>
+
+    <label>Date of Birth</label>
+    <input type="date" id="dob" required>
+    <p>Age: <span id="age"></span></p>
+
+    <select name="gender" required>
+      <option value="">Select Gender</option>
+      <option>Male</option>
+      <option>Female</option>
+    </select>
+
+    <select id="citizenship" required>
+      <option>Malaysian</option>
+      <option>Foreigner</option>
+    </select>
+
+    <input name="ic_passport" placeholder="IC / Passport Number" required>
+
+    <input name="contact" placeholder="Contact Number">
+    <input name="email" placeholder="Email">
+
+    <textarea name="address" placeholder="Address (Optional)"></textarea>
+
+    <div id="error" class="error"></div>
+
+    <button type="submit">Register</button>
+  </form>
+
+  <script>
+    // 🔐 PASTE YOUR SUPABASE DETAILS BELOW
+    const supabase = supabaseJs.createClient(
+      "PASTE_SUPABASE_URL_HERE",
+      "PASTE_SUPABASE_ANON_KEY_HERE"
+    );
+
+    const dobInput = document.getElementById("dob");
+    const ageSpan = document.getElementById("age");
+    const errorDiv = document.getElementById("error");
+    const citizenshipSelect = document.getElementById("citizenship");
+
+    dobInput.addEventListener("change", () => {
+      const birthYear = new Date(dobInput.value).getFullYear();
+      ageSpan.textContent = new Date().getFullYear() - birthYear;
+    });
+
+    document.getElementById("registrationForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      errorDiv.textContent = "";
+
+      const form = e.target;
+      const citizenship = citizenshipSelect.value;
+      const ic = form.ic_passport.value.trim();
+
+      // ✅ Malaysian IC Validation
+      if (citizenship === "Malaysian" && !/^\d{12}$/.test(ic)) {
+        errorDiv.textContent = "Malaysian IC must be exactly 12 digits.";
+        return;
+      }
+
+      const { error } = await supabase.from("clients").insert({
+        full_name: form.full_name.value,
+        date_of_birth: dobInput.value,
+        gender: form.gender.value,
+        citizenship,
