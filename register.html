@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Register</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+
+<body style="max-width:500px;margin:auto;padding:20px">
+  <h2 style="color:orange">Client Registration</h2>
+
+  <form id="form">
+    <input name="full_name" placeholder="Full Name" required><br><br>
+
+    <input type="date" id="dob" required><br>
+    <p>Age: <span id="age"></span></p>
+
+    <select name="gender" required>
+      <option value="">Gender</option>
+      <option>Male</option>
+      <option>Female</option>
+    </select><br><br>
+
+    <select id="citizenship">
+      <option>Malaysian</option>
+      <option>Foreigner</option>
+    </select><br><br>
+
+    <input name="ic_passport" placeholder="IC / Passport" required><br><br>
+    <input name="contact" placeholder="Contact"><br><br>
+    <input name="email" placeholder="Email"><br><br>
+    <textarea name="address" placeholder="Address"></textarea><br><br>
+
+    <button type="submit">Register</button>
+  </form>
+
+  <script>
+    const supabase = window.supabase.createClient(
+      "PASTE_SUPABASE_URL_HERE",
+      "PASTE_SUPABASE_ANON_KEY_HERE"
+    );
+
+    const dob = document.getElementById('dob');
+    const age = document.getElementById('age');
+
+    dob.addEventListener('change', () => {
+      age.textContent =
+        new Date().getFullYear() - new Date(dob.value).getFullYear();
+    });
+
+    document.getElementById('form').addEventListener('submit', async e => {
+      e.preventDefault();
+      const citizenship = document.getElementById('citizenship').value;
+      const ic = e.target.ic_passport.value;
+
+      if (citizenship === 'Malaysian' && !/^\d{12}$/.test(ic)) {
+        alert('Malaysian IC must be 12 digits');
+        return;
+      }
+
+      const { error } = await supabase.from('clients').insert({
+        full_name: e.target.full_name.value,
+        date_of_birth: dob.value,
+        gender: e.target.gender.value,
+        citizenship,
+        ic_passport: ic,
+        contact: e.target.contact.value,
+        email: e.target.email.value,
+        address: e.target.address.value
+      });
+
+      if (error) {
+        alert(error.message);
+      } else {
+        alert('Registration successful!');
+        e.target.reset();
+      }
+    });
+  </script>
+</body>
+</html>
