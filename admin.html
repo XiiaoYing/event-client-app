@@ -402,7 +402,8 @@ window.onload = async () => {
       service_name: s.name,
       start_time: start,
       end_time: end,
-      practitioner: appPractitioner.options[appPractitioner.selectedIndex].text,
+    practitioner_id: appPractitioner.value,
+practitioner_name: appPractitioner.options[appPractitioner.selectedIndex].text,
       remarks: appNotes.value
     });
 
@@ -410,20 +411,43 @@ window.onload = async () => {
     loadAppointments();
   };
 
-  async function loadAppointments(){
-    const {data} = await sb.from("appointments").select("*").order("start_time");
-    appointmentTable.innerHTML="";
-    data.forEach(a=>{
-      appointmentTable.innerHTML += `
-        <tr>
-          <td>${a.start_time.split("T")[0]}</td>
-          <td>${a.start_time.split("T")[1].slice(0,5)}</td>
-          <td>${clients.find(c=>c.id===a.client_id)?.full_name||""}</td>
-          <td>${a.service_name}</td>
-          <td>${a.practitioner}</td>
-        </tr>`;
-    });
+await sb.from("appointments").insert({
+  client_id: client.id,
+  service_name: s.name,
+  start_time: start,
+  end_time: end,
+  practitioner: selectedOption.text,
+  remarks: appNotes.value
+});
+
+resetAppointment();
+await loadAppointments();
+  const { data, error } = await sb
+    .from("appointments")
+    .select("*")
+    .order("start_time", { ascending: true });
+
+  if (error) {
+    console.error(error);
+    return;
   }
+
+  appointmentTable.innerHTML = "";
+
+  data.forEach(a => {
+    const time = new Date(a.start_time);
+
+    appointmentTable.innerHTML += `
+      <tr>
+        <td>${time.toISOString().slice(0,10)}</td>
+        <td>${time.toTimeString().slice(0,5)}</td>
+        <td>${clients.find(c => c.id === a.client_id)?.full_name || "-"}</td>
+        <td>${a.service_name}</td>
+        <td>${a.practitioner || "-"}</td>
+      </tr>
+    `;
+  });
+}
 
   window.resetAppointment = () => {
     appTime.value="";
