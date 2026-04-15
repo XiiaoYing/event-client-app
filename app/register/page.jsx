@@ -1,22 +1,21 @@
-
 'use client';
 
 import { useState } from 'react';
-import { supabase } from '@/lib/supabase';
+import { supabase } from '../../lib/supabase';
 
 export default function RegisterPage() {
   const [dob, setDob] = useState('');
   const [citizenship, setCitizenship] = useState('Malaysian');
 
-  const age =
-    dob ? new Date().getFullYear() - new Date(dob).getFullYear() : '';
+  const age = dob
+    ? new Date().getFullYear() - new Date(dob).getFullYear()
+    : '';
 
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e) {
     e.preventDefault();
-    const form = e.currentTarget;
-    const formData = new FormData(form);
+    const formData = new FormData(e.target);
 
-    const ic = formData.get('ic_passport') as string;
+    const ic = formData.get('ic_passport');
 
     if (citizenship === 'Malaysian' && !/^\d{12}$/.test(ic)) {
       alert('Malaysian IC must be exactly 12 digits');
@@ -31,14 +30,14 @@ export default function RegisterPage() {
       ic_passport: ic,
       contact: formData.get('contact'),
       email: formData.get('email'),
-      address: formData.get('address'),
+      address: formData.get('address')
     });
 
     if (error) {
       alert(error.message);
     } else {
-      alert('Registration successful!');
-      form.reset();
+      alert('Registration successful');
+      e.target.reset();
     }
   }
 
@@ -49,44 +48,26 @@ export default function RegisterPage() {
       </h1>
 
       <form onSubmit={handleSubmit}>
-        <input name="full_name" placeholder="Full Name" required />
-        <br /><br />
+        <input name="full_name" placeholder="Full Name" required /><br /><br />
 
-        <input
-          type="date"
-          required
-          onChange={(e) => setDob(e.target.value)}
-        />
+        <input type="date" required onChange={(e) => setDob(e.target.value)} />
         <p>Age: {age}</p>
 
         <select name="gender" required>
           <option value="">Select Gender</option>
           <option>Male</option>
           <option>Female</option>
-        </select>
-        <br /><br />
+        </select><br /><br />
 
         <select onChange={(e) => setCitizenship(e.target.value)}>
           <option>Malaysian</option>
           <option>Foreigner</option>
-        </select>
-        <br /><br />
+        </select><br /><br />
 
-        <input
-          name="ic_passport"
-          placeholder="IC / Passport"
-          required
-        />
-        <br /><br />
-
-        <input name="contact" placeholder="Contact Number" />
-        <br /><br />
-
-        <input name="email" placeholder="Email" />
-        <br /><br />
-
-        <textarea name="address" placeholder="Address (Optional)" />
-        <br /><br />
+        <input name="ic_passport" placeholder="IC / Passport" required /><br /><br />
+        <input name="contact" placeholder="Contact Number" /><br /><br />
+        <input name="email" placeholder="Email" /><br /><br />
+        <textarea name="address" placeholder="Address (Optional)" /><br /><br />
 
         <button style={{ background: 'orange', color: 'white' }}>
           Register
