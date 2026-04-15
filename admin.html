@@ -1,129 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <title>Client Management</title>
-
-  <!-- Supabase -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-  <!-- Google Font -->
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
-
-  <style>
-    body {
-      margin: 0;
-      background: #0b0b0b;
-      color: #ffffff;
-      font-family: 'Montserrat', sans-serif;
-    }
-
-    header {
-      padding: 16px 20px;
-      background: #000;
-      border-bottom: 2px solid #ff7a00;
-    }
-
-    header h1 {
-      margin: 0;
-      color: #ff7a00;
-    }
-
-    .container {
-      padding: 24px;
-      max-width: 1200px;
-      margin: auto;
-    }
-
-    .search {
-      margin-bottom: 20px;
-    }
-
-    input {
-      padding: 10px;
-      width: 300px;
-      border-radius: 6px;
-      border: none;
-      background: #1f1f1f;
-      color: white;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      background: #151515;
-      border-radius: 12px;
-      overflow: hidden;
-    }
-
-    th, td {
-      padding: 14px;
-      text-align: left;
-      border-bottom: 1px solid #222;
-    }
-
-    th {
-      background: #111;
-      color: #ffb366;
-      font-size: 12px;
-      letter-spacing: 0.5px;
-    }
-
-    tr:hover {
-      background: #202020;
-      cursor: pointer;
-    }
-
-    .empty {
-      color: #aaa;
-      margin-top: 20px;
-    }
-  </style>
-</head>
-
-<body>
-
-<header>
-  <h1>CLIENT MANAGEMENT</h1>
-</header>
-
-<div class="container">
-
-<div class="search">
-  <input
-    type="text"
-    id="search"
-    placeholder="Search by name / contact / IC"
-    oninput="filterClients()"
-  />
-
-  <button
-    style="margin-left: 10px; padding:10px; background:#ff7a00; border:none; border-radius:6px; cursor:pointer; font-weight:bold;"
-    onclick="addClient()"
-  >
-    ➕ Add Client
-  </button>
-</div>
-
-  <table id="clientTable">
-    <thead>
-      <tr>
-        <th>NAME</th>
-        <th>AGE</th>
-        <th>GENDER</th>
-        <th>CITIZENSHIP</th>
-        <th>CONTACT</th>
-        <th>IC / PASSPORT</th>
-        <th>REGISTERED</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
-
-  <div id="empty" class="empty"></div>
-</div>
-
 <script>
+  // =============================
+  // SUPABASE CONNECTION
+  // =============================
   const supabase = supabaseJs.createClient(
     "https://eookqiucuncovvxzdcml.supabase.co",
     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVvb2txaXVjdW5jb3Z2eHpkY21sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYxOTIwNDksImV4cCI6MjA5MTc2ODA0OX0.Bk9QU8CufXnyiavO35WWM3gj1GupNRBk3EJZx-tO9hU"
@@ -131,6 +9,9 @@
 
   let clients = [];
 
+  // =============================
+  // LOAD CLIENTS FROM DATABASE
+  // =============================
   async function loadClients() {
     const { data, error } = await supabase
       .from("clients")
@@ -138,7 +19,7 @@
       .order("created_at", { ascending: false });
 
     if (error) {
-      document.getElementById("empty").textContent = error.message;
+      alert("Failed to load clients: " + error.message);
       return;
     }
 
@@ -146,10 +27,17 @@
     renderTable(data);
   }
 
+  // =============================
+  // CALCULATE AGE
+  // =============================
   function calculateAge(dob) {
+    if (!dob) return "-";
     return new Date().getFullYear() - new Date(dob).getFullYear();
   }
 
+  // =============================
+  // RENDER CLIENT TABLE
+  // =============================
   function renderTable(data) {
     const tbody = document.querySelector("#clientTable tbody");
     tbody.innerHTML = "";
@@ -161,119 +49,118 @@
 
     document.getElementById("empty").textContent = "";
 
-    data.forEach(client => {
+    data.forEach((client) => {
       const tr = document.createElement("tr");
 
-tr.innerHTML = `
-  <td>${client.full_name}</td>
-  <td>${calculateAge(client.date_of_birth)}</td>
-  <td>${client.gender}</td>
-  <td>${client.citizenship}</td>
-  <td>${client.contact || "-"}</td>
-  <td>${client.ic_passport}</td>
-  <td>${new Date(client.created_at).toLocaleString()}</td>
-  <td>
-    <button
-      style="background:#ff4d4d;border:none;color:white;padding:6px 10px;border-radius:4px;cursor:pointer"
-      onclick="deleteClient('${client.id}')"
-    >
-      Delete
-    </button>
-  </td>
-`;
-      tr.onclick = () => viewClient(client);
+      tr.innerHTML = `
+        <td>${client.full_name}</td>
+        <td>${calculateAge(client.date_of_birth)}</td>
+        <td>${client.gender}</td>
+        <td>${client.citizenship}</td>
+        <td>${client.contact || "-"}</td>
+        <td>${client.ic_passport}</td>
+        <td>${new Date(client.created_at).toLocaleString()}</td>
+        <td>
+          <button
+            style="background:#ff4d4d;border:none;color:white;padding:6px 10px;border-radius:4px;cursor:pointer"
+            onclick="deleteClient('${client.id}')"
+          >
+            Delete
+          </button>
+        </td>
+      `;
 
       tbody.appendChild(tr);
     });
   }
 
+  // =============================
+  // SEARCH / FILTER CLIENTS
+  // =============================
   function filterClients() {
     const q = document.getElementById("search").value.toLowerCase();
-    const filtered = clients.filter(c =>
+
+    const filtered = clients.filter((c) =>
       c.full_name.toLowerCase().includes(q) ||
       (c.contact || "").toLowerCase().includes(q) ||
       c.ic_passport.toLowerCase().includes(q)
     );
+
     renderTable(filtered);
   }
 
-  function viewClient(client) {
-    alert(
-      `CLIENT DETAILS\n\n` +
-      `Name: ${client.full_name}\n` +
-      `Age: ${calculateAge(client.date_of_birth)}\n` +
-      `Gender: ${client.gender}\n` +
-      `Citizenship: ${client.citizenship}\n` +
-      `Contact: ${client.contact || "-"}\n` +
-      `Email: ${client.email || "-"}\n` +
-      `IC/Passport: ${client.ic_passport}`
-    );
+  // =============================
+  // MANUAL ADD CLIENT (STAFF)
+  // =============================
+  async function addClient() {
+    const full_name = prompt("Full Name:");
+    if (!full_name) return;
+
+    const dob = prompt("Date of Birth (YYYY-MM-DD):");
+    if (!dob) return;
+
+    const gender = prompt("Gender (Male / Female):");
+    if (!gender) return;
+
+    const citizenship = prompt("Citizenship (Malaysian / Foreigner):");
+    if (!citizenship) return;
+
+    const ic_passport = prompt("IC / Passport Number:");
+    if (!ic_passport) return;
+
+    // Malaysian IC validation
+    if (citizenship === "Malaysian" && !/^\d{12}$/.test(ic_passport)) {
+      alert("Malaysian IC must be exactly 12 digits.");
+      return;
+    }
+
+    const contact = prompt("Contact Number (optional):");
+    const email = prompt("Email (optional):");
+    const address = prompt("Address (optional):");
+
+    const { error } = await supabase.from("clients").insert({
+      full_name,
+      date_of_birth: dob,
+      gender,
+      citizenship,
+      ic_passport,
+      contact,
+      email,
+      address
+    });
+
+    if (error) {
+      alert("Failed to add client: " + error.message);
+    } else {
+      alert("Client added successfully.");
+      loadClients();
+    }
   }
 
+  // =============================
+  // DELETE CLIENT (STAFF)
+  // =============================
+  async function deleteClient(clientId) {
+    const confirmDelete = confirm(
+      "Are you sure you want to permanently delete this client?"
+    );
+    if (!confirmDelete) return;
+
+    const { error } = await supabase
+      .from("clients")
+      .delete()
+      .eq("id", clientId);
+
+    if (error) {
+      alert("Failed to delete client: " + error.message);
+    } else {
+      alert("Client deleted.");
+      loadClients();
+    }
+  }
+
+  // =============================
+  // INIT
+  // =============================
   loadClients();
 </script>
-async function addClient() {
-  const full_name = prompt("Full Name:");
-  if (!full_name) return;
-
-  const dob = prompt("Date of Birth (YYYY-MM-DD):");
-  if (!dob) return;
-
-  const gender = prompt("Gender (Male / Female):");
-  if (!gender) return;
-
-  const citizenship = prompt("Citizenship (Malaysian / Foreigner):");
-  if (!citizenship) return;
-
-  const ic_passport = prompt("IC / Passport Number:");
-  if (!ic_passport) return;
-
-  // Validate Malaysian IC
-  if (citizenship === "Malaysian" && !/^\d{12}$/.test(ic_passport)) {
-    alert("Malaysian IC must be exactly 12 digits.");
-    return;
-  }
-
-  const contact = prompt("Contact Number (optional):");
-  const email = prompt("Email (optional):");
-  const address = prompt("Address (optional):");
-
-  const { error } = await supabase.from("clients").insert({
-    full_name,
-    date_of_birth: dob,
-    gender,
-    citizenship,
-    ic_passport,
-    contact,
-    email,
-    address
-  });
-
-  if (error) {
-    alert(error.message);
-  } else {
-    alert("Client added successfully.");
-    loadClients();
-  }
-}
-  async function deleteClient(clientId) {
-  const confirmDelete = confirm(
-    "Are you sure you want to permanently delete this client?"
-  );
-  if (!confirmDelete) return;
-
-  const { error } = await supabase
-    .from("clients")
-    .delete()
-    .eq("id", clientId);
-
-  if (error) {
-    alert(error.message);
-  } else {
-    alert("Client deleted.");
-    loadClients();
-  }
-}
-``
-</body>
-</html>
