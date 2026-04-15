@@ -1,80 +1,11 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Register</title>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <meta charset="utf-8" />
+  <title>Registration</title>
 </head>
-
-<body style="max-width:500px;margin:auto;padding:20px">
-  <h2 style="color:orange">Client Registration</h2>
-
-  <form id="form">
-    <input name="full_name" placeholder="Full Name" required><br><br>
-
-    <input type="date" id="dob" required><br>
-    <p>Age: <span id="age"></span></p>
-
-    <select name="gender" required>
-      <option value="">Gender</option>
-      <option>Male</option>
-      <option>Female</option>
-    </select><br><br>
-
-    <select id="citizenship">
-      <option>Malaysian</option>
-      <option>Foreigner</option>
-    </select><br><br>
-
-    <input name="ic_passport" placeholder="IC / Passport" required><br><br>
-    <input name="contact" placeholder="Contact"><br><br>
-    <input name="email" placeholder="Email"><br><br>
-    <textarea name="address" placeholder="Address"></textarea><br><br>
-
-    <button type="submit">Register</button>
-  </form>
-
-  <script>
-    const supabase = window.supabase.createClient(
-      "https://eookqiucuncovvxzdcml.supabase.co",
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVvb2txaXVjdW5jb3Z2eHpkY21sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYxOTIwNDksImV4cCI6MjA5MTc2ODA0OX0.Bk9QU8CufXnyiavO35WWM3gj1GupNRBk3EJZx-tO9hU
-    );
-
-    const dob = document.getElementById('dob');
-    const age = document.getElementById('age');
-
-    dob.addEventListener('change', () => {
-      age.textContent =
-        new Date().getFullYear() - new Date(dob.value).getFullYear();
-    });
-
-    document.getElementById('form').addEventListener('submit', async e => {
-      e.preventDefault();
-      const citizenship = document.getElementById('citizenship').value;
-      const ic = e.target.ic_passport.value;
-
-      if (citizenship === 'Malaysian' && !/^\d{12}$/.test(ic)) {
-        alert('Malaysian IC must be 12 digits');
-        return;
-      }
-
-      const { error } = await supabase.from('clients').insert({
-        full_name: e.target.full_name.value,
-        date_of_birth: dob.value,
-        gender: e.target.gender.value,
-        citizenship,
-        ic_passport: ic,
-        contact: e.target.contact.value,
-        email: e.target.email.value,
-        address: e.target.address.value
-      });
-
-      if (error) {
-        alert(error.message);
-      } else {
-        alert('Registration successful!');
-        e.target.reset();
-      }
-    });
-  </script>
+<body style="padding:20px">
+  <h1>✅ Registration Page Loaded</h1>
+  <p>If you see this page, routing is solved.</p>
 </body>
 </html>
