@@ -1,98 +1,125 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <meta charset="UTF-8">
 <title>Admin Dashboard</title>
 
-<!-- Google Font -->
-<link rel="preconnect" href="https://fontseconnect" href="httpsef="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@dy {
+<!-- Font -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
+
+<!-- Supabase -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+* { box-sizing: border-box; }
+
+body {
   margin: 0;
   font-family: 'Montserrat', sans-serif;
-  background: #0b0b0b;
-  color: #fff;
+  background: #f4f4f4;
+  color: #111;
 }
+
+/* ===== TOP NAV ===== */
 header {
   display: flex;
   gap: 12px;
-  padding: 16px;
-  background: #000;
-  border-bottom: 2px solid #ff7a00;
+  padding: 14px 20px;
+  background: #121212;
 }
+
 header button {
-  background: #1f1f1f;
+  background: #2a2a2a;
   color: #fff;
   border: none;
-  padding: 10px 16px;
+  padding: 10px 18px;
   border-radius: 6px;
   cursor: pointer;
 }
+
 header button.active {
   background: #ff7a00;
   color: #000;
   font-weight: 700;
 }
+
+/* ===== LAYOUT ===== */
 .container {
   max-width: 1200px;
   margin: auto;
-  padding: 20px;
+  padding: 24px;
 }
+
 .hidden { display: none; }
+
+/* ===== CARD ===== */
 .card {
-  background: #151515;
-  padding: 16px;
+  background: #fff;
   border-radius: 10px;
+  padding: 20px;
   margin-bottom: 20px;
 }
+
+/* ===== FORM ===== */
 label {
   font-size: 12px;
-  color: #ffb366;
+  font-weight: 600;
+  margin-bottom: 4px;
+  display: block;
 }
+
 input, select, textarea {
   width: 100%;
   padding: 10px;
   border-radius: 6px;
-  border: none;
-  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  margin-bottom: 12px;
 }
+
 button.primary {
   background: #ff7a00;
   color: #000;
-  padding: 8px 14px;
-  border-radius: 6px;
   border: none;
+  padding: 10px 16px;
+  border-radius: 6px;
   cursor: pointer;
   font-weight: 600;
 }
+
 button.secondary {
   background: #666;
   color: #fff;
-  padding: 8px 14px;
-  border-radius: 6px;
   border: none;
-  cursor: pointer;
-}
-button.danger {
-  background: #ff4d4d;
-  color: #fff;
-  padding: 8px 14px;
+  padding: 10px 16px;
   border-radius: 6px;
-  border: none;
   cursor: pointer;
+  margin-left: 8px;
 }
+
+/* ===== TABLE ===== */
 table {
   width: 100%;
   border-collapse: collapse;
 }
-th, td {
+
+th {
+  background: #f1f1f1;
+  text-align: left;
   padding: 10px;
-  border-bottom: 1px solid #333;
   font-size: 13px;
 }
-th {
-  background: #111;
-  color: #ffb366;
+
+td {
+  padding: 10px;
+  border-top: 1px solid #ddd;
+  font-size: 13px;
+}
+
+/* ===== ACTION BAR ===== */
+.action-bar {
+  margin-bottom: 16px;
 }
 </style>
 </head>
@@ -100,19 +127,22 @@ th {
 <body>
 
 <header>
-  <button class="active" onclick="showTab('clients',this)">Clients</button>
-  <button onclick="showTab('practitioners',this)">Practitioners</button>
-  <button onclick="showTab('appointments',this)">Appointments</button>
+  <button id="tabClients" class="active">Clients</button>
+  <button id="tabPractitioners">Practitioners</button>
+  <button id="tabAppointments">Appointments</button>
 </header>
 
 <div class="container">
 
 <!-- CLIENTS -->
-<div id="clientsTab">
-  <button class="primary" onclick="toggleClientForm()">➕ Add Client</button>
+<section id="clientsTab">
+  <div class="action-bar">
+    <button class="primary" id="btnAddClient">+ Add Client</button>
+  </div>
 
-  <div id="clientForm" class="card hidden">
+  <div class="card hidden" id="clientForm">
     <h3>Add Client</h3>
+
     <label>Name</label><input id="c_name">
     <label>DOB</label><input type="date" id="c_dob">
     <label>Gender</label>
@@ -121,9 +151,10 @@ th {
     <select id="c_citizen"><option>Malaysian</option><option>Foreigner</option></select>
     <label>Contact</label><input id="c_contact">
     <label>Email</label><input id="c_email">
-    <label>IC / Passport</label><input id="c_ic">
-    <button class="primary" onclick="addClient()">Submit</button>
-    <button class="secondary" onclick="toggleClientForm()">Cancel</button>
+    <label>IC</label><input id="c_ic">
+
+    <button class="primary" id="saveClient">Save</button>
+    <button class="secondary" id="cancelClient">Cancel</button>
   </div>
 
   <div class="card">
@@ -138,186 +169,82 @@ th {
       <tbody id="clientsTable"></tbody>
     </table>
   </div>
-</div>
+</section>
 
 <!-- PRACTITIONERS -->
-<div id="practitionersTab" class="hidden">
+<section id="practitionersTab" class="hidden">
   <div class="card">
-    <h3>Add Practitioner</h3>
+    <h3>Practitioners</h3>
+    <label>Name</label>
     <input id="p_name">
-    <button class="primary" onclick="addPractitioner()">Add</button>
+    <button class="primary" id="addPractitioner">Add</button>
   </div>
-
-  <div class="card">
-    <h3>Practitioners On Duty</h3>
-    <label>Date</label><input type="date" id="dutyDate">
-    <table>
-      <thead><tr><th>Name</th><th>On Duty</th><th>Delete</th></tr></thead>
-      <tbody id="practitionerTable"></tbody>
-    </table>
-    <button class="primary" onclick="saveDuty()">Save Duty</button>
-  </div>
-</div>
+</section>
 
 <!-- APPOINTMENTS -->
-<div id="appointmentsTab" class="hidden">
-  <button class="primary" onclick="toggleAppointmentForm()">➕ Add Appointment</button>
-
-  <div id="appointmentForm" class="card hidden">
-    <h3>New Appointment</h3>
-    <label>Date</label><input type="date" id="appDate">
-    <label>Client</label><select id="appClient"></select>
-    <label>Service</label><select id="appService"></select>
-    <label>Price</label><input id="appPrice" readonly>
-    <label>Start Time</label><input id="appTime" placeholder="HH:mm">
-    <label>Practitioner</label><select id="appPractitioner"></select>
-    <label>Notes</label><textarea id="appNotes"></textarea>
-    <button class="primary" onclick="saveAppointment()">Save</button>
-    <button class="secondary" onclick="toggleAppointmentForm()">Cancel</button>
+<section id="appointmentsTab" class="hidden">
+  <div class="action-bar">
+    <button class="primary">+ Add Appointment</button>
   </div>
-
   <div class="card">
     <h3>Appointments</h3>
-    <table>
-      <thead>
-        <tr><th>Date</th><th>Time</th><th>Client</th><th>Service</th><th>Practitioner</th></tr>
-      </thead>
-      <tbody id="appointmentsTable"></tbody>
-    </table>
+    <p>(Appointment flow verified next step)</p>
   </div>
-</div>
+</section>
 
 </div>
 
 <script>
-window.onerror = function(msg){ document.body.innerHTML="<pre>"+msg+"</pre>"; };
+/* SAFETY */
+window.onerror = e => alert("JS error: " + e);
 
+/* INIT SUPABASE */
 const sb = supabase.createClient(
   "https://eookqiucuncovvxzdcml.supabase.co",
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVvb2txaXVjdW5jb3Z2eHpkY21sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYxOTIwNDksImV4cCI6MjA5MTc2ODA0OX0.Bk9QU8CufXnyiavO35WWM3gj1GupNRBk3EJZx-tO9hU"
 );
 
-const SERVICES = [
-  {name:"Sports Massage",price:45,duration:15},
-  {name:"Recovery Compression Boots",price:25,duration:10},
-  {name:"Assisted Stretch Session",price:20,duration:10},
-  {name:"Physio Bundle",price:400,duration:0},
-  {name:"Performance Kickstart Program",price:261,duration:0},
-  {name:"Sports Massage - First Trial",price:189,duration:0}
-];
+/* TAB LOGIC */
+const tabs = {
+  Clients: document.getElementById("clientsTab"),
+  Practitioners: document.getElementById("practitionersTab"),
+  Appointments: document.getElementById("appointmentsTab")
+};
 
-let clients=[];
+function activate(tab) {
+  Object.values(tabs).forEach(t => t.classList.add("hidden"));
+  tabs[tab].classList.remove("hidden");
 
-function showTab(tab,btn){
-  ["clients","practitioners","appointments"].forEach(t=>document.getElementById(t+"Tab").classList.add("hidden"));
-  document.getElementById(tab+"Tab").classList.remove("hidden");
-  document.querySelectorAll("header button").forEach(b=>b.classList.remove("active"));
-  btn.classList.add("active");
-  if(tab==="appointments") loadOnDuty();
+  document.querySelectorAll("header button").forEach(b => b.classList.remove("active"));
+  document.getElementById("tab" + tab).classList.add("active");
 }
 
-function toggleClientForm(){clientForm.classList.toggle("hidden");}
-function toggleAppointmentForm(){appointmentForm.classList.toggle("hidden");loadOnDuty();}
+tabClients.onclick = () => activate("Clients");
+tabPractitioners.onclick = () => activate("Practitioners");
+tabAppointments.onclick = () => activate("Appointments");
 
-async function addClient(){
-  if(c_citizen.value==="Malaysian"&&!/^\d{12}$/.test(c_ic.value)){alert("Malaysian IC must be 12 digits");return;}
-  await sb.from("clients").insert({
-    full_name:c_name.value,date_of_birth:c_dob.value,gender:c_gender.value,
-    citizenship:c_citizen.value,contact:c_contact.value,email:c_email.value,ic_passport:c_ic.value
-  });
-  toggleClientForm(); loadClients();
-}
+/* CLIENT FORM TOGGLE */
+btnAddClient.onclick = () => clientForm.classList.remove("hidden");
+cancelClient.onclick = () => clientForm.classList.add("hidden");
 
+/* LOAD CLIENTS */
 async function loadClients(){
-  const {data}=await sb.from("clients").select("*");
-  clients=data||[];
-  clientsTable.innerHTML=""; appClient.innerHTML="";
-  clients.forEach(c=>{
-    clientsTable.innerHTML+=`
+  const {data} = await sb.from("clients").select("*");
+  clientsTable.innerHTML="";
+  data.forEach(c=>{
+    clientsTable.innerHTML += `
       <tr>
-        <td>${c.full_name}</td><td>${c.date_of_birth}</td><td>${c.gender}</td>
-        <td>${c.citizenship}</td><td>${c.contact||""}</td>
-        <td>${c.email||""}</td><td>${c.ic_passport}</td>
-      </tr>`;
-    appClient.innerHTML+=`<option value="${c.id}">${c.full_name}</option>`;
-  });
-}
-
-async function addPractitioner(){
-  await sb.from("practitioners").insert({name:p_name.value});
-  p_name.value=""; loadPractitioners();
-}
-
-async function loadPractitioners(){
-  const {data}=await sb.from("practitioners").select("*").eq("active",true);
-  practitionerTable.innerHTML="";
-  data.forEach(p=>{
-    practitionerTable.innerHTML+=`
-      <tr>
-        <td>${p.name}</td>
-        <td><input type="checkbox" value="${p.id}"></td>
-        <td><button class="danger" onclick="deletePractitioner('${p.id}')">Delete</button></td>
+        <td>${c.full_name}</td>
+        <td>${c.date_of_birth}</td>
+        <td>${c.gender}</td>
+        <td>${c.citizenship}</td>
+        <td>${c.contact||""}</td>
+        <td>${c.email||""}</td>
+        <td>${c.ic_passport}</td>
       </tr>`;
   });
 }
-
-async function deletePractitioner(id){
-  await sb.from("practitioners").update({active:false}).eq("id",id);
-  loadPractitioners();
-}
-
-async function saveDuty(){
-  await sb.from("practitioner_duty").delete().eq("duty_date",dutyDate.value);
-  const rows=[];
-  document.querySelectorAll("#practitionerTable input:checked").forEach(cb=>{
-    rows.push({practitioner_id:cb.value,duty_date:dutyDate.value,on_duty:true});
-  });
-  if(rows.length) await sb.from("practitioner_duty").insert(rows);
-  loadOnDuty();
-}
-
-SERVICES.forEach(s=>{const o=document.createElement("option");o.value=s.name;o.textContent=s.name;appService.appendChild(o);});
-appService.onchange=()=>appPrice.value=SERVICES.find(s=>s.name===appService.value).price;
-
-async function loadOnDuty(){
-  appPractitioner.innerHTML="";
-  const {data}=await sb.from("practitioner_duty")
-    .select("practitioner_id, practitioners(name)")
-    .eq("duty_date",appDate.value)
-    .eq("on_duty",true);
-  if(!data||!data.length){appPractitioner.innerHTML="<option>No practitioner on duty</option>";return;}
-  data.forEach(d=>{const o=document.createElement("option");o.textContent=d.practitioners.name;appPractitioner.appendChild(o);});
-}
-
-async function saveAppointment(){
-  const svc=SERVICES.find(s=>s.name===appService.value);
-  const start=new Date(`${appDate.value}T${appTime.value}`);
-  const end=new Date(start); end.setMinutes(start.getMinutes()+svc.duration);
-  await sb.from("appointments").insert({
-    client_id:appClient.value,service_name:svc.name,
-    start_time:start,end_time:end,practitioner:appPractitioner.value,remarks:appNotes.value
-  });
-  toggleAppointmentForm(); loadAppointments();
-}
-
-async function loadAppointments(){
-  const {data}=await sb.from("appointments").select("*").order("start_time");
-  appointmentsTable.innerHTML="";
-  data.forEach(a=>{
-    appointmentsTable.innerHTML+=`
-      <tr>
-        <td>${a.start_time.split("T")[0]}</td>
-        <td>${a.start_time.split("T")[1].slice(0,5)}</td>
-        <td>${a.service_name}</td>
-        <td>${a.service_name}</td>
-        <td>${a.practitioner}</td>
-      </tr>`;
-  });
-}
-
-const today=new Date().toISOString().slice(0,10);
-dutyDate.value=today; appDate.value=today;
-loadClients(); loadPractitioners(); loadAppointments();
+loadClients();
 </script>
 
 </body>
