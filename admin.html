@@ -212,6 +212,68 @@ tr.innerHTML = `
 
   loadClients();
 </script>
+async function addClient() {
+  const full_name = prompt("Full Name:");
+  if (!full_name) return;
 
+  const dob = prompt("Date of Birth (YYYY-MM-DD):");
+  if (!dob) return;
+
+  const gender = prompt("Gender (Male / Female):");
+  if (!gender) return;
+
+  const citizenship = prompt("Citizenship (Malaysian / Foreigner):");
+  if (!citizenship) return;
+
+  const ic_passport = prompt("IC / Passport Number:");
+  if (!ic_passport) return;
+
+  // Validate Malaysian IC
+  if (citizenship === "Malaysian" && !/^\d{12}$/.test(ic_passport)) {
+    alert("Malaysian IC must be exactly 12 digits.");
+    return;
+  }
+
+  const contact = prompt("Contact Number (optional):");
+  const email = prompt("Email (optional):");
+  const address = prompt("Address (optional):");
+
+  const { error } = await supabase.from("clients").insert({
+    full_name,
+    date_of_birth: dob,
+    gender,
+    citizenship,
+    ic_passport,
+    contact,
+    email,
+    address
+  });
+
+  if (error) {
+    alert(error.message);
+  } else {
+    alert("Client added successfully.");
+    loadClients();
+  }
+}
+  async function deleteClient(clientId) {
+  const confirmDelete = confirm(
+    "Are you sure you want to permanently delete this client?"
+  );
+  if (!confirmDelete) return;
+
+  const { error } = await supabase
+    .from("clients")
+    .delete()
+    .eq("id", clientId);
+
+  if (error) {
+    alert(error.message);
+  } else {
+    alert("Client deleted.");
+    loadClients();
+  }
+}
+``
 </body>
 </html>
