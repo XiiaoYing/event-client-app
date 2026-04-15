@@ -187,6 +187,9 @@
         <td>${c.contact || "-"}</td>
         <td>${c.ic_passport}</td>
         <td>
+  <button onclick="bookAppointment('${c.id}')">
+    📅 Appointment
+  </button>
           <button class="danger" onclick="removeClient('${c.id}')">
             Delete
           </button>
@@ -224,6 +227,63 @@
       full_name, date_of_birth, gender,
       citizenship, ic_passport
     });
+async function bookAppointment(clientId) {
+  const serviceList = SERVICES.map(
+    s => `${s.name} (${s.duration} mins)`
+  ).join("\n");
+
+  const serviceName = prompt(
+    "Choose service:\n\n" + serviceList
+  );
+
+  if (!serviceName) return;
+
+  const service = SERVICES.find(s => s.name === serviceName);
+  if (!service) {
+    alert("Invalid service name. Please copy exactly.");
+    return;
+  }
+
+  const startInput = prompt(
+    "Start time (YYYY-MM-DD HH:mm)\nExample: 2026-04-20 10:00"
+  );
+  if (!startInput) return;
+
+  const startTime = new Date(startInput);
+  if (isNaN(startTime)) {
+    alert("Invalid date format");
+    return;
+  }
+
+  const endTime = new Date(startTime);
+  if (service.duration > 0) {
+    endTime.setMinutes(startTime.getMinutes() + service.duration);
+  }
+
+  const practitioner = prompt("Practitioner on duty:");
+  if (!practitioner) return;
+
+  const { error } = await supabase
+    .from("appointments")
+    .insert({
+      client_id: clientId,
+      service_name: service.name,
+      start_time: startTime.toISOString(),
+      end_time: endTime.toISOString(),
+      practitioner
+    });
+
+  if (error) {
+    alert("Failed to book appointment: " + error.message);
+  } else {
+    alert(
+      `Appointment booked!\n\n` +
+      `Service: ${service.name}\n` +
+      `Start: ${startTime.toLocaleString()}\n` +
+      `End: ${endTime.toLocaleString()}`
+    );
+  }
+}
 
     loadClients();
   }
@@ -235,6 +295,15 @@
   }
 
   loadClients();
+const SERVICES = [
+  { name: "Sports Massage", duration: 15, price: 45 },
+  { name: "Recovery Compression Boots", duration: 10, price: 25 },
+  { name: "Assisted Stretch Session", duration: 10, price: 20 },
+  { name: "Physio Bundle", duration: 0, price: 400 },
+  { name: "Performance Kickstart Program", duration: 0, price: 261 },
+  { name: "Sports Massage - First Trial", duration: 0, price: 189 }
+];
+``
 </script>
 
 </body>
