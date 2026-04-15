@@ -89,14 +89,21 @@
 
 <div class="container">
 
-  <div class="search">
-    <input
-      type="text"
-      id="search"
-      placeholder="Search by name / contact / IC"
-      oninput="filterClients()"
-    />
-  </div>
+<div class="search">
+  <input
+    type="text"
+    id="search"
+    placeholder="Search by name / contact / IC"
+    oninput="filterClients()"
+  />
+
+  <button
+    style="margin-left: 10px; padding:10px; background:#ff7a00; border:none; border-radius:6px; cursor:pointer; font-weight:bold;"
+    onclick="addClient()"
+  >
+    ➕ Add Client
+  </button>
+</div>
 
   <table id="clientTable">
     <thead>
