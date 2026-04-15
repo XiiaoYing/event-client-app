@@ -131,6 +131,50 @@ h2 {
         <th>Citizenship</th><th>Contact</th><th>Email</th>
         <th>IC / Passport</th><th>Action</th>
       </tr>
+      <td>
+  <button class="primary" onclick="editClient('${c.id}')">Edit</button>
+  <button class="danger" onclick="deleteClient('${c.id}')">Delete</button>
+
+        window.editClient = async (clientId) => {
+  const client = clients.find(c => c.id === clientId);
+  if (!client) {
+    alert("Client not found");
+    return;
+  }
+
+  const name = prompt("Full Name:", client.full_name);
+  const dob = prompt("DOB (YYYY-MM-DD):", client.date_of_birth);
+  const gender = prompt("Gender (Male / Female):", client.gender);
+  const citizenship = prompt("Citizenship (Malaysian / Foreigner):", client.citizenship);
+  const contact = prompt("Contact Number:", client.contact || "");
+  const email = prompt("Email:", client.email || "");
+  const ic = prompt("IC / Passport:", client.ic_passport);
+
+  if (!name || !dob || !gender || !citizenship || !ic) {
+    alert("Required fields cannot be empty");
+    return;
+  }
+
+  const { error } = await sb.from("clients")
+    .update({
+      full_name: name,
+      date_of_birth: dob,
+      gender: gender,
+      citizenship: citizenship,
+      contact: contact,
+      email: email,
+      ic_passport: ic
+    })
+    .eq("id", clientId);
+
+  if (error) {
+    alert("Update failed: " + error.message);
+  } else {
+    alert("Client updated");
+    loadClients();
+  }
+};
+</td>
     </thead>
     <tbody id="clientsBody"></tbody>
   </table>
