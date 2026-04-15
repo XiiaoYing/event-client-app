@@ -200,13 +200,14 @@ const sb = supabase.createClient(
 );
 
 const SERVICES = [
-  { name: "Sports Massage", price: 45, duration: 15 },
-  { name: "Recovery Compression Boots", price: 25, duration: 10 },
-  { name: "Assisted Stretch Session", price: 20, duration: 10 },
-  { name: "Physio Bundle", price: 400, duration: 0 },
-  { name: "Performance Kickstart Program", price: 261, duration: 0 },
-  { name: "Sports Massage - First Trial", price: 189, duration: 0 }
+  { id: "SM", name: "Sports Massage", price: 45, duration: 15 },
+  { id: "RCB", name: "Recovery Compression Boots", price: 25, duration: 10 },
+  { id: "AS", name: "Assisted Stretch Session", price: 20, duration: 10 },
+  { id: "PB", name: "Physio Bundle", price: 400, duration: 0 },
+  { id: "PKP", name: "Performance Kickstart Program", price: 261, duration: 0 },
+  { id: "SMFT", name: "Sports Massage - First Trial", price: 189, duration: 0 }
 ];
+
 
 let clientsCache = [];
 
@@ -313,10 +314,11 @@ async function saveDuty(){
 }
 
 /* ================= APPOINTMENTS ================= */
-SERVICES.forEach(s=>{
-  const o=document.createElement("option");
-  o.value=s.name; o.textContent=s.name;
-  appService.appendChild(o);
+SERVICES.forEach(svc => {
+  const opt = document.createElement("option");
+  opt.value = svc.id;       // ✅ service_id
+  opt.textContent = svc.name;
+  appService.appendChild(opt);
 });
 
 function recalcPrice(){
