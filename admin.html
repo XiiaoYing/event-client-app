@@ -1,24 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <title>Admin Dashboard</title>
 
-<!-- ✅ Google Fonts -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
+<!-- Google Font -->
+<link rel="preconnect" href="<link rel="preconnect" hreflink href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&
 
-<!-- ✅ Supabase (MUST be script tag) -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<!-- Supabase -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supcript>
 
 <style>
 body {
   margin: 0;
   font-family: 'Montserrat', sans-serif;
   background: #0b0b0b;
-  color: #ffffff;
+  color: #fff;
 }
-</style>
-</head>
+
 header {
   display: flex;
   gap: 12px;
@@ -26,6 +25,7 @@ header {
   background: #000;
   border-bottom: 2px solid #ff7a00;
 }
+
 header button {
   background: #1f1f1f;
   color: #fff;
@@ -34,16 +34,19 @@ header button {
   border-radius: 6px;
   cursor: pointer;
 }
+
 header button.active {
   background: #ff7a00;
   color: #000;
   font-weight: 700;
 }
+
 .container {
   max-width: 1200px;
   margin: auto;
   padding: 20px;
 }
+
 .hidden { display: none; }
 
 .card {
@@ -69,9 +72,9 @@ input, select, textarea {
 button.primary {
   background: #ff7a00;
   color: #000;
+  padding: 8px 14px;
   border-radius: 6px;
   border: none;
-  padding: 8px 14px;
   cursor: pointer;
   font-weight: 600;
 }
@@ -79,18 +82,18 @@ button.primary {
 button.secondary {
   background: #666;
   color: #fff;
+  padding: 8px 14px;
   border-radius: 6px;
   border: none;
-  padding: 8px 14px;
   cursor: pointer;
 }
 
 button.danger {
   background: #ff4d4d;
   color: #fff;
+  padding: 8px 14px;
   border-radius: 6px;
   border: none;
-  padding: 8px 14px;
   cursor: pointer;
 }
 
@@ -98,11 +101,13 @@ table {
   width: 100%;
   border-collapse: collapse;
 }
+
 th, td {
   padding: 10px;
   border-bottom: 1px solid #333;
   font-size: 13px;
 }
+
 th {
   background: #111;
   color: #ffb366;
@@ -125,7 +130,7 @@ th {
 
 <button class="primary" onclick="toggleClientForm()">➕ Add Client</button>
 
-<div id="addClientForm" class="card hidden">
+<div id="clientForm" class="card hidden">
   <h3>Add Client</h3>
 
   <label>Name</label><input id="c_name">
@@ -138,7 +143,7 @@ th {
   <label>Email</label><input id="c_email">
   <label>IC / Passport</label><input id="c_ic">
 
-  <button class="primary" onclick="submitClient()">Submit</button>
+  <button class="primary" onclick="addClient()">Submit</button>
   <button class="secondary" onclick="toggleClientForm()">Cancel</button>
 </div>
 
@@ -151,9 +156,10 @@ th {
 <th>Citizen</th><th>Contact</th><th>Email</th><th>IC</th>
 </tr>
 </thead>
-<tbody id="clientTable"></tbody>
+<tbody id="clientsTable"></tbody>
 </table>
 </div>
+
 </div>
 
 <!-- ================= PRACTITIONERS ================= -->
@@ -183,18 +189,18 @@ th {
 <button class="primary" onclick="toggleAppointmentForm()">➕ Add Appointment</button>
 
 <div id="appointmentForm" class="card hidden">
-<h3>New Appointment</h3>
+  <h3>New Appointment</h3>
 
-<label>Date</label><input type="date" id="appDate">
-<label>Client</label><select id="appClient"></select>
-<label>Service</label><select id="appService"></select>
-<label>Price</label><input id="appPrice" readonly>
-<label>Start Time</label><input id="appTime" placeholder="HH:mm">
-<label>Practitioner</label><select id="appPractitioner"></select>
-<label>Notes</label><textarea id="appNotes"></textarea>
+  <label>Date</label><input type="date" id="appDate">
+  <label>Client</label><select id="appClient"></select>
+  <label>Service</label><select id="appService"></select>
+  <label>Price</label><input id="appPrice" readonly>
+  <label>Start Time</label><input id="appTime">
+  <label>Practitioner</label><select id="appPractitioner"></select>
+  <label>Notes</label><textarea id="appNotes"></textarea>
 
-<button class="primary" onclick="saveAppointment()">Save</button>
-<button class="secondary" onclick="toggleAppointmentForm()">Cancel</button>
+  <button class="primary" onclick="saveAppointment()">Save</button>
+  <button class="secondary" onclick="toggleAppointmentForm()">Cancel</button>
 </div>
 
 <div class="card">
@@ -203,9 +209,10 @@ th {
 <thead>
 <tr><th>Date</th><th>Time</th><th>Client</th><th>Service</th><th>Practitioner</th></tr>
 </thead>
-<tbody id="appointmentTable"></tbody>
+<tbody id="appointmentsTable"></tbody>
 </table>
 </div>
+
 </div>
 
 </div>
@@ -216,20 +223,10 @@ const sb = supabase.createClient(
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVvb2txaXVjdW5jb3Z2eHpkY21sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYxOTIwNDksImV4cCI6MjA5MTc2ODA0OX0.Bk9QU8CufXnyiavO35WWM3gj1GupNRBk3EJZx-tO9hU"
 );
 
-let clients = [];
-
-const SERVICES = [
-  { name:"Sports Massage", price:45, duration:15 },
-  { name:"Recovery Compression Boots", price:25, duration:10 },
-  { name:"Assisted Stretch Session", price:20, duration:10 },
-  { name:"Physio Bundle", price:400, duration:0 },
-  { name:"Performance Kickstart Program", price:261, duration:0 },
-  { name:"Sports Massage - First Trial", price:189, duration:0 }
-];
-
+// ===== COMMON =====
 function showTab(tab, btn) {
-  ["clients","practitioners","appointments"].forEach(t=>{
-    document.getElementById(t+"Tab").classList.add("hidden");
+  ["clients","practitioners","appointments"].forEach(id=>{
+    document.getElementById(id+"Tab").classList.add("hidden");
   });
   document.getElementById(tab+"Tab").classList.remove("hidden");
   document.querySelectorAll("header button").forEach(b=>b.classList.remove("active"));
@@ -237,40 +234,35 @@ function showTab(tab, btn) {
   if (tab === "appointments") loadOnDuty();
 }
 
+// ===== CLIENTS =====
 function toggleClientForm() {
-  addClientForm.classList.toggle("hidden");
+  clientForm.classList.toggle("hidden");
 }
 
-function toggleAppointmentForm() {
-  appointmentForm.classList.toggle("hidden");
-  loadOnDuty();
-}
-
-async function submitClient() {
+async function addClient() {
   if (c_citizen.value === "Malaysian" && !/^\d{12}$/.test(c_ic.value)) {
-    alert("Malaysian IC must be exactly 12 digits");
+    alert("Malaysian IC must be 12 digits");
     return;
   }
   await sb.from("clients").insert({
-    full_name:c_name.value,
-    date_of_birth:c_dob.value,
-    gender:c_gender.value,
-    citizenship:c_citizen.value,
-    contact:c_contact.value,
-    email:c_email.value,
-    ic_passport:c_ic.value
+    full_name: c_name.value,
+    date_of_birth: c_dob.value,
+    gender: c_gender.value,
+    citizenship: c_citizen.value,
+    contact: c_contact.value,
+    email: c_email.value,
+    ic_passport: c_ic.value
   });
-  loadClients();
   toggleClientForm();
+  loadClients();
 }
 
 async function loadClients() {
   const {data} = await sb.from("clients").select("*");
-  clients = data || [];
-  clientTable.innerHTML = "";
+  clientsTable.innerHTML = "";
   appClient.innerHTML = "";
-  clients.forEach(c=>{
-    clientTable.innerHTML+=`
+  data.forEach(c=>{
+    clientsTable.innerHTML += `
       <tr>
         <td>${c.full_name}</td>
         <td>${c.date_of_birth}</td>
@@ -280,10 +272,11 @@ async function loadClients() {
         <td>${c.email||""}</td>
         <td>${c.ic_passport}</td>
       </tr>`;
-    appClient.innerHTML+=`<option value="${c.id}">${c.full_name}</option>`;
+    appClient.innerHTML += `<option value="${c.id}">${c.full_name}</option>`;
   });
 }
 
+// ===== PRACTITIONERS =====
 async function addPractitioner() {
   await sb.from("practitioners").insert({name:p_name.value});
   p_name.value="";
@@ -294,7 +287,7 @@ async function loadPractitioners() {
   const {data} = await sb.from("practitioners").select("*").eq("active",true);
   practitionerTable.innerHTML="";
   data.forEach(p=>{
-    practitionerTable.innerHTML+=`
+    practitionerTable.innerHTML += `
       <tr>
         <td>${p.name}</td>
         <td><input type="checkbox" value="${p.id}"></td>
@@ -309,31 +302,52 @@ async function deletePractitioner(id) {
 }
 
 async function saveDuty() {
-  const date = dutyDate.value;
-  await sb.from("practitioner_duty").delete().eq("duty_date",date);
+  await sb.from("practitioner_duty").delete().eq("duty_date",dutyDate.value);
   const inserts=[];
   document.querySelectorAll("#practitionerTable input:checked").forEach(cb=>{
-    inserts.push({practitioner_id:cb.value,duty_date:date,on_duty:true});
+    inserts.push({
+      practitioner_id:cb.value,
+      duty_date:dutyDate.value,
+      on_duty:true
+    });
   });
-  if(inserts.length) await sb.from("practitioner_duty").insert(inserts);
+  if (inserts.length) await sb.from("practitioner_duty").insert(inserts);
   loadOnDuty();
 }
 
-SERVICES.forEach(s=>{
+// ===== APPOINTMENTS =====
+const SERVICES = [
+  {name:"Sports Massage",price:45,duration:15},
+  {name:"Recovery Compression Boots",price:25,duration:10},
+  {name:"Assisted Stretch Session",price:20,duration:10},
+  {name:"Physio Bundle",price:400,duration:0},
+  {name:"Performance Kickstart Program",price:261,duration:0},
+  {name:"Sports Massage - First Trial",price:189,duration:0}
+];
+
+SERVICES.forEach(s=> {
   const o=document.createElement("option");
   o.value=s.name; o.textContent=s.name;
   appService.appendChild(o);
 });
-appService.onchange=()=>appPrice.value=SERVICES.find(s=>s.name===appService.value).price;
+
+appService.onchange=()=> {
+  appPrice.value = SERVICES.find(s=>s.name===appService.value).price;
+};
+
+function toggleAppointmentForm() {
+  appointmentForm.classList.toggle("hidden");
+  loadOnDuty();
+}
 
 async function loadOnDuty() {
   appPractitioner.innerHTML="";
-  const {data}=await sb
+  const {data} = await sb
     .from("practitioner_duty")
     .select("practitioner_id, practitioners(name)")
     .eq("duty_date",appDate.value)
     .eq("on_duty",true);
-  if(!data||!data.length){
+  if (!data || !data.length) {
     appPractitioner.innerHTML="<option>No practitioner on duty</option>";
     return;
   }
@@ -345,43 +359,45 @@ async function loadOnDuty() {
 }
 
 async function saveAppointment() {
-  const c=clients.find(x=>x.id===appClient.value);
   const s=SERVICES.find(x=>x.name===appService.value);
   const start=new Date(`${appDate.value}T${appTime.value}`);
   const end=new Date(start); end.setMinutes(start.getMinutes()+s.duration);
+
   await sb.from("appointments").insert({
-    client_id:c.id,
-    service_name:s.name,
-    start_time:start,
-    end_time:end,
-    practitioner:appPractitioner.value,
-    remarks:appNotes.value
+    client_id: appClient.value,
+    service_name: s.name,
+    start_time: start,
+    end_time: end,
+    practitioner: appPractitioner.value,
+    remarks: appNotes.value
   });
+
   toggleAppointmentForm();
   loadAppointments();
 }
 
 async function loadAppointments() {
-  const {data}=await sb.from("appointments").select("*").order("start_time");
-  appointmentTable.innerHTML="";
+  const {data} = await sb.from("appointments").select("*").order("start_time");
+  appointmentsTable.innerHTML="";
   data.forEach(a=>{
-    appointmentTable.innerHTML+=`
+    appointmentsTable.innerHTML += `
       <tr>
         <td>${a.start_time.split("T")[0]}</td>
         <td>${a.start_time.split("T")[1].slice(0,5)}</td>
-        <td>${clients.find(c=>c.id===a.client_id)?.full_name||""}</td>
+        <td>${a.service_name}</td>
         <td>${a.service_name}</td>
         <td>${a.practitioner}</td>
       </tr>`;
   });
 }
 
-const today=new Date().toISOString().slice(0,10);
-dutyDate.value=today;
-appDate.value=today;
+// ===== INIT =====
+const today = new Date().toISOString().slice(0,10);
+dutyDate.value = today;
+appDate.value = today;
+
 loadClients();
 loadPractitioners();
-loadOnDuty();
 loadAppointments();
 </script>
 
