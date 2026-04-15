@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <title>Admin Dashboard</title>
 
-<!-- Google Font -->
+<!-- Fonts -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
@@ -45,19 +45,16 @@ header button.active {
   padding: 20px;
 }
 .hidden { display: none; }
-
 .card {
   background: #151515;
   padding: 16px;
   border-radius: 10px;
   margin-bottom: 20px;
 }
-
 label {
   font-size: 12px;
   color: #ffb366;
 }
-
 input, select, textarea {
   width: 100%;
   padding: 10px;
@@ -65,7 +62,6 @@ input, select, textarea {
   border: none;
   margin-bottom: 10px;
 }
-
 button.primary {
   background: #ff7a00;
   color: #000;
@@ -91,7 +87,6 @@ button.danger {
   border: none;
   cursor: pointer;
 }
-
 table {
   width: 100%;
   border-collapse: collapse;
@@ -105,7 +100,6 @@ th {
   background: #111;
   color: #ffb366;
 }
-
 .actions button { margin-right: 6px; }
 </style>
 </head>
@@ -147,8 +141,8 @@ th {
 <table>
 <thead>
 <tr>
-<th>Name</th><th>DOB</th><th>Gender</th><th>Citizen</th>
-<th>Contact</th><th>Email</th><th>IC</th><th>Action</th>
+<th>Name</th><th>DOB</th><th>Gender</th>
+<th>Citizenship</th><th>Contact</th><th>Email</th><th>IC</th><th>Action</th>
 </tr>
 </thead>
 <tbody id="clientTable"></tbody>
@@ -187,7 +181,7 @@ th {
 <label>Client</label><select id="appClient"></select>
 <label>Service</label><select id="appService"></select>
 <label>Price</label><input id="appPrice" readonly>
-<label>Time</label><input id="appTime" placeholder="HH:mm">
+<label>Start Time</label><input id="appTime" placeholder="HH:mm">
 <label>Practitioner</label><select id="appPractitioner"></select>
 <label>Notes</label><textarea id="appNotes"></textarea>
 
@@ -198,7 +192,7 @@ th {
 <div class="card">
 <h3>Appointments</h3>
 <table>
-<thead><tr><th>Time</th><th>Client</th><th>Service</th><th>Practitioner</th></tr></thead>
+<thead><tr><th>Date</th><th>Time</th><th>Client</th><th>Service</th><th>Practitioner</th></tr></thead>
 <tbody id="appointmentTable"></tbody>
 </table>
 </div>
@@ -226,7 +220,7 @@ const SERVICES = [
 
 let clients = [];
 
-/* TAB SWITCH */
+/* ------- Tabs ------- */
 window.showTab = (tab, btn) => {
   ["clients","practitioners","appointments"].forEach(t=>{
     document.getElementById(t+"Tab").classList.add("hidden");
@@ -234,9 +228,10 @@ window.showTab = (tab, btn) => {
   document.getElementById(tab+"Tab").classList.remove("hidden");
   document.querySelectorAll("header button").forEach(b=>b.classList.remove("active"));
   btn.classList.add("active");
+  if (tab === "appointments") loadOnDuty();
 };
 
-/* CLIENTS */
+/* ------- Clients ------- */
 window.toggleClientForm = () => {
   document.getElementById("addClientForm").classList.toggle("hidden");
 };
@@ -277,7 +272,7 @@ async function loadClients(){
         <td>${c.contact||""}</td>
         <td>${c.email||""}</td>
         <td>${c.ic_passport}</td>
-        <td class="actions">
+        <td>
           <button class="danger" onclick="deleteClient('${c.id}')">Delete</button>
         </td>
       </tr>`;
@@ -292,7 +287,7 @@ window.deleteClient = async (id) => {
   }
 };
 
-/* PRACTITIONERS */
+/* ------- Practitioners ------- */
 async function loadPractitioners(){
   const {data} = await sb.from("practitioners").select("*").eq("active", true);
   practitionerTable.innerHTML = "";
@@ -300,7 +295,7 @@ async function loadPractitioners(){
     practitionerTable.innerHTML += `
       <tr>
         <td>${p.name}</td>
-        <td><input type="checkbox" data-id="${p.id}"></td>
+        <td><input type="checkbox" value="${p.id}"></td>
         <td><button class="danger" onclick="removePractitioner('${p.id}')">Delete</button></td>
       </tr>`;
   });
@@ -321,23 +316,92 @@ window.saveDuty = async () => {
   await sb.from("practitioner_duty").delete().eq("duty_date", dutyDate.value);
   document.querySelectorAll("#practitionerTable input:checked").forEach(i=>{
     sb.from("practitioner_duty").insert({
-      practitioner_id:i.dataset.id,
-      duty_date:dutyDate.value,
-      on_duty:true
+      practitioner_id: i.value,
+      duty_date: dutyDate.value,
+      on_duty: true
     });
   });
+  loadOnDuty();
 };
 
-/* APPOINTMENTS */
-SERVICES.forEach(s=>appService.innerHTML+=`<option>${s.name}</option>`);
-appService.onchange=()=>appPrice.value=SERVICES.find(s=>s.name===appService.value).price;
+/* ------- Appointments ------- */
+SERVICES.forEach(s=>{
+  const opt = document.createElement("option");
+  opt.value = s.name;
+  opt.textContent = s.name;
+  appService.appendChild(opt);
+});
+
+appService.onchange = () => {
+  appPrice.value = SERVICES.find(s=>s.name===appService.value).price;
+};
+
+async function loadOnDuty(){
+  appPractitioner.innerHTML = "";
+  const {data} = await sb
+    .from("practitioner_duty")
+    .select("practitioner_id, practitioners(name)")
+    .eq("duty_date", appDate.value)
+    .eq("on_duty", true);
+
+  if (!data || data.length === 0) {
+    appPractitioner.innerHTML = `<option>No practitioner on duty</option>`;
+    return;
+  }
+
+  data.forEach(d=>{
+    const opt = document.createElement("option");
+    opt.value = d.practitioner_id;
+    opt.textContent = d.practitioners.name;
+    appPractitioner.appendChild(opt);
+  });
+}
+
+appDate.onchange = loadOnDuty;
 
 window.saveAppointment = async () => {
-  alert("Appointment saved (review logic next)");
+  const c = clients.find(x=>x.id===appClient.value);
+  const s = SERVICES.find(x=>x.name===appService.value);
+
+  const start = new Date(`${appDate.value}T${appTime.value}`);
+  const end = new Date(start);
+  end.setMinutes(start.getMinutes() + s.duration);
+
+  await sb.from("appointments").insert({
+    client_id: c.id,
+    service_name: s.name,
+    start_time: start,
+    end_time: end,
+    practitioner: appPractitioner.options[appPractitioner.selectedIndex].text,
+    remarks: appNotes.value
+  });
+
+  resetAppointment();
+  loadAppointments();
 };
 
-window.resetAppointment = ()=>{ appTime.value=""; appNotes.value=""; };
+async function loadAppointments(){
+  const {data} = await sb.from("appointments").select("*").order("start_time");
+  appointmentTable.innerHTML = "";
 
+  data.forEach(a=>{
+    appointmentTable.innerHTML += `
+      <tr>
+        <td>${a.start_time.split("T")[0]}</td>
+        <td>${a.start_time.split("T")[1].slice(0,5)}</td>
+        <td>${clients.find(c=>c.id===a.client_id)?.full_name||""}</td>
+        <td>${a.service_name}</td>
+        <td>${a.practitioner}</td>
+      </tr>`;
+  });
+}
+
+window.resetAppointment = () => {
+  appTime.value = "";
+  appNotes.value = "";
+};
+
+/* ------- Init ------- */
 const today = new Date().toISOString().slice(0,10);
 dutyDate.value = today;
 appDate.value = today;
@@ -345,6 +409,8 @@ appPrice.value = SERVICES[0].price;
 
 loadClients();
 loadPractitioners();
+loadOnDuty();
+loadAppointments();
 
 };
 </script>
