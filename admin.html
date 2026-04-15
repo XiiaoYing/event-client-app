@@ -239,12 +239,32 @@ window.onload = () => {
     });
   }
 
-  window.addClient = () => {
-    const name=prompt("Name");
-    const dob=prompt("DOB YYYY-MM-DD");
-    if(!name||!dob)return;
-    sb.from("clients").insert({full_name:name,date_of_birth:dob}).then(loadClients);
-  };
+ window.addClient = () => {
+  const name = prompt("Full name:");
+  const dob = prompt("DOB (YYYY-MM-DD):");
+  const gender = prompt("Gender (Male / Female):");
+  const citizenship = prompt("Citizenship (Malaysian / Foreigner):");
+  const ic = prompt("IC / Passport:");
+
+  if (!name || !dob || !gender || !citizenship || !ic) {
+    alert("All fields are required");
+    return;
+  }
+
+  sb.from("clients").insert({
+    full_name: name,
+    date_of_birth: dob,
+    gender: gender,
+    citizenship: citizenship,
+    ic_passport: ic
+  }).then(({ error }) => {
+    if (error) {
+      alert("Insert failed: " + error.message);
+    } else {
+      loadClients();
+    }
+  });
+};
 
   window.deleteClient = id => {
     if(confirm("Delete client?")) sb.from("clients").delete().eq("id",id).then(loadClients);
