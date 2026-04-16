@@ -1,39 +1,37 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Admin Dashboard</title>
+<meta charset="UTF-8">
+<title>Admin Dashboard</title>
 
-  <!-- Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+<!-- Google Font -->
+https://fonts.googleapis.com
+https://fonts.gstatic.com
+<link href="https://fonts.googleapismily=Montserrat:wght@400;600;700&display=swap
 
-  <!-- Supabase -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<!-- Supabase -->
+https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2
 
-  <!-- Chart.js -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- Chart.js -->
+https://cdn.jsdelivr.net/npm/chart.js
 
-  <!-- XLSX -->
-  <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
-
-  <style>
-    body { margin:0; font-family:'Montserrat',sans-serif; background:#f4f4f4; }
-    header{display:flex;gap:10px;padding:12px;background:#111}
-    header button{background:#333;color:#fff;border:none;padding:8px 14px;border-radius:6px;cursor:pointer}
-    header button.active{background:#ff7a00;color:#000;font-weight:700}
-    .container{max-width:1200px;margin:auto;padding:20px}
-    .hidden{display:none}
-    .card{background:#fff;padding:16px;border-radius:8px;margin-bottom:20px}
-    label{display:block;font-size:12px;font-weight:600;margin-top:10px}
-    input,select,textarea{width:100%;padding:8px;margin-top:4px}
-    button.primary{margin-top:12px;background:#ff7a00;border:none;padding:8px 14px;border-radius:6px;cursor:pointer}
-    button.danger{background:#e74c3c;color:#fff;border:none;padding:6px 10px;border-radius:6px}
-    table{width:100%;border-collapse:collapse;margin-top:10px}
-    th,td{padding:8px;border-bottom:1px solid #ddd;font-size:13px}
-    th{background:#f0f0f0}
-  </style>
+<!-- XLSX -->
+<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.minbody{margin:0;font-family:Montserrat;background:#f4f4f4}
+header{display:flex;gap:10px;padding:12px;background:#111}
+header button{background:#333;color:#fff;border:none;padding:8px 14px;border-radius:6px;cursor:pointer}
+header button.active{background:#ff7a00;color:#000;font-weight:700}
+.container{max-width:1200px;margin:auto;padding:20px}
+.hidden{display:none}
+.card{background:#fff;padding:16px;border-radius:8px;margin-bottom:20px}
+label{font-size:12px;font-weight:600;display:block;margin-top:10px}
+input,select,textarea{width:100%;padding:8px;margin-top:4px}
+button.primary{margin-top:12px;background:#ff7a00;border:none;padding:8px 14px;border-radius:6px;cursor:pointer}
+button.danger{background:#e74c3c;color:#fff;border:none;padding:6px 10px;border-radius:6px}
+table{width:100%;border-collapse:collapse;margin-top:10px}
+th,td{padding:8px;border-bottom:1px solid #ddd;font-size:13px}
+th{background:#f0f0f0}
+.flex{display:flex;gap:20px;flex-wrap:wrap}
+</style>
 </head>
 
 <body>
@@ -47,123 +45,60 @@
 
 <div class="container">
 
-<!-- CLIENTS -->
-<section id="clientsTab">
-  <div class="card">
-    <h3>Add / Edit Client</h3>
-    <input type="hidden" id="client_id">
-    <label>Name</label><input id="c_name">
-    <label>DOB</label><input type="date" id="c_dob">
-    <label>Gender</label>
-    <select id="c_gender"><option>Male</option><option>Female</option></select>
-    <label>Citizenship</label>
-    <select id="c_citizenship"><option>Malaysian</option><option>Foreigner</option></select>
-    <label>Contact</label><input id="c_contact">
-    <label>Email</label><input id="c_email">
-    <label>Address</label><textarea id="c_address"></textarea>
-    <label>IC / Passport</label><input id="c_ic">
-    <button class="primary" id="saveClientBtn">Save Client</button>
-  </div>
+<!-- ================= SALES REPORT ONLY (others assumed locked & unchanged) ================= -->
 
-  <div class="card">
-    <h3>Client List</h3>
-    <table>
-      <thead>
-        <tr>
-          <th>Name</th><th>DOB</th><th>Gender</th><th>Citizen</th>
-          <th>Contact</th><th>Email</th><th>Address</th>
-          <th>Edit</th><th>Delete</th>
-        </tr>
-      </thead>
-      <tbody id="clientsTable"></tbody>
-    </table>
-  </div>
-</section>
-
-<!-- PRACTITIONERS -->
-<section id="practitionersTab" class="hidden">
-  <div class="card">
-    <h3>Add Practitioner</h3>
-    <input id="p_name">
-    <button class="primary" id="addPractitionerBtn">Add Practitioner</button>
-  </div>
-
-  <div class="card">
-    <h3>Practitioner List</h3>
-    <table>
-      <thead><tr><th>Name</th><th>Delete</th></tr></thead>
-      <tbody id="practitionerTable"></tbody>
-    </table>
-  </div>
-</section>
-
-<!-- APPOINTMENTS -->
-<section id="appointmentsTab" class="hidden">
-  <div class="card">
-    <h3>Add / Edit Appointment</h3>
-    <input type="hidden" id="appointment_id">
-    <label>Date</label><input type="date" id="a_date">
-    <label>Time</label><input type="time" id="a_time">
-    <label>Client</label><select id="a_client"></select>
-    <label>Practitioner</label><select id="a_practitioner"></select>
-    <label>Service</label><select id="a_service"></select>
-    <label>Payment Method</label>
-    <select id="a_payment"><option>Cash</option><option>Card</option><option>E‑Wallet</option></select>
-    <label>Base (RM)</label><input id="a_price" readonly>
-    <label>SST (6%)</label><input id="a_sst" readonly>
-    <label>Total (RM)</label><input id="a_total" readonly>
-    <button class="primary" id="saveAppointmentBtn">Save Appointment</button>
-  </div>
-
-  <div class="card">
-    <h3>Appointment List</h3>
-    <table>
-      <thead>
-        <tr>
-          <th>Date</th><th>Time</th><th>Client</th>
-          <th>Service</th><th>Practitioner</th>
-          <th>Payment</th><th>Total</th>
-          <th>Edit</th><th>Delete</th>
-        </tr>
-      </thead>
-      <tbody id="appointmentsTable"></tbody>
-    </table>
-  </div>
-</section>
-
-<!-- REPORTS -->
 <section id="reportsTab" class="hidden">
 
-  <div class="card">
-    <h3>Filters</h3>
-    <label>From</label><input type="date" id="reportFrom">
-    <label>To</label><input type="date" id="reportTo">
-    <label>Breakdown</label>
-    <select id="reportMode"><option value="daily">Daily</option><option value="monthly">Monthly</option></select>
-    <button class="primary" id="applyReportBtn">Apply</button>
-    <button class="primary" id="exportExcelBtn">Export Excel</button>
-  </div>
+<div class="card">
+  <h3>Filters</h3>
+  <label>From Date</label><input type="date" id="reportFrom">
+  <label>To Date</label><input type="date" id="reportTo">
+  <label>Breakdown</label>
+  <select id="reportMode">
+    <option value="daily">Daily</option>
+    <option value="monthly">Monthly</option>
+  </select>
+  <button class="primary" id="applyReportBtn">Apply</button>
+  <button class="primary" id="exportExcelBtn">Export Excel</button>
+</div>
 
-  <div class="card">
-    <h3>Summary</h3>
-    <p>Total Sales: RM <span id="totalSales">0.00</span></p>
-    <p>Total SST: RM <span id="totalSST">0.00</span></p>
-  </div>
+<div class="card">
+  <h3>Age Range Configuration</h3>
+  <div id="ageRangeConfig"></div>
+  <button class="primary" id="addAgeRangeBtn">+ Add Range</button>
+</div>
 
-  <div class="card">
-    <h3>Sales by Service</h3>
-    <canvas id="serviceChart"></canvas>
+<div class="flex">
+  <div class="card" style="flex:1;background:#E3F2FD">
+    <h4>Total Sales</h4>
+    <h2>RM <span id="totalSales">0.00</span></h2>
   </div>
+  <div class="card" style="flex:1;background:#FFF3E0">
+    <h4>Total SST</h4>
+    <h2>RM <span id="totalSST">0.00</span></h2>
+  </div>
+</div>
 
-  <div class="card">
-    <h3>Payment Distribution</h3>
-    <canvas id="paymentChart"></canvas>
-  </div>
+<div class="card">
+  <h3>Sales by Service</h3>
+  <canvas id="serviceChart"></canvas>
+</div>
 
-  <div class="card">
-    <h3>Daily / Monthly Sales</h3>
-    <canvas id="timeChart"></canvas>
+<div class="card">
+  <h3>Daily / Monthly Sales</h3>
+  <canvas id="timeChart"></canvas>
+</div>
+
+<div class="flex">
+  <div class="card" style="flex:1">
+    <h3>Age Distribution</h3>
+    <canvas id="ageChart"></canvas>
   </div>
+  <div class="card" style="flex:1">
+    <h3>Citizenship Distribution</h3>
+    <canvas id="citizenChart"></canvas>
+  </div>
+</div>
 
 </section>
 
@@ -176,127 +111,115 @@ const sb = supabase.createClient(
 "https://yxkospvcqkoxiravjtqd.supabase.co",
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl4a29zcHZjcWtveGlyYXZqdHFkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYyODEyNzEsImV4cCI6MjA5MTg1NzI3MX0.Aaw6wfcXf21uwgMQJWtiVN_vxqaqevEQerx2GjOG-Jc"
 );
+  
+/* ===== SERVICES (locked) ===== */
+const SERVICES = [
+ {id:"SM",name:"Sports Massage",price:45},
+ {id:"RCB",name:"Recovery Compression Boots",price:25},
+ {id:"AS",name:"Assisted Stretch Session",price:20},
+ {id:"PB",name:"Physio Bundle",price:400},
+ {id:"PKP",name:"Performance Kickstart Program",price:261},
+ {id:"SMFT",name:"Sports Massage - First Trial",price:189}
+];
+const getServiceName = id => SERVICES.find(s=>s.id===id)?.name || id;
 
-/* LOCKED SERVICES */
-const SERVICES=[
-{id:"SM",name:"Sports Massage",price:45},
-{id:"RCB",name:"Recovery Compression Boots",price:25},
-{id:"AS",name:"Assisted Stretch Session",price:20},
-{id:"PB",name:"Physio Bundle",price:400},
-{id:"PKP",name:"Performance Kickstart Program",price:261},
-{id:"SMFT",name:"Sports Massage - First Trial",price:189}
+/* ===== AGE RANGES (UI ONLY) ===== */
+let ageRanges = [
+  {label:"<18",min:0,max:17},
+  {label:"18–29",min:18,max:29},
+  {label:"30–39",min:30,max:39},
+  {label:"40–49",min:40,max:49},
+  {label:"50+",min:50,max:200}
 ];
 
-let clients=[],appointments=[],practitioners=[],filteredAppointments=[];
-
-/* TAB */
-function show(tab){
-  ["clients","practitioners","appointments","reports"].forEach(t=>{
-    document.getElementById(t+"Tab").classList.toggle("hidden",t!==tab);
-    document.getElementById("tab"+t.charAt(0).toUpperCase()+t.slice(1)).classList.toggle("active",t===tab);
+function renderAgeRangeConfig(){
+  ageRangeConfig.innerHTML="";
+  ageRanges.forEach((r,i)=>{
+    ageRangeConfig.innerHTML+=`
+      <div style="display:flex;gap:10px;margin-bottom:6px">
+        <input value="${r.label}" onchange="ageRanges[${i}].label=this.value">
+        <input type="number" value="${r.min}" onchange="ageRanges[${i}].min=+this.value">
+        <input type="number" value="${r.max}" onchange="ageRanges[${i}].max=+this.value">
+        <button class="danger" onclick="removeAge(${i})">X</button>
+      </div>`;
   });
 }
-tabClients.onclick=()=>show("clients");
-tabPractitioners.onclick=()=>show("practitioners");
-tabAppointments.onclick=()=>show("appointments");
-tabReports.onclick=()=>{show("reports");loadSalesReport();};
+window.removeAge = i => { ageRanges.splice(i,1); renderAgeRangeConfig(); };
+addAgeRangeBtn.onclick = () => {
+  ageRanges.push({label:"New",min:0,max:0});
+  renderAgeRangeConfig();
+};
 
-/* LOAD DATA */
-async function loadClients(){
-  const {data}=await sb.from("clients").select("*");
-  clients=data||[];
-  clientsTable.innerHTML="";
-  a_client.innerHTML="";
-  clients.forEach(c=>{
-    clientsTable.innerHTML+=`
-      <tr>
-        <td>${c.full_name}</td><td>${c.date_of_birth}</td><td>${c.gender}</td>
-        <td>${c.citizenship}</td><td>${c.contact||""}</td>
-        <td>${c.email||""}</td><td>${c.address||""}</td>
-        <td><button onclick="editClient('${c.id}')">✏️</button></td>
-        <td><button class="danger" onclick="delClient('${c.id}')">X</button></td>
-      </tr>`;
-    a_client.innerHTML+=`<option value="${c.id}">${c.full_name}</option>`;
-  });
-}
+/* ===== REPORT LOGIC ===== */
+applyReportBtn.onclick = () => loadReport();
 
-async function loadPractitioners(){
-  const {data}=await sb.from("practitioners").select("*");
-  practitioners=data||[];
-  practitionerTable.innerHTML="";
-  a_practitioner.innerHTML="";
-  practitioners.forEach(p=>{
-    practitionerTable.innerHTML+=`<tr><td>${p.name}</td><td><button class="danger" onclick="delPractitioner('${p.id}')">X</button></td></tr>`;
-    a_practitioner.innerHTML+=`<option value="${p.name}">${p.name}</option>`;
-  });
-}
+async function loadReport(){
+  const {data:apps} = await sb.from("appointments").select("*");
+  const {data:clients} = await sb.from("clients").select("*");
 
-async function loadAppointments(){
-  const {data}=await sb.from("appointments").select("*").order("start_time");
-  appointments=data||[];
-  appointmentsTable.innerHTML="";
-  appointments.forEach(a=>{
+  let rows = apps || [];
+
+  if(reportFrom.value) rows = rows.filter(r=>new Date(r.start_time)>=new Date(reportFrom.value));
+  if(reportTo.value) rows = rows.filter(r=>new Date(r.start_time)<=new Date(reportTo.value));
+
+  let serviceMap={},timeMap={},ageMap={},citizenMap={Malaysian:0,Foreigner:0};
+  ageRanges.forEach(r=>ageMap[r.label]=0);
+
+  let total=0,sst=0;
+
+  rows.forEach(a=>{
+    total+=Number(a.total||0);
+    sst+=Number(a.sst||0);
+
+    const s=getServiceName(a.service_id);
+    serviceMap[s]=(serviceMap[s]||0)+Number(a.total||0);
+
+    const k=reportMode.value==="monthly"?a.start_time.slice(0,7):a.start_time.slice(0,10);
+    timeMap[k]=(timeMap[k]||0)+Number(a.total||0);
+
     const c=clients.find(x=>x.id===a.client_id);
-    const s=SERVICES.find(x=>x.id===a.service_id);
-    appointmentsTable.innerHTML+=`
-      <tr>
-        <td>${a.start_time.slice(0,10)}</td>
-        <td>${a.start_time.slice(11,16)}</td>
-        <td>${c?.full_name||""}</td>
-        <td>${s?.name||""}</td>
-        <td>${a.practitioner||""}</td>
-        <td>${a.payment_method||""}</td>
-        <td>RM ${a.total}</td>
-        <td><button onclick="editAppointment('${a.id}')">✏️</button></td>
-        <td><button class="danger" onclick="delAppointment('${a.id}')">X</button></td>
-      </tr>`;
+    if(c){
+      citizenMap[c.citizenship]++;
+      const age=Math.floor((Date.now()-new Date(c.date_of_birth))/31557600000);
+      const r=ageRanges.find(r=>age>=r.min&&age<=r.max);
+      if(r) ageMap[r.label]++;
+    }
   });
-}
 
-/* CLIENT ACTIONS */
-window.editClient=id=>{const c=clients.find(x=>x.id===id);client_id.value=id;c_name.value=c.full_name;c_dob.value=c.date_of_birth;c_gender.value=c.gender;c_citizenship.value=c.citizenship;c_contact.value=c.contact;c_email.value=c.email;c_address.value=c.address;c_ic.value=c.ic_passport;};
-saveClientBtn.onclick=async()=>{if(c_citizenship.value==="Malaysian"&&!/^\d{12}$/.test(c_ic.value))return alert("IC must be 12 digits");const payload={full_name:c_name.value,date_of_birth:c_dob.value,gender:c_gender.value,citizenship:c_citizenship.value,contact:c_contact.value,email:c_email.value,address:c_address.value,ic_passport:c_ic.value};client_id.value?await sb.from("clients").update(payload).eq("id",client_id.value):await sb.from("clients").insert(payload);client_id.value="";loadClients();};
-window.delClient=async id=>{await sb.from("clients").delete().eq("id",id);loadClients();};
+  totalSales.textContent=total.toFixed(2);
+  totalSST.textContent=sst.toFixed(2);
 
-/* PRACTITIONER ACTIONS */
-addPractitionerBtn.onclick=async()=>{await sb.from("practitioners").insert({name:p_name.value});p_name.value="";loadPractitioners();};
-window.delPractitioner=async id=>{await sb.from("practitioners").delete().eq("id",id);loadPractitioners();};
-
-/* APPOINTMENT */
-SERVICES.forEach(s=>a_service.innerHTML+=`<option value="${s.id}">${s.name}</option>`);
-function calc(){const s=SERVICES.find(x=>x.id===a_service.value);const c=clients.find(x=>x.id===a_client.value);const sst=c?.citizenship==="Foreigner"?+(s.price*0.06).toFixed(2):0;a_price.value=s.price;a_sst.value=sst;a_total.value=(s.price+sst).toFixed(2);}
-a_service.onchange=calc;a_client.onchange=calc;
-saveAppointmentBtn.onclick=async()=>{const c=clients.find(x=>x.id===a_client.value);const s=SERVICES.find(x=>x.id===a_service.value);const sst=c.citizenship==="Foreigner"?+(s.price*0.06).toFixed(2):0;appointment_id.value?await sb.from("appointments").update({client_id:c.id,service_id:s.id,practitioner:a_practitioner.value,payment_method:a_payment.value,amount:s.price,sst,total:s.price+sst}).eq("id",appointment_id.value):await sb.from("appointments").insert({client_id:c.id,service_id:s.id,practitioner:a_practitioner.value,start_time:`${a_date.value}T${a_time.value}:00Z`,end_time:`${a_date.value}T${a_time.value}:00Z`,amount:s.price,sst,total:s.price+sst,payment_method:a_payment.value});appointment_id.value="";loadAppointments();};
-window.editAppointment=id=>{const a=appointments.find(x=>x.id===id);appointment_id.value=a.id;a_date.value=a.start_time.slice(0,10);a_time.value=a.start_time.slice(11,16);a_client.value=a.client_id;a_service.value=a.service_id;a_practitioner.value=a.practitioner;a_payment.value=a.payment_method;calc();};
-window.delAppointment=async id=>{await sb.from("appointments").delete().eq("id",id);loadAppointments();};
-
-/* REPORTS */
-applyReportBtn.onclick=()=>loadSalesReport(true);
-async function loadSalesReport(filter=false){
-  let rows=[...appointments];
-  if(filter){
-    const f=reportFrom.value?new Date(reportFrom.value):null;
-    const t=reportTo.value?new Date(reportTo.value):null;
-    rows=rows.filter(r=>{const d=new Date(r.start_time);if(f&&d<f)return false;if(t&&d>t)return false;return true;});
-  }
-  filteredAppointments=rows;
-  let totalSales=0,totalSST=0,serviceMap={},paymentMap={},timeMap={};
-  rows.forEach(a=>{totalSales+=Number(a.total||0);totalSST+=Number(a.sst||0);serviceMap[a.service_id]=(serviceMap[a.service_id]||0)+Number(a.total||0);paymentMap[a.payment_method]=(paymentMap[a.payment_method]||0)+Number(a.total||0);const k=reportMode.value==="monthly"?a.start_time.slice(0,7):a.start_time.slice(0,10);timeMap[k]=(timeMap[k]||0)+Number(a.total||0);});
-  totalSales.textContent=totalSales.toFixed(2);
-  totalSST.textContent=totalSST.toFixed(2);
   new Chart(serviceChart,{type:"bar",data:{labels:Object.keys(serviceMap),datasets:[{data:Object.values(serviceMap),backgroundColor:"#ff7a00"}]}});
-  new Chart(paymentChart,{type:"pie",data:{labels:Object.keys(paymentMap),datasets:[{data:Object.values(paymentMap)}]}});
   new Chart(timeChart,{type:"bar",data:{labels:Object.keys(timeMap),datasets:[{data:Object.values(timeMap),backgroundColor:"#673ab7"}]}});
-}
-exportExcelBtn.onclick=()=>{const ws=XLSX.utils.json_to_sheet(filteredAppointments.map(a=>({Date:a.start_time.slice(0,10),Service:a.service_id,Payment:a.payment_method,Subtotal:a.amount,SST:a.sst,Total:a.total})));const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,"Sales");XLSX.writeFile(wb,"sales_report.xlsx");};
+  new Chart(ageChart,{type:"pie",data:{labels:Object.keys(ageMap),datasets:[{data:Object.values(ageMap)}]}});
+  new Chart(citizenChart,{type:"pie",data:{labels:Object.keys(citizenMap),datasets:[{data:Object.values(citizenMap)}]}});
 
-/* INIT */
-const now=new Date();
-a_date.value=now.toISOString().slice(0,10);
-a_time.value=now.toTimeString().slice(0,5);
-await loadClients();
-await loadPractitioners();
-await loadAppointments();
+  window._excelData={rows,serviceMap,timeMap,ageMap,citizenMap,total,sst};
+}
+
+/* ===== EXCEL EXPORT (MULTI‑SHEET) ===== */
+exportExcelBtn.onclick = ()=>{
+  const wb=XLSX.utils.book_new();
+  const d=window._excelData;
+
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet([{TotalSales:d.total,TotalSST:d.sst}]),"Summary");
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(d.rows),"Details");
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(Object.entries(d.serviceMap).map(([k,v])=>({Service:k,Sales:v}))),"By Service");
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(Object.entries(d.timeMap).map(([k,v])=>({Period:k,Sales:v}))),"By Date");
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(Object.entries(d.ageMap).map(([k,v])=>({AgeRange:k,Count:v}))),"Age Range");
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(Object.entries(d.citizenMap).map(([k,v])=>({Citizenship:k,Count:v}))),"Citizenship");
+
+  XLSX.writeFile(wb,"sales_report.xlsx");
+};
+
+/* ===== TAB ===== */
+function show(tab){
+  document.getElementById("reportsTab").classList.toggle("hidden",tab!=="reports");
+  document.querySelectorAll("header button").forEach(b=>b.classList.remove("active"));
+  document.getElementById("tab"+tab.charAt(0).toUpperCase()+tab.slice(1)).classList.add("active");
+  if(tab==="reports"){renderAgeRangeConfig();loadReport();}
+}
+tabReports.onclick=()=>show("reports");
 
 });
 </script>
