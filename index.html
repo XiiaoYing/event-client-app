@@ -1,111 +1,429 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Click Test</title>
+<meta charset="UTF-8">
+<title>Admin Dashboard</title>
 
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f4f4f4;
-    }
-    header {
-      display: flex;
-      gap: 10px;
-      padding: 10px;
-      background: #111;
-    }
-    header button {
-      background: #333;
-      color: white;
-      border: none;
-      padding: 10px 16px;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-    header button.active {
-      background: orange;
-      color: black;
-    }
-    .hidden {
-      display: none;
-    }
-    .container {
-      padding: 20px;
-    }
-    .card {
-      background: white;
-      padding: 16px;
-      border-radius: 8px;
-      max-width: 300px;
-    }
-    input {
-      width: 100%;
-      padding: 8px;
-      margin-top: 8px;
-    }
-    button.save {
-      margin-top: 10px;
-      width: 100%;
-      padding: 10px;
-      background: orange;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-  </style>
+<!-- Google Font -->
+https://fonts.googleapis.com
+<link://fonts.gstatic.com
+<link
+  href="https://fonts.googleapis.com/css2?family=Montserrat:w0&display=swap
+
+<!-- Supabase -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js (Excel Export) -->
+<script src="https://cdn.jsdelivr.net/npmsx.full.min.js
+
+<style>
+body{margin:0;font-family:'Montserrat',sans-serif;background:#f4f4f4}
+header{display:flex;gap:10px;padding:12px;background:#111}
+header button{background:#333;color:#fff;border:none;padding:8px 14px;border-radius:6px;cursor:pointer}
+header button.active{background:#ff7a00;color:#000;font-weight:700}
+.container{max-width:1200px;margin:auto;padding:20px}
+.hidden{display:none}
+.card{background:#fff;padding:16px;border-radius:8px;margin-bottom:20px}
+label{font-size:12px;font-weight:600;display:block;margin-top:10px}
+input,select,textarea{width:100%;padding:8px;margin-top:4px}
+button.primary{background:#ff7a00;border:none;padding:8px 14px;border-radius:6px;margin-top:12px;cursor:pointer}
+button.danger{background:#e74c3c;color:#fff;border:none;padding:6px 10px;border-radius:6px;cursor:pointer}
+table{width:100%;border-collapse:collapse;margin-top:10px}
+th,td{padding:8px;border-bottom:1px solid #ddd;font-size:13px}
+th{background:#f0f0f0}
+.flex{display:flex;gap:15px;flex-wrap:wrap}
+.small{font-size:11px;color:#666}
+</style>
 </head>
 
 <body>
 
 <header>
-  <button id="btnClients" class="active">Clients</button>
-  <button id="btnPractitioners">Practitioners</button>
-  <button id="btnAppointments">Appointments</button>
-  <button id="btnReports">Sales Report</button>
+  <button id="tabClients" class="active">Clients</button>
+  <button id="tabPractitioners">Practitioners</button>
+  <button id="tabAppointments">Appointments</button>
+  <button id="tabReports">Sales Report</button>
 </header>
 
 <div class="container">
-  <div id="clients" class="card">
-    <h3>Client Test</h3>
-    <input id="clientName" placeholder="Client name">
-    <button class="save" id="saveClient">Save Client</button>
+
+<!-- ================= CLIENTS ================= -->
+<section id="clientsTab">
+  <div class="card">
+    <h3>Add / Edit Client</h3>
+    <input type="hidden" id="client_id">
+
+    <label>Name</label><input id="c_name">
+    <label>DOB</label><input type="date" id="c_dob">
+
+    <label>Gender</label>
+    <select id="c_gender"><option>Male</option><option>Female</option></select>
+
+    <label>Citizenship</label>
+    <select id="c_citizenship"><option>Malaysian</option><option>Foreigner</option></select>
+
+    <label>Contact</label><input id="c_contact">
+    <label>Email</label><input id="c_email">
+    <label>Address</label><textarea id="c_address"></textarea>
+
+    <label>IC / Passport</label>
+    <input id="c_ic" oninput="formatIC(this)">
+
+    <button class="primary" id="saveClientBtn">Save Client</button>
+    <button class="primary" type="button" id="cancelClientBtn">Cancel</button>
   </div>
 
-  <div id="practitioners" class="card hidden"><h3>Practitioners Tab</h3></div>
-  <div id="appointments" class="card hidden"><h3>Appointments Tab</h3></div>
-  <div id="reports" class="card hidden"><h3>Sales Report Tab</h3></div>
+  <div class="card">
+    <h3>Client List</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th><th>DOB</th><th>Age</th><th>Gender</th><th>Citizen</th>
+          <th>Contact</th><th>Email</th><th>Address</th>
+          <th>Edit</th><th>Delete</th>
+        </tr>
+      </thead>
+      <tbody id="clientsTable"></tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ================= PRACTITIONERS ================= -->
+<section id="practitionersTab" class="hidden">
+  <div class="card">
+    <h3>Add Practitioner</h3>
+    <input id="p_name">
+    <button class="primary" id="addPractitionerBtn">Add</button>
+  </div>
+
+  <div class="card">
+    <h3>Practitioner List</h3>
+    <table>
+      <thead><tr><th>Name</th><th>Delete</th></tr></thead>
+      <tbody id="practitionerTable"></tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ================= APPOINTMENTS ================= -->
+<section id="appointmentsTab" class="hidden">
+  <div class="card">
+    <h3>Add / Edit Appointment</h3>
+    <input type="hidden" id="appointment_id">
+
+    <label>Date</label><input type="date" id="a_date">
+    <label>Time</label><input type="time" id="a_time">
+
+    <label>Client</label><select id="a_client"></select>
+    <label>Practitioner</label><select id="a_practitioner"></select>
+
+    <label>Service</label><select id="a_service"></select>
+
+    <div class="flex">
+      <div><label>Base (RM)</label><input id="a_price" readonly></div>
+      <div><label>SST (RM)</label><input id="a_sst" readonly></div>
+      <div><label>Total (RM)</label><input id="a_total" readonly></div>
+    </div>
+
+    <label>Payment Method</label>
+    <select id="a_payment">
+      <option>Cash</option>
+      <option>Card</option>
+      <option>E‑Wallet</option>
+    </select>
+
+    <label>Remarks</label><textarea id="a_remarks"></textarea>
+
+    <button class="primary" id="saveAppointmentBtn">Save Appointment</button>
+  </div>
+
+  <div class="card">
+    <h3>Appointment List</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Date</th><th>Time</th><th>Client</th><th>Service</th>
+          <th>Practitioner</th><th>Payment</th><th>Total</th>
+          <th>Edit</th><th>Delete</th>
+        </tr>
+      </thead>
+      <tbody id="appointmentsTable"></tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ================= SALES REPORT ================= -->
+<section id="reportsTab" class="hidden">
+
+  <div class="card">
+    <h3>Filters</h3>
+    <label>From Date</label><input type="date" id="reportFrom">
+    <label>To Date</label><input type="date" id="reportTo">
+    <button class="primary" id="applyReportBtn">Apply</button>
+    <button class="primary" id="exportExcelBtn">Export Excel</button>
+  </div>
+
+  <div class="card">
+    <h3>Summary by Day</h3>
+    <table>
+      <thead><tr><th>Date</th><th>Total Sales (RM)</th><th>SST (RM)</th></tr></thead>
+      <tbody id="summaryTable"></tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <h3>Detail</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Date</th><th>Time</th><th>Client</th><th>Service</th>
+          <th>Practitioner</th><th>Payment</th>
+          <th>Subtotal</th><th>SST</th><th>Total</th>
+        </tr>
+      </thead>
+      <tbody id="detailTable"></tbody>
+    </table>
+  </div>
+
+</section>
+
 </div>
 
 <script>
-console.log("✅ Script loaded");
-
-function show(tab) {
-  document.getElementById("clients").classList.add("hidden");
-  document.getElementById("practitioners").classList.add("hidden");
-  document.getElementById("appointments").classList.add("hidden");
-  document.getElementById("reports").classList.add("hidden");
-
-  document.getElementById("btnClients").classList.remove("active");
-  document.getElementById("btnPractitioners").classList.remove("active");
-  document.getElementById("btnAppointments").classList.remove("active");
-  document.getElementById("btnReports").classList.remove("active");
-
-  document.getElementById(tab).classList.remove("hidden");
-  document.getElementById("btn" + tab.charAt(0).toUpperCase() + tab.slice(1)).classList.add("active");
+/* ---------------- Helpers ---------------- */
+function formatIC(input){
+  const raw=input.value.replace(/-/g,'');
+  if(/^[A-Za-z]/.test(raw)){input.value=raw;return;}
+  let out=raw;
+  if(raw.length>6) out=raw.slice(0,6)+"-"+raw.slice(6);
+  if(raw.length>8) out=raw.slice(0,6)+"-"+raw.slice(6,8)+"-"+raw.slice(8,12);
+  input.value=out;
 }
+const ageFromDob=d=>Math.floor((Date.now()-new Date(d))/(365.25*86400000));
 
-btnClients.onclick = () => show("clients");
-btnPractitioners.onclick = () => show("practitioners");
-btnAppointments.onclick = () => show("appointments");
-btnReports.onclick = () => show("reports");
+document.addEventListener("DOMContentLoaded", async()=>{
 
-saveClient.onclick = () => {
-  alert("✅ Save works: " + clientName.value);
+const sb=supabase.createClient(
+"https://yxkospvcqkoxiravjtqd.supabase.co",
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl4a29zcHZjcWtveGlyYXZqdHFkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYyODEyNzEsImV4cCI6MjA5MTg1NzI3MX0.Aaw6wfcXf21uwgMQJWtiVN_vxqaqevEQerx2GjOG-Jc"
+);
+
+const SERVICES=[
+ {id:"SM",name:"Sports Massage",price:45},
+ {id:"RCB",name:"Recovery Compression Boots",price:25},
+ {id:"AS",name:"Assisted Stretch Session",price:20},
+ {id:"PB",name:"Physio Bundle",price:400},
+ {id:"PKP",name:"Performance Kickstart Program",price:261},
+ {id:"SMFT",name:"Sports Massage - First Trial",price:189}
+];
+
+let clients=[],appointments=[];
+
+/* ---------------- Tabs ---------------- */
+function show(tab){
+ ["clients","practitioners","appointments","reports"].forEach(t=>{
+  document.getElementById(t+"Tab").classList.toggle("hidden",t!==tab);
+  document.getElementById("tab"+t.charAt(0).toUpperCase()+t.slice(1)).classList.toggle("active",t===tab);
+ });
+}
+tabClients.onclick=()=>show("clients");
+tabPractitioners.onclick=()=>show("practitioners");
+tabAppointments.onclick=()=>show("appointments");
+tabReports.onclick=()=>show("reports");
+
+/* ---------------- Clients ---------------- */
+async function loadClients(){
+ const {data}=await sb.from("clients").select("*");
+ clients=data||[];
+ clientsTable.innerHTML="";
+ a_client.innerHTML="";
+ clients.forEach(c=>{
+  clientsTable.innerHTML+=`
+   <tr>
+    <td>${c.full_name}</td>
+    <td>${c.date_of_birth}</td>
+    <td>${ageFromDob(c.date_of_birth)}</td>
+    <td>${c.gender}</td>
+    <td>${c.citizenship}</td>
+    <td>${c.contact||""}</td>
+    <td>${c.email||""}</td>
+    <td>${c.address||""}</td>
+    <td><button onclick="editClient('${c.id}')">✏️</button></td>
+    <td><button class="danger" onclick="delClient('${c.id}')">X</button></td>
+   </tr>`;
+  a_client.innerHTML+=`<option value="${c.id}">${c.full_name}</option>`;
+ });
+}
+window.editClient=id=>{
+ const c=clients.find(x=>x.id===id);
+ client_id.value=id;c_name.value=c.full_name;c_dob.value=c.date_of_birth;
+ c_gender.value=c.gender;c_citizenship.value=c.citizenship;
+ c_contact.value=c.contact;c_email.value=c.email;
+ c_address.value=c.address;c_ic.value=c.ic_passport;
 };
+saveClientBtn.onclick=async()=>{
+ if(c_citizenship.value==="Malaysian" && !/^\d{6}-\d{2}-\d{4}$/.test(c_ic.value)){
+  alert("IC must be XXXXXX-XX-XXXX");return;
+ }
+ const payload={
+  full_name:c_name.value,date_of_birth:c_dob.value,gender:c_gender.value,
+  citizenship:c_citizenship.value,contact:c_contact.value,
+  email:c_email.value,address:c_address.value,ic_passport:c_ic.value
+ };
+ client_id.value
+  ? await sb.from("clients").update(payload).eq("id",client_id.value)
+  : await sb.from("clients").insert(payload);
+ clearClientForm(); loadClients();
+};
+cancelClientBtn.onclick=clearClientForm;
+function clearClientForm(){
+ client_id.value="";c_name.value="";c_dob.value="";
+ c_gender.value="Male";c_citizenship.value="Malaysian";
+ c_contact.value="";c_email.value="";c_address.value="";c_ic.value="";
+}
+window.delClient=async id=>{await sb.from("clients").delete().eq("id",id);loadClients();};
+
+/* ---------------- Practitioners ---------------- */
+async function loadPractitioners(){
+ const {data}=await sb.from("practitioners").select("*");
+ practitionerTable.innerHTML="";a_practitioner.innerHTML="";
+ data.forEach(p=>{
+  practitionerTable.innerHTML+=`
+   <tr><td>${p.name}</td>
+   <td><button class="danger" onclick="delPractitioner('${p.id}')">X</button></td></tr>`;
+  a_practitioner.innerHTML+=`<option>${p.name}</option>`;
+ });
+}
+addPractitionerBtn.onclick=async()=>{await sb.from("practitioners").insert({name:p_name.value});p_name.value="";loadPractitioners();};
+window.delPractitioner=async id=>{await sb.from("practitioners").delete().eq("id",id);loadPractitioners();};
+
+/* ---------------- Appointments ---------------- */
+SERVICES.forEach(s=>a_service.innerHTML+=`<option value="${s.id}">${s.name}</option>`);
+function recalc(){
+ const svc=SERVICES.find(s=>s.id===a_service.value);
+ const c=clients.find(x=>x.id===a_client.value);
+ const sst=c?.citizenship==="Foreigner"?+(svc.price*0.06).toFixed(2):0;
+ a_price.value=svc.price;a_sst.value=sst;a_total.value=(svc.price+sst).toFixed(2);
+}
+a_service.onchange=recalc;a_client.onchange=recalc;
+
+saveAppointmentBtn.onclick=async()=>{
+ const svc=SERVICES.find(s=>s.id===a_service.value);
+ const c=clients.find(x=>x.id===a_client.value);
+ const sst=c.citizenship==="Foreigner"?+(svc.price*0.06).toFixed(2):0;
+ appointment_id.value
+ ? await sb.from("appointments").update({
+   client_id:c.id,service_id:svc.id,practitioner:a_practitioner.value,
+   payment_method:a_payment.value,remarks:a_remarks.value,
+   amount:svc.price,sst,total:svc.price+sst
+  }).eq("id",appointment_id.value)
+ : await sb.from("appointments").insert({
+   client_id:c.id,service_id:svc.id,practitioner:a_practitioner.value,
+   payment_method:a_payment.value,remarks:a_remarks.value,
+   amount:svc.price,sst,total:svc.price+sst,
+   start_time:`${a_date.value}T${a_time.value}:00Z`,
+   end_time:`${a_date.value}T${a_time.value}:00Z`
+  });
+ appointment_id.value="";loadAppointments();
+};
+
+async function loadAppointments(){
+ const {data}=await sb.from("appointments").select("*").order("start_time");
+ appointments=data||[];appointmentsTable.innerHTML="";
+ appointments.forEach(a=>{
+  const cname=clients.find(c=>c.id===a.client_id)?.full_name||"";
+  const sname=SERVICES.find(s=>s.id===a.service_id)?.name||"";
+  appointmentsTable.innerHTML+=`
+   <tr>
+    <td>${a.start_time.slice(0,10)}</td>
+    <td>${a.start_time.slice(11,16)}</td>
+    <td>${cname}</td>
+    <td>${sname}</td>
+    <td>${a.practitioner||""}</td>
+    <td>${a.payment_method||""}</td>
+    <td>RM ${a.total}</td>
+    <td><button onclick="editAppointment('${a.id}')">✏️</button></td>
+    <td><button class="danger" onclick="delAppointment('${a.id}')">X</button></td>
+   </tr>`;
+ });
+}
+window.editAppointment=id=>{
+ const a=appointments.find(x=>x.id===id);
+ appointment_id.value=a.id;
+ a_date.value=a.start_time.slice(0,10);
+ a_time.value=a.start_time.slice(11,16);
+ a_client.value=a.client_id;
+ a_service.value=a.service_id;
+ a_practitioner.value=a.practitioner;
+ a_payment.value=a.payment_method;
+ a_remarks.value=a.remarks;
+ recalc();
+};
+window.delAppointment=async id=>{await sb.from("appointments").delete().eq("id",id);loadAppointments();};
+
+/* ---------------- Sales Report ---------------- */
+applyReportBtn.onclick=async()=>{
+ const {data}=await sb.from("appointments").select("*");
+ summaryTable.innerHTML="";detailTable.innerHTML="";
+ const dayMap={};
+ let totalSales=0,totalSST=0;
+
+ data.forEach(a=>{
+  const date=a.start_time.slice(0,10);
+  const time=a.start_time.slice(11,16);
+  const cname=clients.find(c=>c.id===a.client_id)?.full_name||"";
+  const sname=SERVICES.find(s=>s.id===a.service_id)?.name||"";
+
+  totalSales+=Number(a.total||0);
+  totalSST+=Number(a.sst||0);
+
+  if(!dayMap[date]) dayMap[date]={sales:0,sst:0};
+  dayMap[date].sales+=Number(a.total||0);
+  dayMap[date].sst+=Number(a.sst||0);
+
+  detailTable.innerHTML+=`
+    <tr>
+      <td>${date}</td><td>${time}</td><td>${cname}</td><td>${sname}</td>
+      <td>${a.practitioner||""}</td><td>${a.payment_method||""}</td>
+      <td>${a.amount}</td><td>${a.sst}</td><td>${a.total}</td>
+    </tr>`;
+ });
+
+ Object.keys(dayMap).forEach(d=>{
+  summaryTable.innerHTML+=`
+    <tr><td>${d}</td><td>${dayMap[d].sales.toFixed(2)}</td><td>${dayMap[d].sst.toFixed(2)}</td></tr>`;
+ });
+
+};
+
+exportExcelBtn.onclick=function(){
+ const rows=[];
+ const summary=[];
+ document.querySelectorAll("#detailTable tr").forEach(tr=>{
+  const tds=[...tr.querySelectorAll("td")].map(td=>td.textContent);
+  rows.push({Date:tds[0],Time:tds[1],Client:tds[2],Service:tds[3],Practitioner:tds[4],Payment:tds[5],Subtotal:tds[6],SST:tds[7],Total:tds[8]});
+ });
+ document.querySelectorAll("#summaryTable tr").forEach(tr=>{
+  const tds=[...tr.querySelectorAll("td")].map(td=>td.textContent);
+  summary.push({Date:tds[0],"Total Sales":tds[1],"Total SST":tds[2]});
+ });
+ const wb=XLSX.utils.book_new();
+ XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(rows),"Detail");
+ XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(summary),"Summary");
+ XLSX.writeFile(wb,"sales_report.xlsx");
+};
+
+/* ---------------- Init ---------------- */
+const today=new Date().toISOString().slice(0,10);
+a_date.value=today;
+a_time.value=new Date().toTimeString().slice(0,5);
+reportFrom.value=today;
+reportTo.value=today;
+
+await loadClients();
+await loadPractitioners();
+await loadAppointments();
+
+});
 </script>
 
 </body>
 </html>
-``
