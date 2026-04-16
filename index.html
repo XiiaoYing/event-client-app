@@ -121,6 +121,11 @@
 </div>
 
 <script>
+  
+window.addEventListener("error", e => {
+  console.error("JS ERROR:", e.message);
+});
+  
 document.addEventListener("DOMContentLoaded", () => {
 
   const sb = supabase.createClient(
@@ -129,7 +134,13 @@ document.addEventListener("DOMContentLoaded", () => {
   );
 
   // ✅ ALL your existing JS stays INSIDE this block
-  // (tabs, clients, practitioners, appointments, etc)
+  // const tabClientsBtn = document.getElementById("tabClients");
+const tabPractitionersBtn = document.getElementById("tabPractitioners");
+const tabAppointmentsBtn = document.getElementById("tabAppointments");
+
+tabClientsBtn.addEventListener("click", () => showTab("clients"));
+tabPractitionersBtn.addEventListener("click", () => showTab("practitioners"));
+tabAppointmentsBtn.addEventListener("click", () => showTab("appointments"));
 
 });
 </script>
