@@ -1,12 +1,14 @@
 <!DOCTYPE html>
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Admin Dashboard</title>
 
   <!-- Google Font -->
-  <link rel="preconnect"is.com
-  <link rel="preconnect" href="https    href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap"
-    relscript src="https://cdn.jsdelivr.net/npm/@supabase/supcript>
+  <link rel="preconnect" href="https://fonts.googleapiscom
+  <link
+    href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap"
+   
+  <script src="https://cdn.jsdelivr.net/npm/@supabase2</script>
 
   <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
@@ -19,6 +21,51 @@
       margin: 0;
       font-family: "Montserrat", sans-serif;
       background: #f4f4f4;
+    }
+
+    header {
+      display: flex;
+      gap: 12px;
+      padding: 14px;
+      background: #111;
+    }
+
+    header button {
+      background: #333;
+      color: #fff;
+      border: none;
+      padding: 8px 18px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    header button.active {
+      background: #ff7a00;
+      color: #000;
+      font-weight: 600;
+    }
+
+    .container {
+      max-width: 1300px;
+      margin: auto;
+      padding: 24px;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .card {
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      margin-bottom: 24px;
+    }
+
+    .section-title {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 16px;
     }
   </style>
 </head>
