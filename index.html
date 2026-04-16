@@ -4,35 +4,38 @@
 <meta charset="UTF-8">
 <title>Admin Dashboard</title>
 
+<!-- Google Font -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
 
+<!-- Supabase SDK -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
-body { margin:0;font-family:Montserrat;background:#f4f4f4 }
-header{display:flex;gap:10px;padding:12px;background:#111}
-header button{background:#333;color:#fff;border:none;padding:8px 14px;border-radius:6px;cursor:pointer}
-header button.active{background:#ff7a00;color:#000;font-weight:700}
-.container{max-width:1100px;margin:auto;padding:20px}
-.hidden{display:none}
-.card{background:#fff;padding:16px;border-radius:8px;margin-bottom:20px}
-label{font-size:12px;font-weight:600;display:block;margin-top:10px}
-input,select,textarea{width:100%;padding:8px;margin-top:4px}
-button.primary{margin-top:12px;background:#ff7a00;border:none;padding:8px 14px;border-radius:6px;cursor:pointer}
-button.danger{background:#e74c3c;color:#fff;border:none;padding:6px 10px;border-radius:6px}
-table{width:100%;border-collapse:collapse;margin-top:10px}
-th,td{padding:8px;border-bottom:1px solid #ddd;font-size:13px}
-th{background:#f0f0f0}
+body { margin:0; font-family:'Montserrat',sans-serif; background:#f4f4f4; }
+header { display:flex; gap:10px; padding:12px; background:#111; }
+header button { background:#333; color:#fff; border:none; padding:8px 14px; border-radius:6px; cursor:pointer; }
+header button.active { background:#ff7a00; color:#000; font-weight:700; }
+.container { max-width:1100px; margin:auto; padding:20px; }
+.hidden { display:none; }
+.card { background:#fff; padding:16px; border-radius:8px; margin-bottom:20px; }
+label { display:block; font-size:12px; font-weight:600; margin-top:10px; }
+input,select,textarea { width:100%; padding:8px; margin-top:4px; }
+button.primary { margin-top:12px; background:#ff7a00; border:none; padding:8px 14px; border-radius:6px; cursor:pointer; }
+button.danger { background:#e74c3c; color:#fff; border:none; padding:6px 10px; border-radius:6px; }
+table { width:100%; border-collapse:collapse; margin-top:10px; }
+th,td { padding:8px; border-bottom:1px solid #ddd; font-size:13px; }
+th { background:#f0f0f0; }
 </style>
 </head>
 
 <body>
 
 <header>
-<button id="tabClients" class="active">Clients</button>
-<button id="tabAppointments">Appointments</button>
+  <button id="tabClients" class="active">Clients</button>
+  <button id="tabPractitioners">Practitioners</button>
+  <button id="tabAppointments">Appointments</button>
 </header>
 
 <div class="container">
@@ -49,6 +52,9 @@ th{background:#f0f0f0}
 <select id="c_gender"><option>Male</option><option>Female</option></select>
 <label>Citizenship</label>
 <select id="c_citizenship"><option>Malaysian</option><option>Foreigner</option></select>
+<label>Contact Number</label><input id="c_contact">
+<label>Email</label><input id="c_email">
+<label>Address</label><textarea id="c_address"></textarea>
 <label>IC / Passport</label><input id="c_ic">
 <button class="primary" id="saveClientBtn">Save Client</button>
 </div>
@@ -56,10 +62,25 @@ th{background:#f0f0f0}
 <div class="card">
 <h3>Client List</h3>
 <table>
-<thead>
-<tr><th>Name</th><th>Age</th><th>Citizen</th><th>IC</th><th>Edit</th><th>Delete</th></tr>
-</thead>
+<thead><tr><th>Name</th><th>Age</th><th>Contact</th><th>Email</th><th>Edit</th><th>Delete</th></tr></thead>
 <tbody id="clientsTable"></tbody>
+</table>
+</div>
+</section>
+
+<!-- PRACTITIONERS -->
+<section id="practitionersTab" class="hidden">
+<div class="card">
+<h3>Add Practitioner</h3>
+<input id="p_name">
+<button class="primary" id="addPractitionerBtn">Add Practitioner</button>
+</div>
+
+<div class="card">
+<h3>Practitioner List</h3>
+<table>
+<thead><tr><th>Name</th><th>Delete</th></tr></thead>
+<tbody id="practitionerTable"></tbody>
 </table>
 </div>
 </section>
@@ -68,16 +89,22 @@ th{background:#f0f0f0}
 <section id="appointmentsTab" class="hidden">
 <div class="card">
 <h3>Add Appointment</h3>
-
 <label>Date</label><input type="date" id="a_date">
 <label>Time</label><input type="time" id="a_time">
 <label>Client</label><select id="a_client"></select>
 <label>Service</label><select id="a_service"></select>
-<label>Base Price (RM)</label><input id="a_price" readonly>
+<label>Base (RM)</label><input id="a_price" readonly>
 <label>SST (6%)</label><input id="a_sst" readonly>
 <label>Total</label><input id="a_total" readonly>
-
 <button class="primary" id="saveAppointmentBtn">Save Appointment</button>
+</div>
+
+<div class="card">
+<h3>Appointment List</h3>
+<table>
+<thead><tr><th>Date</th><th>Time</th><th>Client</th><th>Service</th><th>Total</th></tr></thead>
+<tbody id="appointmentsTable"></tbody>
+</table>
 </div>
 </section>
 
@@ -92,34 +119,33 @@ const sb = supabase.createClient(
 );
 
 const SERVICES = [
- {id:"SM",name:"Sports Massage",price:45},
- {id:"RCB",name:"Recovery Compression Boots",price:25},
- {id:"AS",name:"Assisted Stretch Session",price:20},
- {id:"PB",name:"Physio Bundle",price:400},
- {id:"PKP",name:"Performance Kickstart Program",price:261},
- {id:"SMFT",name:"Sports Massage - First Trial",price:189}
+ {id:"SM", name:"Sports Massage", price:45},
+ {id:"RCB", name:"Recovery Compression Boots", price:25},
+ {id:"AS", name:"Assisted Stretch Session", price:20},
+ {id:"PB", name:"Physio Bundle", price:400},
+ {id:"PKP", name:"Performance Kickstart Program", price:261},
+ {id:"SMFT", name:"Sports Massage - First Trial", price:189}
 ];
 
 let clients=[];
 
 /* Tabs */
 tabClients.onclick=()=>showTab("clients");
+tabPractitioners.onclick=()=>showTab("practitioners");
 tabAppointments.onclick=()=>showTab("appointments");
 function showTab(t){
 clientsTab.classList.toggle("hidden",t!=="clients");
+practitionersTab.classList.toggle("hidden",t!=="practitioners");
 appointmentsTab.classList.toggle("hidden",t!=="appointments");
 tabClients.classList.toggle("active",t==="clients");
+tabPractitioners.classList.toggle("active",t==="practitioners");
 tabAppointments.classList.toggle("active",t==="appointments");
 }
 
-/* AGE */
-c_dob.onchange=()=> {
-const dob=new Date(c_dob.value);
-const age=Math.floor((Date.now()-dob)/(365.25*86400000));
-c_age.value=age;
-}
+/* Age */
+c_dob.onchange=()=>c_age.value=Math.floor((Date.now()-new Date(c_dob.value))/(365.25*86400000));
 
-/* CLIENTS */
+/* Clients */
 async function loadClients(){
 const {data}=await sb.from("clients").select("*");
 clients=data||[];
@@ -130,88 +156,81 @@ clientsTable.innerHTML+=`
 <tr>
 <td>${c.full_name}</td>
 <td>${Math.floor((Date.now()-new Date(c.date_of_birth))/(365.25*86400000))}</td>
-<td>${c.citizenship}</td>
-<td>${c.ic_passport}</td>
-<td><button onclick='editClient("${c.id}")'>✏️</button></td>
-<td><button class="danger" onclick='delClient("${c.id}")'>X</button></td>
+<td>${c.contact||""}</td>
+<td>${c.email||""}</td>
+<td><button onclick="editClient('${c.id}')">✏️</button></td>
+<td><button class="danger" onclick="delClient('${c.id}')">X</button></td>
 </tr>`;
 a_client.innerHTML+=`<option value="${c.id}">${c.full_name}</option>`;
 });
 }
 
-window.editClient=id=>{
+window.editClient=(id)=>{
 const c=clients.find(x=>x.id===id);
-client_id.value=c.id;
+client_id.value=id;
 c_name.value=c.full_name;
 c_dob.value=c.date_of_birth;
-c_ic.value=c.ic_passport;
 c_gender.value=c.gender;
 c_citizenship.value=c.citizenship;
+c_contact.value=c.contact;
+c_email.value=c.email;
+c_address.value=c.address;
+c_ic.value=c.ic_passport;
 c_dob.onchange();
 };
 
 saveClientBtn.onclick=async()=>{
-if(c_citizenship.value==="Malaysian" && !/^\d{12}$/.test(c_ic.value)){
-alert("Malaysian IC must be 12 digits"); return;
-}
-const payload={
-full_name:c_name.value,
-date_of_birth:c_dob.value,
-gender:c_gender.value,
-citizenship:c_citizenship.value,
-ic_passport:c_ic.value
-};
-if(client_id.value){
-await sb.from("clients").update(payload).eq("id",client_id.value);
-}else{
-await sb.from("clients").insert(payload);
-}
-client_id.value="";
-loadClients();
+if(c_citizenship.value==="Malaysian" && !/^\d{12}$/.test(c_ic.value)) return alert("IC must be 12 digits");
+const payload={full_name:c_name.value,date_of_birth:c_dob.value,gender:c_gender.value,citizenship:c_citizenship.value,contact:c_contact.value,email:c_email.value,address:c_address.value,ic_passport:c_ic.value};
+client_id.value ? await sb.from("clients").update(payload).eq("id",client_id.value) : await sb.from("clients").insert(payload);
+client_id.value="";loadClients();
 };
 
-window.delClient=async id=>{
-await sb.from("clients").delete().eq("id",id);
-loadClients();
-};
+window.delClient=async(id)=>{await sb.from("clients").delete().eq("id",id);loadClients();};
 
-/* APPOINTMENTS */
+/* Practitioners */
+async function loadPractitioners(){
+const {data}=await sb.from("practitioners").select("*");
+practitionerTable.innerHTML="";
+data.forEach(p=>{
+practitionerTable.innerHTML+=`<tr><td>${p.name}</td><td><button class="danger" onclick="delPractitioner('${p.id}')">X</button></td></tr>`;
+});
+}
+
+addPractitionerBtn.onclick=async()=>{await sb.from("practitioners").insert({name:p_name.value});p_name.value="";loadPractitioners();};
+window.delPractitioner=async(id)=>{await sb.from("practitioners").delete().eq("id",id);loadPractitioners();};
+
+/* Appointments */
 SERVICES.forEach(s=>a_service.innerHTML+=`<option value="${s.id}">${s.name}</option>`);
-
 function calc(){
 const svc=SERVICES.find(s=>s.id===a_service.value);
-const client=clients.find(c=>c.id===a_client.value);
-if(!svc||!client) return;
-const sst=client.citizenship==="Foreigner"?+(svc.price*0.06).toFixed(2):0;
-a_price.value=svc.price;
-a_sst.value=sst;
-a_total.value=(svc.price+sst).toFixed(2);
+const c=clients.find(x=>x.id===a_client.value);
+const sst=c?.citizenship==="Foreigner"?+(svc.price*0.06).toFixed(2):0;
+a_price.value=svc.price;a_sst.value=sst;a_total.value=(svc.price+sst).toFixed(2);
 }
-
-a_service.onchange=calc;
-a_client.onchange=calc;
+a_service.onchange=calc;a_client.onchange=calc;
 
 saveAppointmentBtn.onclick=async()=>{
 const svc=SERVICES.find(s=>s.id===a_service.value);
-const client=clients.find(c=>c.id===a_client.value);
-const sst=client.citizenship==="Foreigner"?+(svc.price*0.06).toFixed(2):0;
-await sb.from("appointments").insert({
-client_id:a_client.value,
-service_id:svc.id,
-start_time:`${a_date.value}T${a_time.value}:00Z`,
-end_time:`${a_date.value}T${a_time.value}:00Z`,
-amount:svc.price,
-sst,
-total:(svc.price+sst)
-});
-alert("Appointment saved");
+const c=clients.find(x=>x.id===a_client.value);
+const sst=c.citizenship==="Foreigner"?+(svc.price*0.06).toFixed(2):0;
+await sb.from("appointments").insert({client_id:a_client.value,service_id:svc.id,start_time:`${a_date.value}T${a_time.value}:00Z`,end_time:`${a_date.value}T${a_time.value}:00Z`,amount:svc.price,sst,total:(svc.price+sst)});
+loadAppointments();
 };
 
-/* INIT */
+async function loadAppointments(){
+const {data}=await sb.from("appointments").select("*").order("start_time");
+appointmentsTable.innerHTML="";
+data.forEach(a=>{
+appointmentsTable.innerHTML+=`<tr><td>${a.start_time.split("T")[0]}</td><td>${a.start_time.split("T")[1].slice(0,5)}</td><td>${a.client_id}</td><td>${a.service_id}</td><td>RM ${a.total}</td></tr>`;
+});
+}
+
+/* Init */
 const now=new Date();
 a_date.value=now.toISOString().slice(0,10);
 a_time.value=now.toTimeString().slice(0,5);
-await loadClients();
+await loadClients(); await loadPractitioners(); await loadAppointments();
 
 });
 </script>
