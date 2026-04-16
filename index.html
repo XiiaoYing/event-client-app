@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
   <title>Admin Dashboard</title>
@@ -13,16 +12,14 @@
     rel="stylesheet"
   >
 
-  <!-- Supabase -->
+  <!-- Libraries -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-  <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-
-  <!-- XLSX -->
   <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
 
   <style>
+    * { box-sizing: border-box; }
+
     body {
       margin: 0;
       font-family: "Montserrat", sans-serif;
@@ -34,6 +31,9 @@
       gap: 12px;
       padding: 14px;
       background: #111;
+      position: sticky;
+      top: 0;
+      z-index: 10;
     }
 
     header button {
@@ -57,130 +57,159 @@
       padding: 24px;
     }
 
-    .hidden {
-      display: none;
-    }
+    .hidden { display: none; }
 
     .card {
       background: #fff;
+      border: 1px solid #e0e0e0;
       padding: 20px;
       border-radius: 12px;
       margin-bottom: 24px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
     }
 
-    /* ===== FORCE LAYOUT FIX ===== */
+    .section-title {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 14px;
+      border-bottom: 2px solid #eee;
+      padding-bottom: 6px;
+    }
 
-/* Global reset */
-* {
-  box-sizing: border-box;
-}
+    /* ---------- FORM GRIDS ---------- */
 
-body {
-  background: #f4f4f4;
-}
+    .form-grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
 
-/* Card consistency */
-.card {
-  background: #ffffff;
-  border: 1px solid #e0e0e0;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-}
+    .form-grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
 
-/* Form layout */
-.flex {
-  display: flex !important;
-  flex-wrap: wrap;
-  gap: 16px;
-}
+    .form-grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
 
-.flex > div {
-  flex: 1 1 240px;
-  min-width: 240px;
-}
+    .full-row {
+      grid-column: 1 / -1;
+    }
 
-/* Inputs */
-input, select, textarea {
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  padding: 8px;
-  font-size: 14px;
-}
+    label {
+      font-size: 12px;
+      font-weight: 600;
+    }
 
-textarea {
-  min-height: 70px;
-  resize: vertical;
-}
+    input, select, textarea {
+      width: 100%;
+      padding: 8px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      margin-top: 4px;
+      font-size: 14px;
+    }
 
-/* Buttons */
-button {
-  cursor: pointer;
-}
+    textarea {
+      min-height: 70px;
+      resize: vertical;
+    }
 
-button.primary {
-  background: #ff7a00;
-  color: #000;
-}
+    button.primary {
+      background: #ff7a00;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
 
-button.primary:hover {
-  opacity: 0.9;
-}
+    button.danger {
+      background: #e74c3c;
+      color: #fff;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
 
-button.danger {
-  background: #e74c3c;
-  color: #fff;
-}
+    button.small {
+      padding: 6px 10px;
+      font-size: 12px;
+    }
 
-/* Table fixes */
-table {
-  border-collapse: collapse;
-  width: 100%;
-}
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 14px;
+      font-size: 13px;
+    }
 
-th {
-  font-weight: 600;
-}
+    th, td {
+      border-bottom: 1px solid #ddd;
+      padding: 10px;
+      vertical-align: top;
+    }
 
-th, td {
-  vertical-align: top;
-}
+    th {
+      background: #f0f0f0;
+    }
 
-/* Section titles */
-.section-title {
-  font-size: 18px;
-  font-weight: 700;
-  border-bottom: 2px solid #eee;
-  padding-bottom: 6px;
-  margin-bottom: 14px;
-}
+    .address-cell {
+      max-width: 260px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
 
-/* Address cell expand */
-.address-cell {
-  max-width: 260px;
-}
+    .address-cell:hover {
+      white-space: normal;
+    }
 
-/* Header stays fixed visually */
-header {
-  position: sticky;
-  top: 0;
-  z-index: 10;
-}
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(3,1fr);
+      gap: 16px;
+      margin-bottom: 16px;
+    }
 
-/* Charts container */
-.chart-grid {
-  display: grid !important;
-}
+    .kpi {
+      background: #fafafa;
+      border-left: 6px solid #ff7a00;
+      padding: 14px;
+      border-radius: 8px;
+    }
 
-/* Mobile friendliness */
-@media (max-width: 768px) {
-  header {
-    flex-wrap: wrap;
-  }
+    .kpi .label {
+      font-size: 12px;
+      color: #777;
+    }
 
-  table {
-    font-size: 12px;
-  }
-}
+    .kpi .value {
+      font-size: 22px;
+      font-weight: 700;
+    }
 
+    .chart-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+
+    canvas { max-height: 260px; }
+
+    @media (max-width: 900px) {
+      .form-grid-4,
+      .form-grid-3,
+      .form-grid-2,
+      .chart-grid,
+      .kpi-grid {
+        grid-template-columns: 1fr;
+      }
+    }
   </style>
 </head>
 
@@ -201,27 +230,24 @@ header {
     <div class="section-title">Clients</div>
     <input type="hidden" id="client_id">
 
-    <div class="flex">
+    <div class="form-grid-4">
       <div><label>Name</label><input id="c_name"></div>
       <div><label>DOB</label><input type="date" id="c_dob"></div>
-      <div><label>Gender</label>
-        <select id="c_gender"><option>Male</option><option>Female</option></select>
-      </div>
-      <div><label>Citizenship</label>
-        <select id="c_citizenship"><option>Malaysian</option><option>Foreigner</option></select>
-      </div>
+      <div><label>Gender</label><select id="c_gender"><option>Male</option><option>Female</option></select></div>
+      <div><label>Citizenship</label><select id="c_citizenship"><option>Malaysian</option><option>Foreigner</option></select></div>
     </div>
 
-    <div class="flex">
+    <div class="form-grid-3" style="margin-top:16px">
       <div><label>IC / Passport</label><input id="c_ic"></div>
       <div><label>Contact</label><input id="c_contact"></div>
       <div><label>Email</label><input id="c_email"></div>
     </div>
 
-    <label>Address (Optional)</label>
-    <textarea id="c_address"></textarea>
+    <div class="form-grid-2" style="margin-top:16px">
+      <div class="full-row"><label>Address (Optional)</label><textarea id="c_address"></textarea></div>
+    </div>
 
-    <div class="flex">
+    <div style="margin-top:16px">
       <button class="primary" id="saveClientBtn">Save</button>
       <button class="primary" id="cancelClientBtn">Cancel</button>
     </div>
@@ -245,10 +271,9 @@ header {
 <section id="practitionersTab" class="hidden">
   <div class="card">
     <div class="section-title">Practitioners</div>
-    <div class="flex">
-      <input id="p_name">
-      <button class="primary" id="addPractitionerBtn">Add</button>
-    </div>
+    <input id="p_name">
+    <button class="primary" id="addPractitionerBtn">Add</button>
+
     <table>
       <thead><tr><th>Name</th><th>Delete</th></tr></thead>
       <tbody id="practitionerTable"></tbody>
@@ -262,32 +287,30 @@ header {
     <div class="section-title">Appointments</div>
     <input type="hidden" id="appointment_id">
 
-    <div class="flex">
+    <div class="form-grid-2">
       <div><label>Date</label><input type="date" id="a_date"></div>
       <div><label>Time</label><input type="time" id="a_time"></div>
-    </div>
-
-    <div class="flex">
       <div><label>Client</label><select id="a_client"></select></div>
       <div><label>Practitioner</label><select id="a_practitioner"></select></div>
     </div>
 
-    <label>Service</label>
-    <select id="a_service"></select>
+    <div class="form-grid-2" style="margin-top:16px">
+      <div><label>Service</label><select id="a_service"></select></div>
+      <div><label>Payment</label><select id="a_payment"><option>Cash</option><option>Card</option><option>E‑Wallet</option></select></div>
+    </div>
 
-    <div class="flex">
+    <div class="form-grid-3" style="margin-top:16px">
       <div><label>Base (RM)</label><input id="a_price" readonly></div>
       <div><label>SST (RM)</label><input id="a_sst" readonly></div>
       <div><label>Total (RM)</label><input id="a_total" readonly></div>
     </div>
 
-    <label>Payment</label>
-    <select id="a_payment"><option>Cash</option><option>Card</option><option>E‑Wallet</option></select>
+    <div class="form-grid-1 full-row" style="margin-top:16px">
+      <label>Remarks</label>
+      <textarea id="a_remarks"></textarea>
+    </div>
 
-    <label>Remarks</label>
-    <textarea id="a_remarks"></textarea>
-
-    <div class="flex">
+    <div style="margin-top:16px">
       <button class="primary" id="saveAppointmentBtn">Save</button>
       <button class="primary" id="cancelAppointmentBtn">Cancel</button>
     </div>
@@ -297,8 +320,8 @@ header {
     <table>
       <thead>
         <tr>
-          <th>Date</th><th>Time</th><th>Client</th>
-          <th>Service</th><th>Practitioner</th><th>Payment</th><th>Total</th>
+          <th>Date</th><th>Time</th><th>Client</th><th>Service</th>
+          <th>Practitioner</th><th>Payment</th><th>Total</th>
           <th>Edit</th><th>Delete</th>
         </tr>
       </thead>
@@ -311,12 +334,10 @@ header {
 <section id="reportsTab" class="hidden">
   <div class="card">
     <div class="section-title">Sales Report</div>
-    <div class="flex">
-      <div><label>From</label><input type="date" id="reportFrom"></div>
-      <div><label>To</label><input type="date" id="reportTo"></div>
-      <button class="primary" id="applyReportBtn">Generate</button>
-      <button class="primary" id="exportExcelBtn">Export Excel</button>
-    </div>
+    <input type="date" id="reportFrom">
+    <input type="date" id="reportTo">
+    <button class="primary" id="applyReportBtn">Generate</button>
+    <button class="primary" id="exportExcelBtn">Export Excel</button>
   </div>
 
   <div class="kpi-grid">
@@ -352,20 +373,18 @@ header {
 </div>
 
 <script>
-/* =========================
-   Configuration & Globals
-   ========================= */
-const SUPABASE_URL = "https://yxkospvcqkoxiravjtqd.supabase.co";
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl4a29zcHZjcWtveGlyYXZqdHFkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYyODEyNzEsImV4cCI6MjA5MTg1NzI3MX0.Aaw6wfcXf21uwgMQJWtiVN_vxqaqevEQerx2GjOG-Jc";
+/* ================= CONFIG ================= */
+const SUPABASE_URL = "YOUR_SUPABASE_URL";
+const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY";
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 const SERVICES = [
-  {id:"SM",name:"Sports Massage",price:45},
-  {id:"RCB",name:"Recovery Compression Boots",price:25},
-  {id:"AS",name:"Assisted Stretch Session",price:20},
-  {id:"PB",name:"Physio Bundle",price:400},
-  {id:"PKP",name:"Performance Kickstart Program",price:261},
-  {id:"SMFT",name:"Sports Massage - First Trial",price:189}
+  { id:"SM", name:"Sports Massage", price:45 },
+  { id:"RCB", name:"Recovery Compression Boots", price:25 },
+  { id:"AS", name:"Assisted Stretch Session", price:20 },
+  { id:"PB", name:"Physio Bundle", price:400 },
+  { id:"PKP", name:"Performance Kickstart Program", price:261 },
+  { id:"SMFT", name:"Sports Massage - First Trial", price:189 }
 ];
 
 let clients = [];
@@ -374,58 +393,47 @@ let appointments = [];
 
 let serviceCountChart, serviceRevenueChart, paymentRevenueChart, ageRevenueChart;
 
-/* =========================
-   Utilities
-   ========================= */
-const calcAge = dob =>
-  Math.floor((Date.now() - new Date(dob)) / (365.25 * 86400000));
+/* ================= HELPERS ================= */
+const age = d => Math.floor((Date.now() - new Date(d)) / (365.25 * 86400000));
 
-function showTab(tab) {
-  ["clients","practitioners","appointments","reports"].forEach(t=>{
-    document.getElementById(t+"Tab").classList.toggle("hidden", t!==tab);
-    document.getElementById("tab"+t.charAt(0).toUpperCase()+t.slice(1))
-      .classList.toggle("active", t===tab);
+function showTab(t){
+  ["clients","practitioners","appointments","reports"].forEach(x=>{
+    document.getElementById(x+"Tab").classList.toggle("hidden", x!==t);
+    document.getElementById("tab"+x.charAt(0).toUpperCase()+x.slice(1))
+      .classList.toggle("active", x===t);
   });
 }
+tabClients.onclick = ()=>showTab("clients");
+tabPractitioners.onclick = ()=>showTab("practitioners");
+tabAppointments.onclick = ()=>showTab("appointments");
+tabReports.onclick = ()=>showTab("reports");
 
-tabClients.onclick = () => showTab("clients");
-tabPractitioners.onclick = () => showTab("practitioners");
-tabAppointments.onclick = () => showTab("appointments");
-tabReports.onclick = () => showTab("reports");
-
-function showChartInfo(el, values, labels, unit) {
-  if (!el.length) return;
+function showChartInfo(el, values, labels, unit){
+  if(!el.length) return;
   const i = el[0].index;
   const total = values.reduce((a,b)=>a+b,0);
   alert(
-    `${labels[i]}\n` +
-    `${unit}: ${values[i].toFixed(2)}\n` +
-    `Percentage: ${((values[i]/total)*100).toFixed(1)}%`
+    `${labels[i]}\n${unit}: ${values[i].toFixed(2)}\nPercentage: ${((values[i]/total)*100).toFixed(1)}%`
   );
 }
 
-/* =========================
-   Input Formatting
-   ========================= */
-c_ic.oninput = () => {
+/* ================= FORMATTERS ================= */
+c_ic.oninput = ()=>{
   let v = c_ic.value.replace(/-/g,"");
-  if (/^[A-Za-z]/.test(v)) { c_ic.value = v; return; }
+  if(/^[A-Za-z]/.test(v)){ c_ic.value=v; return; }
   v = v.replace(/\D/g,"");
   c_ic.value =
-    v.length > 8 ? v.slice(0,6)+"-"+v.slice(6,8)+"-"+v.slice(8,12)
-    : v.length > 6 ? v.slice(0,6)+"-"+v.slice(6)
+    v.length>8 ? v.slice(0,6)+"-"+v.slice(6,8)+"-"+v.slice(8,12)
+    : v.length>6 ? v.slice(0,6)+"-"+v.slice(6)
     : v;
 };
-
-c_contact.oninput = () => {
+c_contact.oninput = ()=>{
   let v = c_contact.value.replace(/\D/g,"");
-  c_contact.value = v.length > 3 ? v.slice(0,3)+"-"+v.slice(3,11) : v;
+  c_contact.value = v.length>3 ? v.slice(0,3)+"-"+v.slice(3,11) : v;
 };
 
-/* =========================
-   Clients
-   ========================= */
-async function loadClients() {
+/* ================= CLIENTS ================= */
+async function loadClients(){
   const { data } = await sb.from("clients").select("*").order("full_name");
   clients = data || [];
   clientsTable.innerHTML = "";
@@ -436,7 +444,7 @@ async function loadClients() {
       <tr>
         <td>${c.full_name}</td>
         <td>${c.date_of_birth}</td>
-        <td>${calcAge(c.date_of_birth)}</td>
+        <td>${age(c.date_of_birth)}</td>
         <td>${c.gender||""}</td>
         <td>${c.citizenship||""}</td>
         <td>${c.ic_passport||""}</td>
@@ -450,27 +458,27 @@ async function loadClients() {
   });
 }
 
-window.editClient = id => {
+window.editClient = id=>{
   const c = clients.find(x=>x.id===id);
-  client_id.value=c.id;
-  c_name.value=c.full_name;
-  c_dob.value=c.date_of_birth;
-  c_gender.value=c.gender;
-  c_citizenship.value=c.citizenship;
-  c_ic.value=c.ic_passport||"";
-  c_contact.value=c.contact||"";
-  c_email.value=c.email||"";
-  c_address.value=c.address||"";
+  client_id.value = c.id;
+  c_name.value = c.full_name;
+  c_dob.value = c.date_of_birth;
+  c_gender.value = c.gender;
+  c_citizenship.value = c.citizenship;
+  c_ic.value = c.ic_passport||"";
+  c_contact.value = c.contact||"";
+  c_email.value = c.email||"";
+  c_address.value = c.address||"";
 };
 
-window.deleteClient = async id => {
+window.deleteClient = async id=>{
   if(!confirm("Delete client?")) return;
   await sb.from("clients").delete().eq("id",id);
   loadClients();
 };
 
-saveClientBtn.onclick = async () => {
-  if(!c_name.value||!c_dob.value) return alert("Name and DOB required");
+saveClientBtn.onclick = async ()=>{
+  if(!c_name.value || !c_dob.value) return alert("Name & DOB required");
   const payload = {
     full_name:c_name.value,
     date_of_birth:c_dob.value,
@@ -488,7 +496,7 @@ saveClientBtn.onclick = async () => {
   loadClients();
 };
 
-cancelClientBtn.onclick = () => {
+cancelClientBtn.onclick = ()=>{
   client_id.value="";
   c_name.value="";
   c_dob.value="";
@@ -498,12 +506,10 @@ cancelClientBtn.onclick = () => {
   c_address.value="";
 };
 
-/* =========================
-   Practitioners
-   ========================= */
-async function loadPractitioners() {
+/* ================= PRACTITIONERS ================= */
+async function loadPractitioners(){
   const { data } = await sb.from("practitioners").select("*").order("name");
-  practitioners=data||[];
+  practitioners = data || [];
   practitionerTable.innerHTML="";
   a_practitioner.innerHTML="";
   practitioners.forEach(p=>{
@@ -516,45 +522,42 @@ async function loadPractitioners() {
   });
 }
 
-window.deletePractitioner = async id => {
+addPractitionerBtn.onclick = async ()=>{
+  if(!p_name.value) return;
+  await sb.from("practitioners").insert({ name:p_name.value });
+  p_name.value="";
+  loadPractitioners();
+};
+
+window.deletePractitioner = async id=>{
   if(!confirm("Delete practitioner?")) return;
   await sb.from("practitioners").delete().eq("id",id);
   loadPractitioners();
 };
 
-addPractitionerBtn.onclick = async () => {
-  if(!p_name.value) return;
-  await sb.from("practitioners").insert({name:p_name.value});
-  p_name.value="";
-  loadPractitioners();
-};
-
-/* =========================
-   Appointments
-   ========================= */
+/* ================= APPOINTMENTS ================= */
 SERVICES.forEach(s=>{
   a_service.innerHTML += `<option value="${s.id}">${s.name}</option>`;
 });
 
-function recalcAppointment() {
-  const svc = SERVICES.find(s=>s.id===a_service.value);
-  const cli = clients.find(c=>c.id===a_client.value);
-  const sst = cli?.citizenship==="Foreigner" ? +(svc.price*0.06).toFixed(2) : 0;
-  a_price.value=svc.price;
+function recalcAppointment(){
+  const s = SERVICES.find(x=>x.id===a_service.value);
+  const c = clients.find(x=>x.id===a_client.value);
+  const sst = c?.citizenship==="Foreigner" ? +(s.price*0.06).toFixed(2) : 0;
+  a_price.value=s.price;
   a_sst.value=sst;
-  a_total.value=(svc.price+sst).toFixed(2);
+  a_total.value=(s.price+sst).toFixed(2);
 }
+a_service.onchange = recalcAppointment;
+a_client.onchange = recalcAppointment;
 
-a_service.onchange=recalcAppointment;
-a_client.onchange=recalcAppointment;
-
-async function loadAppointments() {
+async function loadAppointments(){
   const { data } = await sb.from("appointments").select("*").order("start_time");
-  appointments=data||[];
+  appointments = data || [];
   appointmentsTable.innerHTML="";
   appointments.forEach(a=>{
-    const cn=clients.find(c=>c.id===a.client_id)?.full_name||"";
-    const sn=SERVICES.find(s=>s.id===a.service_id)?.name||"";
+    const cn = clients.find(c=>c.id===a.client_id)?.full_name||"";
+    const sn = SERVICES.find(s=>s.id===a.service_id)?.name||"";
     appointmentsTable.innerHTML += `
       <tr>
         <td>${a.start_time.slice(0,10)}</td>
@@ -570,82 +573,90 @@ async function loadAppointments() {
   });
 }
 
-window.editAppointment = id => {
-  const a=appointments.find(x=>x.id===id);
-  appointment_id.value=a.id;
-  a_date.value=a.start_time.slice(0,10);
-  a_time.value=a.start_time.slice(11,16);
-  a_client.value=a.client_id;
-  a_service.value=a.service_id;
-  a_practitioner.value=a.practitioner;
-  a_payment.value=a.payment_method;
-  a_remarks.value=a.remarks||"";
+window.editAppointment = id=>{
+  const a = appointments.find(x=>x.id===id);
+  appointment_id.value = a.id;
+  a_date.value = a.start_time.slice(0,10);
+  a_time.value = a.start_time.slice(11,16);
+  a_client.value = a.client_id;
+  a_service.value = a.service_id;
+  a_practitioner.value = a.practitioner;
+  a_payment.value = a.payment_method;
+  a_remarks.value = a.remarks||"";
   recalcAppointment();
 };
 
-saveAppointmentBtn.onclick = async () => {
-  const svc = SERVICES.find(s=>s.id===a_service.value);
-  const cli = clients.find(c=>c.id===a_client.value);
-  const sst = cli.citizenship==="Foreigner" ? +(svc.price*0.06).toFixed(2) : 0;
+saveAppointmentBtn.onclick = async ()=>{
+  const s = SERVICES.find(x=>x.id===a_service.value);
+  const c = clients.find(x=>x.id===a_client.value);
+  const sst = c.citizenship==="Foreigner" ? +(s.price*0.06).toFixed(2) : 0;
   const startTime = `${a_date.value}T${a_time.value}:00Z`;
 
   appointment_id.value
     ? await sb.from("appointments").update({
-        client_id:cli.id, service_id:svc.id,
+        client_id:c.id,
+        service_id:s.id,
         practitioner:a_practitioner.value,
-        payment_method:a_payment.value, remarks:a_remarks.value,
-        amount:svc.price, sst, total:svc.price+sst,
-        start_time:startTime, end_time:startTime
+        payment_method:a_payment.value,
+        remarks:a_remarks.value,
+        amount:s.price,
+        sst,
+        total:s.price+sst,
+        start_time:startTime,
+        end_time:startTime
       }).eq("id",appointment_id.value)
     : await sb.from("appointments").insert({
-        client_id:cli.id, service_id:svc.id,
+        client_id:c.id,
+        service_id:s.id,
         practitioner:a_practitioner.value,
-        payment_method:a_payment.value, remarks:a_remarks.value,
-        amount:svc.price, sst, total:svc.price+sst,
-        start_time:startTime, end_time:startTime
+        payment_method:a_payment.value,
+        remarks:a_remarks.value,
+        amount:s.price,
+        sst,
+        total:s.price+sst,
+        start_time:startTime,
+        end_time:startTime
       });
 
   cancelAppointmentBtn.click();
   loadAppointments();
 };
 
-window.deleteAppointment = async id => {
+window.deleteAppointment = async id=>{
   if(!confirm("Delete appointment?")) return;
   await sb.from("appointments").delete().eq("id",id);
   loadAppointments();
 };
 
-cancelAppointmentBtn.onclick = () => {
+cancelAppointmentBtn.onclick = ()=>{
   appointment_id.value="";
   a_remarks.value="";
 };
 
-/* =========================
-   Sales Report & Charts
-   ========================= */
-applyReportBtn.onclick = () => {
+/* ================= SALES REPORT ================= */
+applyReportBtn.onclick = ()=>{
   const serviceCount={}, serviceRevenue={}, paymentRevenue={}, ageRevenue={};
   let totalIncome=0, totalSST=0;
   reportDetailTable.innerHTML="";
 
   appointments.forEach(a=>{
     const d=a.start_time.slice(0,10);
-    if(d<reportFrom.value||d>reportTo.value) return;
+    if(d<reportFrom.value || d>reportTo.value) return;
 
     const svc=SERVICES.find(s=>s.id===a.service_id)?.name||"";
     const cli=clients.find(c=>c.id===a.client_id);
-    const age=calcAge(cli.date_of_birth);
-    const grp=age<18?"<18":age<30?"18–29":age<40?"30–39":age<50?"40–49":"50+";
+    const g= (()=>{const ag=age(cli.date_of_birth);
+      return ag<18?"<18":ag<30?"18–29":ag<40?"30–39":ag<50?"40–49":"50+";})();
 
     serviceCount[svc]=(serviceCount[svc]||0)+1;
     serviceRevenue[svc]=(serviceRevenue[svc]||0)+Number(a.total);
     paymentRevenue[a.payment_method]=(paymentRevenue[a.payment_method]||0)+Number(a.total);
-    ageRevenue[grp]=(ageRevenue[grp]||0)+Number(a.total);
+    ageRevenue[g]=(ageRevenue[g]||0)+Number(a.total);
 
     totalIncome+=Number(a.total);
     totalSST+=Number(a.sst);
 
-    reportDetailTable.innerHTML += `
+    reportDetailTable.innerHTML+=`
       <tr>
         <td>${d}</td>
         <td>${a.start_time.slice(11,16)}</td>
@@ -693,10 +704,8 @@ applyReportBtn.onclick = () => {
   });
 };
 
-/* =========================
-   Excel Export
-   ========================= */
-exportExcelBtn.onclick = () => {
+/* ================= EXCEL EXPORT ================= */
+exportExcelBtn.onclick = ()=>{
   const rows=[];
   document.querySelectorAll("#reportDetailTable tr").forEach(tr=>{
     const t=[...tr.children].map(td=>td.textContent);
@@ -711,9 +720,7 @@ exportExcelBtn.onclick = () => {
   XLSX.writeFile(wb,"sales_report.xlsx");
 };
 
-/* =========================
-   Init
-   ========================= */
+/* ================= INIT ================= */
 (async()=>{
   const today=new Date().toISOString().slice(0,10);
   a_date.value=today;
