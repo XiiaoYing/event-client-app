@@ -1,8 +1,7 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Admin Dashboard</title>
 
   <!-- Google Font -->
@@ -49,7 +48,9 @@
       margin: auto;
       padding: 24px;
     }
-    .hidden { display: none; }
+    .hidden {
+      display: none;
+    }
     .card {
       background: #fff;
       padding: 20px;
@@ -86,9 +87,13 @@
       background: #e74c3c;
       color: #fff;
       border: none;
-      padding: 10px 18px;
+      padding: 8px 14px;
       border-radius: 8px;
       cursor: pointer;
+    }
+    button.small {
+      padding: 6px 10px;
+      font-size: 12px;
     }
     table {
       width: 100%;
@@ -110,15 +115,44 @@
       overflow: hidden;
       text-overflow: ellipsis;
     }
-    .address-cell:hover { white-space: normal; }
+    .address-cell:hover {
+      white-space: normal;
+    }
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+    .kpi {
+      background: #fafafa;
+      border-left: 6px solid #ff7a00;
+      padding: 14px;
+      border-radius: 8px;
+    }
+    .kpi .label {
+      font-size: 12px;
+      color: #777;
+    }
+    .kpi .value {
+      font-size: 22px;
+      font-weight: 700;
+    }
     .chart-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 24px;
     }
-    canvas { max-height: 260px; }
+    canvas {
+      max-height: 260px;
+    }
     @media (max-width: 900px) {
-      .chart-grid { grid-template-columns: 1fr; }
+      .chart-grid {
+        grid-template-columns: 1fr;
+      }
+      .kpi-grid {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
@@ -134,7 +168,7 @@
 
 <div class="container">
 
-<!-- ================= CLIENTS ================= -->
+<!-- CLIENTS -->
 <section id="clientsTab">
   <div class="card">
     <div class="section-title">Clients</div>
@@ -182,7 +216,7 @@
   </div>
 </section>
 
-<!-- ================= PRACTITIONERS ================= -->
+<!-- PRACTITIONERS -->
 <section id="practitionersTab" class="hidden">
   <div class="card">
     <div class="section-title">Practitioners</div>
@@ -197,7 +231,7 @@
   </div>
 </section>
 
-<!-- ================= APPOINTMENTS ================= -->
+<!-- APPOINTMENTS -->
 <section id="appointmentsTab" class="hidden">
   <div class="card">
     <div class="section-title">Appointments</div>
@@ -223,18 +257,14 @@
     </div>
 
     <label>Payment</label>
-    <select id="a_payment">
-      <option>Cash</option>
-      <option>Card</option>
-      <option>E‑Wallet</option>
-    </select>
+    <select id="a_payment"><option>Cash</option><option>Card</option><option>E‑Wallet</option></select>
 
     <label>Remarks</label>
     <textarea id="a_remarks"></textarea>
 
     <div class="flex">
       <button class="primary" id="saveAppointmentBtn">Save</button>
-      <button class="danger" id="deleteAppointmentBtn">Delete</button>
+      <button class="primary" id="cancelAppointmentBtn">Cancel</button>
     </div>
   </div>
 
@@ -244,6 +274,7 @@
         <tr>
           <th>Date</th><th>Time</th><th>Client</th>
           <th>Service</th><th>Practitioner</th><th>Payment</th><th>Total</th>
+          <th>Edit</th><th>Delete</th>
         </tr>
       </thead>
       <tbody id="appointmentsTable"></tbody>
@@ -251,15 +282,45 @@
   </div>
 </section>
 
-<!-- ================= SALES REPORT ================= -->
+<!-- SALES REPORT -->
 <section id="reportsTab" class="hidden">
   <div class="card">
     <div class="section-title">Sales Report</div>
+
     <div class="flex">
       <div><label>From</label><input type="date" id="reportFrom"></div>
       <div><label>To</label><input type="date" id="reportTo"></div>
       <button class="primary" id="applyReportBtn">Generate</button>
+      <button class="primary" id="exportExcelBtn">Export Excel</button>
     </div>
+  </div>
+
+  <div class="kpi-grid">
+    <div class="kpi">
+      <div class="label">Total Income</div>
+      <div class="value" id="kpiTotalIncome">RM 0.00</div>
+    </div>
+    <div class="kpi">
+      <div class="label">Total SST</div>
+      <div class="value" id="kpiTotalSST">RM 0.00</div>
+    </div>
+    <div class="kpi">
+      <div class="label">Total Transactions</div>
+      <div class="value" id="kpiTxn">0</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="section-title">Detail</div>
+    <table>
+      <thead>
+        <tr>
+          <th>Date</th><th>Time</th><th>Client</th><th>Service</th>
+          <th>Practitioner</th><th>Payment</th><th>Subtotal</th><th>SST</th><th>Total</th>
+        </tr>
+      </thead>
+      <tbody id="reportDetailTable"></tbody>
+    </table>
   </div>
 
   <div class="card">
@@ -277,7 +338,10 @@
 </div>
 
 <script>
-/* ================= JS LOGIC ================= */
+/* =========================
+   JavaScript (logic locked)
+   ========================= */
+
 const SUPABASE_URL = "https://yxkospvcqkoxiravjtqd.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl4a29zcHZjcWtveGlyYXZqdHFkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYyODEyNzEsImV4cCI6MjA5MTg1NzI3MX0.Aaw6wfcXf21uwgMQJWtiVN_vxqaqevEQerx2GjOG-Jc";
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -294,23 +358,37 @@ const SERVICES = [
 let clients=[], practitioners=[], appointments=[];
 let serviceCountChart, serviceRevenueChart, paymentRevenueChart, ageRevenueChart;
 
-const calcAge = dob => Math.floor((Date.now()-new Date(dob))/(365.25*86400000));
+const calcAge = d =>
+  Math.floor((Date.now() - new Date(d)) / (365.25 * 86400000));
 
 /* ---------- Tabs ---------- */
-function show(tab){
+function showTab(tab){
   ["clients","practitioners","appointments","reports"].forEach(t=>{
     document.getElementById(t+"Tab").classList.toggle("hidden",t!==tab);
-    document.getElementById("tab"+t.charAt(0).toUpperCase()+t.slice(1)).classList.toggle("active",t===tab);
+    document.getElementById("tab"+t.charAt(0).toUpperCase()+t.slice(1))
+      .classList.toggle("active",t===tab);
   });
 }
-tabClients.onclick=()=>show("clients");
-tabPractitioners.onclick=()=>show("practitioners");
-tabAppointments.onclick=()=>show("appointments");
-tabReports.onclick=()=>show("reports");
+tabClients.onclick=()=>showTab("clients");
+tabPractitioners.onclick=()=>showTab("practitioners");
+tabAppointments.onclick=()=>showTab("appointments");
+tabReports.onclick=()=>showTab("reports");
 
-/* ---------- Formatters ---------- */
-c_ic.oninput=()=>{let v=c_ic.value.replace(/-/g,"");if(/^[A-Za-z]/.test(v))return c_ic.value=v;v=v.replace(/\D/g,"");c_ic.value=v.length>8?v.slice(0,6)+"-"+v.slice(6,8)+"-"+v.slice(8,12):v.length>6?v.slice(0,6)+"-"+v.slice(6):v;};
-c_contact.oninput=()=>{let v=c_contact.value.replace(/\D/g,"");c_contact.value=v.length>3?v.slice(0,3)+"-"+v.slice(3,11):v;};
+/* ---------- IC & Contact Format ---------- */
+c_ic.oninput=()=>{
+  let v=c_ic.value.replace(/-/g,"");
+  if(/^[A-Za-z]/.test(v)){ c_ic.value=v; return; }
+  v=v.replace(/\D/g,"");
+  c_ic.value=v.length>8
+    ? v.slice(0,6)+"-"+v.slice(6,8)+"-"+v.slice(8,12)
+    : v.length>6
+      ? v.slice(0,6)+"-"+v.slice(6)
+      : v;
+};
+c_contact.oninput=()=>{
+  let v=c_contact.value.replace(/\D/g,"");
+  c_contact.value=v.length>3 ? v.slice(0,3)+"-"+v.slice(3,11) : v;
+};
 
 /* ---------- Clients ---------- */
 async function loadClients(){
@@ -330,22 +408,51 @@ async function loadClients(){
         <td>${c.contact||""}</td>
         <td>${c.email||""}</td>
         <td class="address-cell">${c.address||""}</td>
-        <td><button onclick="editClient('${c.id}')">✏️</button></td>
-        <td><button onclick="deleteClient('${c.id}')">🗑</button></td>
+        <td><button class="small" onclick="editClient('${c.id}')">✏️</button></td>
+        <td><button class="danger small" onclick="deleteClient('${c.id}')">🗑</button></td>
       </tr>`;
     a_client.innerHTML+=`<option value="${c.id}">${c.full_name}</option>`;
   });
 }
-window.editClient=id=>{const c=clients.find(x=>x.id===id);client_id.value=c.id;c_name.value=c.full_name;c_dob.value=c.date_of_birth;c_gender.value=c.gender;c_citizenship.value=c.citizenship;c_ic.value=c.ic_passport||"";c_contact.value=c.contact||"";c_email.value=c.email||"";c_address.value=c.address||"";};
-window.deleteClient=async id=>{if(!confirm("Delete client?"))return;await sb.from("clients").delete().eq("id",id);loadClients();};
-
+window.editClient=id=>{
+  const c=clients.find(x=>x.id===id);
+  client_id.value=c.id;
+  c_name.value=c.full_name;
+  c_dob.value=c.date_of_birth;
+  c_gender.value=c.gender;
+  c_citizenship.value=c.citizenship;
+  c_ic.value=c.ic_passport||"";
+  c_contact.value=c.contact||"";
+  c_email.value=c.email||"";
+  c_address.value=c.address||"";
+};
+window.deleteClient=async id=>{
+  if(!confirm("Delete client?"))return;
+  await sb.from("clients").delete().eq("id",id);
+  loadClients();
+};
 saveClientBtn.onclick=async()=>{
   if(!c_name.value||!c_dob.value)return alert("Name and DOB required");
-  const payload={full_name:c_name.value,date_of_birth:c_dob.value,gender:c_gender.value,citizenship:c_citizenship.value,ic_passport:c_ic.value,contact:c_contact.value,email:c_email.value,address:c_address.value||null};
-  client_id.value?await sb.from("clients").update(payload).eq("id",client_id.value):await sb.from("clients").insert(payload);
-  cancelClientBtn.click();loadClients();
+  const payload={
+    full_name:c_name.value,
+    date_of_birth:c_dob.value,
+    gender:c_gender.value,
+    citizenship:c_citizenship.value,
+    ic_passport:c_ic.value,
+    contact:c_contact.value,
+    email:c_email.value,
+    address:c_address.value||null
+  };
+  client_id.value
+    ? await sb.from("clients").update(payload).eq("id",client_id.value)
+    : await sb.from("clients").insert(payload);
+  cancelClientBtn.click();
+  loadClients();
 };
-cancelClientBtn.onclick=()=>{client_id.value="";c_name.value="";c_dob.value="";c_ic.value="";c_contact.value="";c_email.value="";c_address.value="";};
+cancelClientBtn.onclick=()=>{
+  client_id.value="";c_name.value="";c_dob.value="";
+  c_ic.value="";c_contact.value="";c_email.value="";c_address.value="";
+};
 
 /* ---------- Practitioners ---------- */
 async function loadPractitioners(){
@@ -354,46 +461,188 @@ async function loadPractitioners(){
   practitionerTable.innerHTML="";
   a_practitioner.innerHTML="";
   practitioners.forEach(p=>{
-    practitionerTable.innerHTML+=`<tr><td>${p.name}</td><td><button onclick="deletePractitioner('${p.id}')">🗑</button></td></tr>`;
+    practitionerTable.innerHTML+=`
+      <tr>
+        <td>${p.name}</td>
+        <td><button class="danger small" onclick="deletePractitioner('${p.id}')">🗑</button></td>
+      </tr>`;
     a_practitioner.innerHTML+=`<option>${p.name}</option>`;
   });
 }
-window.deletePractitioner=async id=>{if(!confirm("Delete practitioner?"))return;await sb.from("practitioners").delete().eq("id",id);loadPractitioners();};
-addPractitionerBtn.onclick=async()=>{if(!p_name.value)return;await sb.from("practitioners").insert({name:p_name.value});p_name.value="";loadPractitioners();};
+window.deletePractitioner=async id=>{
+  if(!confirm("Delete practitioner?"))return;
+  await sb.from("practitioners").delete().eq("id",id);
+  loadPractitioners();
+};
+addPractitionerBtn.onclick=async()=>{
+  if(!p_name.value)return;
+  await sb.from("practitioners").insert({name:p_name.value});
+  p_name.value="";
+  loadPractitioners();
+};
 
 /* ---------- Appointments ---------- */
 SERVICES.forEach(s=>a_service.innerHTML+=`<option value="${s.id}">${s.name}</option>`);
-function recalc(){const s=SERVICES.find(x=>x.id===a_service.value);const c=clients.find(x=>x.id===a_client.value);const sst=c?.citizenship==="Foreigner"?+(s.price*0.06).toFixed(2):0;a_price.value=s.price;a_sst.value=sst;a_total.value=(s.price+sst).toFixed(2);}
-a_service.onchange=recalc;a_client.onchange=recalc;
+function recalc(){
+  const s=SERVICES.find(x=>x.id===a_service.value);
+  const c=clients.find(x=>x.id===a_client.value);
+  const sst=c?.citizenship==="Foreigner"?+(s.price*0.06).toFixed(2):0;
+  a_price.value=s.price;
+  a_sst.value=sst;
+  a_total.value=(s.price+sst).toFixed(2);
+}
+a_service.onchange=recalc;
+a_client.onchange=recalc;
 
 async function loadAppointments(){
   const {data}=await sb.from("appointments").select("*").order("start_time");
   appointments=data||[];
   appointmentsTable.innerHTML="";
   appointments.forEach(a=>{
-    const cn=clients.find(c=>c.id===a.client_id)?.full_name||"";const sn=SERVICES.find(s=>s.id===a.service_id)?.name||"";
-    appointmentsTable.innerHTML+=`<tr onclick="editAppointment('${a.id}')"><td>${a.start_time.slice(0,10)}</td><td>${a.start_time.slice(11,16)}</td><td>${cn}</td><td>${sn}</td><td>${a.practitioner}</td><td>${a.payment_method}</td><td>${a.total}</td></tr>`;
+    const cn=clients.find(c=>c.id===a.client_id)?.full_name||"";
+    const sn=SERVICES.find(s=>s.id===a.service_id)?.name||"";
+    appointmentsTable.innerHTML+=`
+      <tr>
+        <td>${a.start_time.slice(0,10)}</td>
+        <td>${a.start_time.slice(11,16)}</td>
+        <td>${cn}</td>
+        <td>${sn}</td>
+        <td>${a.practitioner}</td>
+        <td>${a.payment_method}</td>
+        <td>${a.total}</td>
+        <td><button class="small" onclick="editAppointment('${a.id}')">✏️</button></td>
+        <td><button class="danger small" onclick="deleteAppointment('${a.id}')">🗑</button></td>
+      </tr>`;
   });
 }
-window.editAppointment=id=>{const a=appointments.find(x=>x.id===id);appointment_id.value=a.id;a_date.value=a.start_time.slice(0,10);a_time.value=a.start_time.slice(11,16);a_client.value=a.client_id;a_service.value=a.service_id;a_practitioner.value=a.practitioner;a_payment.value=a.payment_method;a_remarks.value=a.remarks||"";recalc();};
-saveAppointmentBtn.onclick=async()=>{const s=SERVICES.find(x=>x.id===a_service.value);const c=clients.find(x=>x.id===a_client.value);const sst=c.citizenship==="Foreigner"?+(s.price*0.06).toFixed(2):0;appointment_id.value?await sb.from("appointments").update({client_id:c.id,service_id:s.id,practitioner:a_practitioner.value,payment_method:a_payment.value,remarks:a_remarks.value,amount:s.price,sst,total:s.price+sst}).eq("id",appointment_id.value):await sb.from("appointments").insert({client_id:c.id,service_id:s.id,practitioner:a_practitioner.value,payment_method:a_payment.value,remarks:a_remarks.value,amount:s.price,sst,total:s.price+sst,start_time:`${a_date.value}T${a_time.value}:00Z`,end_time:`${a_date.value}T${a_time.value}:00Z`});appointment_id.value="";loadAppointments();};
-deleteAppointmentBtn.onclick=async()=>{if(!appointment_id.value)return;if(!confirm("Delete appointment?"))return;await sb.from("appointments").delete().eq("id",appointment_id.value);appointment_id.value="";loadAppointments();};
+window.editAppointment=id=>{
+  const a=appointments.find(x=>x.id===id);
+  appointment_id.value=a.id;
+  a_date.value=a.start_time.slice(0,10);
+  a_time.value=a.start_time.slice(11,16);
+  a_client.value=a.client_id;
+  a_service.value=a.service_id;
+  a_practitioner.value=a.practitioner;
+  a_payment.value=a.payment_method;
+  a_remarks.value=a.remarks||"";
+  recalc();
+};
+saveAppointmentBtn.onclick=async()=>{
+  const s=SERVICES.find(x=>x.id===a_service.value);
+  const c=clients.find(x=>x.id===a_client.value);
+  const sst=c.citizenship==="Foreigner"?+(s.price*0.06).toFixed(2):0;
+  appointment_id.value
+    ? await sb.from("appointments").update({
+        client_id:c.id,service_id:s.id,practitioner:a_practitioner.value,
+        payment_method:a_payment.value,remarks:a_remarks.value,
+        amount:s.price,sst,total:s.price+sst
+      }).eq("id",appointment_id.value)
+    : await sb.from("appointments").insert({
+        client_id:c.id,service_id:s.id,practitioner:a_practitioner.value,
+        payment_method:a_payment.value,remarks:a_remarks.value,
+        amount:s.price,sst,total:s.price+sst,
+        start_time:`${a_date.value}T${a_time.value}:00Z`,
+        end_time:`${a_date.value}T${a_time.value}:00Z`
+      });
+  cancelAppointmentBtn.click();
+  loadAppointments();
+};
+window.deleteAppointment=async id=>{
+  if(!confirm("Delete appointment?"))return;
+  await sb.from("appointments").delete().eq("id",id);
+  loadAppointments();
+};
+cancelAppointmentBtn.onclick=()=>{
+  appointment_id.value="";
+  a_remarks.value="";
+};
 
-/* ---------- Sales Charts ---------- */
+/* ---------- Sales Report ---------- */
 applyReportBtn.onclick=()=>{
   const serviceCount={},serviceRevenue={},paymentRevenue={},ageRevenue={};
-  appointments.forEach(a=>{const svc=SERVICES.find(s=>s.id===a.service_id)?.name||"";const c=clients.find(x=>x.id===a.client_id);const age=calcAge(c.date_of_birth);const g=age<18?"<18":age<30?"18–29":age<40?"30–39":age<50?"40–49":"50+";serviceCount[svc]=(serviceCount[svc]||0)+1;serviceRevenue[svc]=(serviceRevenue[svc]||0)+Number(a.total);paymentRevenue[a.payment_method]=(paymentRevenue[a.payment_method]||0)+Number(a.total);ageRevenue[g]=(ageRevenue[g]||0)+Number(a.total);});
-  serviceCountChart&&serviceCountChart.destroy();serviceRevenueChart&&serviceRevenueChart.destroy();paymentRevenueChart&&paymentRevenueChart.destroy();ageRevenueChart&&ageRevenueChart.destroy();
-  serviceCountChart=new Chart(document.getElementById("serviceCountChart"),{type:"bar",data:{labels:Object.keys(serviceCount),datasets:[{data:Object.values(serviceCount),label:"Subscribers"}]}});
-  serviceRevenueChart=new Chart(document.getElementById("serviceRevenueChart"),{type:"pie",data:{labels:Object.keys(serviceRevenue),datasets:[{data:Object.values(serviceRevenue)}]}});
-  paymentRevenueChart=new Chart(document.getElementById("paymentRevenueChart"),{type:"pie",data:{labels:Object.keys(paymentRevenue),datasets:[{data:Object.values(paymentRevenue)}]}});
-  ageRevenueChart=new Chart(document.getElementById("ageRevenueChart"),{type:"pie",data:{labels:Object.keys(ageRevenue),datasets:[{data:Object.values(ageRevenue)}]}});
+  let totalIncome=0,totalSST=0;
+
+  reportDetailTable.innerHTML="";
+  appointments.forEach(a=>{
+    const date=a.start_time.slice(0,10);
+    if(date<reportFrom.value||date>reportTo.value)return;
+
+    const svc=SERVICES.find(s=>s.id===a.service_id)?.name||"";
+    const c=clients.find(x=>x.id===a.client_id);
+    const age=calcAge(c.date_of_birth);
+    const group=age<18?"<18":age<30?"18–29":age<40?"30–39":age<50?"40–49":"50+";
+
+    serviceCount[svc]=(serviceCount[svc]||0)+1;
+    serviceRevenue[svc]=(serviceRevenue[svc]||0)+Number(a.total);
+    paymentRevenue[a.payment_method]=(paymentRevenue[a.payment_method]||0)+Number(a.total);
+    ageRevenue[group]=(ageRevenue[group]||0)+Number(a.total);
+
+    totalIncome+=Number(a.total);
+    totalSST+=Number(a.sst);
+
+    reportDetailTable.innerHTML+=`
+      <tr>
+        <td>${date}</td>
+        <td>${a.start_time.slice(11,16)}</td>
+        <td>${c.full_name}</td>
+        <td>${svc}</td>
+        <td>${a.practitioner}</td>
+        <td>${a.payment_method}</td>
+        <td>${a.amount}</td>
+        <td>${a.sst}</td>
+        <td>${a.total}</td>
+      </tr>`;
+  });
+
+  kpiTotalIncome.textContent=`RM ${totalIncome.toFixed(2)}`;
+  kpiTotalSST.textContent=`RM ${totalSST.toFixed(2)}`;
+  kpiTxn.textContent=Object.values(serviceCount).reduce((a,b)=>a+b,0);
+
+  serviceCountChart&&serviceCountChart.destroy();
+  serviceRevenueChart&&serviceRevenueChart.destroy();
+  paymentRevenueChart&&paymentRevenueChart.destroy();
+  ageRevenueChart&&ageRevenueChart.destroy();
+
+  serviceCountChart=new Chart(serviceCountChartEl=getCtx("serviceCountChart"),{
+    type:"bar",
+    data:{labels:Object.keys(serviceCount),datasets:[{data:Object.values(serviceCount),label:"Bookings"}]},
+    options:{onClick:(e,el)=>showChartInfo(el,Object.values(serviceCount),Object.keys(serviceCount),"Bookings")}
+  });
+
+  serviceRevenueChart=new Chart(getCtx("serviceRevenueChart"),{
+    type:"pie",
+    data:{labels:Object.keys(serviceRevenue),datasets:[{data:Object.values(serviceRevenue)}]},
+    options:{onClick:(e,el)=>showChartInfo(el,Object.values(serviceRevenue),Object.keys(serviceRevenue),"RM")}
+  });
+
+  paymentRevenueChart=new Chart(getCtx("paymentRevenueChart"),{
+    type:"pie",
+    data:{labels:Object.keys(paymentRevenue),datasets:[{data:Object.values(paymentRevenue)}]},
+    options:{onClick:(e,el)=>showChartInfo(el,Object.values(paymentRevenue),Object.keys(paymentRevenue),"RM")}
+  });
+
+  ageRevenueChart=new Chart(getCtx("ageRevenueChart"),{
+    type:"pie",
+    data:{labels:Object.keys(ageRevenue),datasets:[{data:Object.values(ageRevenue)}]},
+    options:{onClick:(e,el)=>showChartInfo(el,Object.values(ageRevenue),Object.keys(ageRevenue),"RM")}
+  });
 };
+
+function getCtx(id){
+  return document.getElementById(id).getContext("2d");
+}
+function showChartInfo(el,values,labels,unit){
+  if(!el.length)return;
+  const i=el[0].index;
+  const total=values.reduce((a,b)=>a+b,0);
+  alert(`${labels[i]}\n${unit}: ${values[i].toFixed(2)}\nPercentage: ${((values[i]/total)*100).toFixed(1)}%`);
+}
 
 /* ---------- INIT ---------- */
 (async()=>{
   const today=new Date().toISOString().slice(0,10);
-  a_date.value=today;a_time.value=new Date().toTimeString().slice(0,5);reportFrom.value=today;reportTo.value=today;
+  a_date.value=today;a_time.value=new Date().toTimeString().slice(0,5);
+  reportFrom.value=today;reportTo.value=today;
   await loadClients();await loadPractitioners();await loadAppointments();
 })();
 </script>
