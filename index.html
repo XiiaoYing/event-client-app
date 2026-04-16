@@ -2,34 +2,67 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Admin Dashboard</title>
+  <title>Clickable Test</title>
 
   <!-- Google Font -->
-  <link://fonts.googleapis.com
-  <link rel="preconnect" href="https://fonts.gstatic.comnts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap"
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap"
     rel="stylesheet"
- ps://cdn.jsdelivr.net/npm/@supabase/supabase Chart.js -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.cript>
-
-  <!-- XLSX -->
-  <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+  >
 
   <style>
-    body { margin:0; font-family:'Montserrat',sans-serif; background:#f4f4f4; }
-    header { display:flex; gap:10px; padding:12px; background:#111; }
-    header button { background:#333;color:#fff;border:none;padding:8px 14px;border-radius:6px;cursor:pointer }
-    header button.active { background:#ff7a00;color:#000;font-weight:700 }
-    .container { max-width:1200px;margin:auto;padding:20px }
-    .hidden { display:none }
-    .card { background:#fff;padding:16px;border-radius:8px;margin-bottom:20px }
-    label { font-size:12px;font-weight:600;display:block;margin-top:10px }
-    input,select,textarea { width:100%;padding:8px;margin-top:4px }
-    button.primary { background:#ff7a00;border:none;padding:8px 14px;border-radius:6px;margin-top:12px;cursor:pointer }
-    button.danger { background:#e74c3c;color:#fff;border:none;padding:6px 10px;border-radius:6px;cursor:pointer }
-    table { width:100%;border-collapse:collapse;margin-top:10px }
-    th,td { padding:8px;border-bottom:1px solid #ddd;font-size:13px }
-    th { background:#f0f0f0 }
-    .flex { display:flex;gap:15px;flex-wrap:wrap }
+    body {
+      margin: 0;
+      font-family: 'Montserrat', sans-serif;
+      background: #f4f4f4;
+    }
+    header {
+      display: flex;
+      gap: 10px;
+      padding: 12px;
+      background: #111;
+    }
+    header button {
+      background: #333;
+      color: #fff;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    header button.active {
+      background: #ff7a00;
+      color: #000;
+      font-weight: 600;
+    }
+    .container {
+      padding: 20px;
+    }
+    .hidden {
+      display: none;
+    }
+    .card {
+      background: #fff;
+      padding: 16px;
+      border-radius: 8px;
+      max-width: 400px;
+    }
+    input {
+      width: 100%;
+      padding: 8px;
+      margin-top: 6px;
+    }
+    button.primary {
+      margin-top: 10px;
+      width: 100%;
+      padding: 8px;
+      background: #ff7a00;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
   </style>
 </head>
 
@@ -44,43 +77,42 @@
 
 <div class="container">
 
-<section id="clientsTab">
-  <div class="card">
-    <h3>Add Client (TEST)</h3>
-    <input id="c_name" placeholder="Client name">
-    <button class="primary" id="saveClientBtn">Save Client (Test)</button>
-  </div>
-</section>
+  <section id="clientsTab">
+    <div class="card">
+      <h3>Client Test</h3>
+      <input id="clientName" placeholder="Client name">
+      <button class="primary" id="saveBtn">Save Client</button>
+    </div>
+  </section>
 
-<section id="practitionersTab" class="hidden">
-  <div class="card"><h3>Practitioners Tab Works</h3></div>
-</section>
+  <section id="practitionersTab" class="hidden">
+    <div class="card"><h3>Practitioners Tab</h3></div>
+  </section>
 
-<section id="appointmentsTab" class="hidden">
-  <div class="card"><h3>Appointments Tab Works</h3></div>
-</section>
+  <section id="appointmentsTab" class="hidden">
+    <div class="card"><h3>Appointments Tab</h3></div>
+  </section>
 
-<section id="reportsTab" class="hidden">
-  <div class="card"><h3>Sales Report Tab Works</h3></div>
-</section>
+  <section id="reportsTab" class="hidden">
+    <div class="card"><h3>Sales Report Tab</h3></div>
+  </section>
 
 </div>
 
 <script>
 document.addEventListener("DOMContentLoaded", () => {
+  console.log("✅ JS is running");
 
-  console.log("✅ JavaScript started");
-
-  const sb = supabase.createClient(
-"https://yxkospvcqkoxiravjtqd.supabase.co",
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl4a29zcHZjcWtveGlyYXZqdHFkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYyODEyNzEsImV4cCI6MjA5MTg1NzI3MX0.Aaw6wfcXf21uwgMQJWtiVN_vxqaqevEQerx2GjOG-Jc"
-);
   function show(tab) {
     ["clients","practitioners","appointments","reports"].forEach(t => {
-      document.getElementById(t+"Tab").classList.toggle("hidden", t !== tab);
+      document.getElementById(t+"Tab").classList.add("hidden");
       document.getElementById("tab"+t.charAt(0).toUpperCase()+t.slice(1))
-        .classList.toggle("active", t === tab);
+        .classList.remove("active");
     });
+
+    document.getElementById(tab+"Tab").classList.remove("hidden");
+    document.getElementById("tab"+tab.charAt(0).toUpperCase()+tab.slice(1))
+      .classList.add("active");
   }
 
   tabClients.onclick = () => show("clients");
@@ -88,13 +120,11 @@ document.addEventListener("DOMContentLoaded", () => {
   tabAppointments.onclick = () => show("appointments");
   tabReports.onclick = () => show("reports");
 
-  saveClientBtn.onclick = () => {
-    alert("✅ Button click works. JS is running.");
+  saveBtn.onclick = () => {
+    alert("✅ Save button works. Name = " + clientName.value);
   };
-
 });
 </script>
 
 </body>
 </html>
-``
