@@ -265,22 +265,30 @@ payment_method:a_payment.value
 loadAppointments();
 };
 
-async function loadAppointments(){
-const {data}=await sb.from("appointments").select("*").order("start_time");
-appointmentsTable.innerHTML="";
-data.forEach(a=>{
-const client=clients.find(c=>c.id===a.client_id);
-const svc=SERVICES.find(s=>s.id===a.service_id);
-appointmentsTable.innerHTML+=`
-<tr>
-<td>${a.start_time.split("T")[0]}</td>
-<td>${a.start_time.split("T")[1].slice(0,5)}</td>
-<td>${client?.full_name||""}</td>
-<td>${svc?.name||""}</td>
-<td>${a.payment_method}</td>
-<td>RM ${a.total}</td>
-</tr>`;
-});
+async function loadAppointments() {
+  const { data } = await sb
+    .from("appointments")
+    .select("*")
+    .order("start_time");
+
+  appointmentsTable.innerHTML = "";
+
+  data.forEach(a => {
+    const client = clients.find(c => c.id === a.client_id);
+    const service = SERVICES.find(s => s.id === a.service_id);
+
+    appointmentsTable.innerHTML += `
+      <tr>
+        <td>${a.start_time.split("T")[0]}</td>
+        <td>${a.start_time.split("T")[1].slice(0,5)}</td>
+        <td>${client ? client.full_name : ""}</td>
+        <td>${service ? service.name : ""}</td>
+        <td>${a.practitioner || ""}</td>
+        <td>${a.payment_method}</td>
+        <td>RM ${a.total}</td>
+      </tr>
+    `;
+  });
 }
 
 /* INIT */
