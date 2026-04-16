@@ -373,6 +373,10 @@
 </div>
 
 <script>
+
+  function ctx(id) {
+  return document.getElementById(id).getContext("2d");
+}
 /* ================= CONFIG ================= */
 const SUPABASE_URL = "https://yxkospvcqkoxiravjtqd.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl4a29zcHZjcWtveGlyYXZqdHFkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYyODEyNzEsImV4cCI6MjA5MTg1NzI3MX0.Aaw6wfcXf21uwgMQJWtiVN_vxqaqevEQerx2GjOG-Jc";
@@ -679,30 +683,94 @@ applyReportBtn.onclick = ()=>{
   paymentRevenueChart&&paymentRevenueChart.destroy();
   ageRevenueChart&&ageRevenueChart.destroy();
 
-  serviceCountChart=new Chart(serviceCountChartEl,{
-    type:"bar",
-    data:{labels:Object.keys(serviceCount),datasets:[{data:Object.values(serviceCount)}]},
-    options:{onClick:(e,el)=>showChartInfo(el,Object.values(serviceCount),Object.keys(serviceCount),"Bookings")}
-  });
+  serviceCountChart = new Chart(
+  ctx("serviceCountChart"),
+  {
+    type: "bar",
+    data: {
+      labels: Object.keys(serviceCount),
+      datasets: [{
+        label: "Bookings",
+        data: Object.values(serviceCount)
+      }]
+    },
+    options: {
+      onClick: (e, el) =>
+        showChartInfo(
+          el,
+          Object.values(serviceCount),
+          Object.keys(serviceCount),
+          "Bookings"
+        )
+    }
+  }
+);
 
-  serviceRevenueChart=new Chart(serviceRevenueChartEl,{
-    type:"pie",
-    data:{labels:Object.keys(serviceRevenue),datasets:[{data:Object.values(serviceRevenue)}]},
-    options:{onClick:(e,el)=>showChartInfo(el,Object.values(serviceRevenue),Object.keys(serviceRevenue),"RM")}
-  });
+serviceRevenueChart = new Chart(
+  ctx("serviceRevenueChart"),
+  {
+    type: "pie",
+    data: {
+      labels: Object.keys(serviceRevenue),
+      datasets: [{
+        data: Object.values(serviceRevenue)
+      }]
+    },
+    options: {
+      onClick: (e, el) =>
+        showChartInfo(
+          el,
+          Object.values(serviceRevenue),
+          Object.keys(serviceRevenue),
+          "RM"
+        )
+    }
+  }
+);
 
-  paymentRevenueChart=new Chart(paymentRevenueChartEl,{
-    type:"pie",
-    data:{labels:Object.keys(paymentRevenue),datasets:[{data:Object.values(paymentRevenue)}]},
-    options:{onClick:(e,el)=>showChartInfo(el,Object.values(paymentRevenue),Object.keys(paymentRevenue),"RM")}
-  });
+paymentRevenueChart = new Chart(
+  ctx("paymentRevenueChart"),
+  {
+    type: "pie",
+    data: {
+      labels: Object.keys(paymentRevenue),
+      datasets: [{
+        data: Object.values(paymentRevenue)
+      }]
+    },
+    options: {
+      onClick: (e, el) =>
+        showChartInfo(
+          el,
+          Object.values(paymentRevenue),
+          Object.keys(paymentRevenue),
+          "RM"
+        )
+    }
+  }
+);
 
-  ageRevenueChart=new Chart(ageRevenueChartEl,{
-    type:"pie",
-    data:{labels:Object.keys(ageRevenue),datasets:[{data:Object.values(ageRevenue)}]},
-    options:{onClick:(e,el)=>showChartInfo(el,Object.values(ageRevenue),Object.keys(ageRevenue),"RM")}
-  });
-};
+ageRevenueChart = new Chart(
+  ctx("ageRevenueChart"),
+  {
+    type: "pie",
+    data: {
+      labels: Object.keys(ageRevenue),
+      datasets: [{
+        data: Object.values(ageRevenue)
+      }]
+    },
+    options: {
+      onClick: (e, el) =>
+        showChartInfo(
+          el,
+          Object.values(ageRevenue),
+          Object.keys(ageRevenue),
+          "RM"
+        )
+    }
+  }
+);
 
 /* ================= EXCEL EXPORT ================= */
 exportExcelBtn.onclick = ()=>{
