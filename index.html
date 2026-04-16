@@ -1,64 +1,55 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
   <meta charset="UTF-8">
-  <title>Clickable Test</title>
-
-  <!-- Google Font -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap"
-    rel="stylesheet"
-  >
+  <title>Click Test</title>
 
   <style>
     body {
       margin: 0;
-      font-family: 'Montserrat', sans-serif;
+      font-family: Arial, sans-serif;
       background: #f4f4f4;
     }
     header {
       display: flex;
       gap: 10px;
-      padding: 12px;
+      padding: 10px;
       background: #111;
     }
     header button {
       background: #333;
-      color: #fff;
+      color: white;
       border: none;
-      padding: 8px 14px;
+      padding: 10px 16px;
       border-radius: 6px;
       cursor: pointer;
     }
     header button.active {
-      background: #ff7a00;
-      color: #000;
-      font-weight: 600;
-    }
-    .container {
-      padding: 20px;
+      background: orange;
+      color: black;
     }
     .hidden {
       display: none;
     }
+    .container {
+      padding: 20px;
+    }
     .card {
-      background: #fff;
+      background: white;
       padding: 16px;
       border-radius: 8px;
-      max-width: 400px;
+      max-width: 300px;
     }
     input {
       width: 100%;
       padding: 8px;
-      margin-top: 6px;
+      margin-top: 8px;
     }
-    button.primary {
+    button.save {
       margin-top: 10px;
       width: 100%;
-      padding: 8px;
-      background: #ff7a00;
+      padding: 10px;
+      background: orange;
       border: none;
       border-radius: 6px;
       cursor: pointer;
@@ -69,62 +60,52 @@
 <body>
 
 <header>
-  <button id="tabClients" class="active">Clients</button>
-  <button id="tabPractitioners">Practitioners</button>
-  <button id="tabAppointments">Appointments</button>
-  <button id="tabReports">Sales Report</button>
+  <button id="btnClients" class="active">Clients</button>
+  <button id="btnPractitioners">Practitioners</button>
+  <button id="btnAppointments">Appointments</button>
+  <button id="btnReports">Sales Report</button>
 </header>
 
 <div class="container">
+  <div id="clients" class="card">
+    <h3>Client Test</h3>
+    <input id="clientName" placeholder="Client name">
+    <button class="save" id="saveClient">Save Client</button>
+  </div>
 
-  <section id="clientsTab">
-    <div class="card">
-      <h3>Client Test</h3>
-      <input id="clientName" placeholder="Client name">
-      <button class="primary" id="saveBtn">Save Client</button>
-    </div>
-  </section>
-
-  <section id="practitionersTab" class="hidden">
-    <div class="card"><h3>Practitioners Tab</h3></div>
-  </section>
-
-  <section id="appointmentsTab" class="hidden">
-    <div class="card"><h3>Appointments Tab</h3></div>
-  </section>
-
-  <section id="reportsTab" class="hidden">
-    <div class="card"><h3>Sales Report Tab</h3></div>
-  </section>
-
+  <div id="practitioners" class="card hidden"><h3>Practitioners Tab</h3></div>
+  <div id="appointments" class="card hidden"><h3>Appointments Tab</h3></div>
+  <div id="reports" class="card hidden"><h3>Sales Report Tab</h3></div>
 </div>
 
 <script>
-document.addEventListener("DOMContentLoaded", () => {
-  console.log("✅ JS is running");
+console.log("✅ Script loaded");
 
-  function show(tab) {
-    ["clients","practitioners","appointments","reports"].forEach(t => {
-      document.getElementById(t+"Tab").classList.add("hidden");
-      document.getElementById("tab"+t.charAt(0).toUpperCase()+t.slice(1))
-        .classList.remove("active");
-    });
+function show(tab) {
+  document.getElementById("clients").classList.add("hidden");
+  document.getElementById("practitioners").classList.add("hidden");
+  document.getElementById("appointments").classList.add("hidden");
+  document.getElementById("reports").classList.add("hidden");
 
-    document.getElementById(tab+"Tab").classList.remove("hidden");
-    document.getElementById("tab"+tab.charAt(0).toUpperCase()+tab.slice(1))
-      .classList.add("active");
-  }
+  document.getElementById("btnClients").classList.remove("active");
+  document.getElementById("btnPractitioners").classList.remove("active");
+  document.getElementById("btnAppointments").classList.remove("active");
+  document.getElementById("btnReports").classList.remove("active");
 
-  tabClients.onclick = () => show("clients");
-  tabPractitioners.onclick = () => show("practitioners");
-  tabAppointments.onclick = () => show("appointments");
-  tabReports.onclick = () => show("reports");
+  document.getElementById(tab).classList.remove("hidden");
+  document.getElementById("btn" + tab.charAt(0).toUpperCase() + tab.slice(1)).classList.add("active");
+}
 
-  saveBtn.onclick = () => {
-    alert("✅ Save button works. Name = " + clientName.value);
-  };
-});
+btnClients.onclick = () => show("clients");
+btnPractitioners.onclick = () => show("practitioners");
+btnAppointments.onclick = () => show("appointments");
+btnReports.onclick = () => show("reports");
+
+saveClient.onclick = () => {
+  alert("✅ Save works: " + clientName.value);
+};
 </script>
 
 </body>
 </html>
+``
