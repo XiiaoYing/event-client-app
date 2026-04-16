@@ -121,10 +121,19 @@
 </div>
 
 <script>
-const sb = supabase.createClient(
-"https://eookqiucuncovvxzdcml.supabase.co",
-"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVvb2txaXVjdW5jb3Z2eHpkY21sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYxOTIwNDksImV4cCI6MjA5MTc2ODA0OX0.Bk9QU8CufXnyiavO35WWM3gj1GupNRBk3EJZx-tO9hU",
+document.addEventListener("DOMContentLoaded", () => {
 
+  const sb = supabase.createClient(
+ "https://eookqiucuncovvxzdcml.supabase.co",
+"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVvb2txaXVjdW5jb3Z2eHpkY21sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYxOTIwNDksImV4cCI6MjA5MTc2ODA0OX0.Bk9QU8CufXnyiavO35WWM3gj1GupNRBk3EJZx-tO9hU"
+  );
+
+  // ✅ ALL your existing JS stays INSIDE this block
+  // (tabs, clients, practitioners, appointments, etc)
+
+});
+</script>
+  
 
 /* LOCKED SERVICES */
 const SERVICES = [
