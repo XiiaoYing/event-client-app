@@ -2,10 +2,50 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>HTML TEST</title>
+  <title>Supabase Smoke Test</title>
+
+  <!-- ✅ Correct Google Font loading -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap"
+    rel="stylesheet"
+  >
+
+  <!-- ✅ Correct Supabase JS SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background: #f4f4f4;
+      padding: 40px;
+    }
+  </style>
 </head>
+
 <body>
-  <h1>✅ PAGE IS NOT BLANK</h1>
-  <p>If you see this text, HTML parsing is correct.</p>
+
+<h1>✅ Supabase Smoke Test</h1>
+<p id="status">Loading…</p>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+
+  const sb = supabase.createClient(
+    "YOUR_NEW_SUPABASE_PROJECT_URL",
+    "YOUR_NEW_SUPABASE_ANON_KEY"
+  );
+
+  window.sb = sb; // expose for console check
+
+  document.getElementById("status").innerText =
+    "✅ Supabase loaded successfully";
+
+  console.log("Supabase client:", sb);
+
+});
+</script>
+
 </body>
 </html>
