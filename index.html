@@ -5,11 +5,11 @@
   <title>Admin Dashboard</title>
 
   <!-- Google Font -->
-  <link rel="preconnect" href="  https://fonts.gstatic.com
-  <ttps://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap
-
-  <!-- Supabase SDK (v2) -->
-  https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2
+  <link rel="preconnect" hrefm
+  <link rel="preconnect" href <link
+    href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap"
+SDK (v2) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supe-js@2
 
   <style>
     body {
@@ -20,6 +20,25 @@
     }
   </style>
 </head>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+
+  // ✅ Supabase is now guaranteed to exist
+  const sb = supabase.createClient(
+    "YOUR_SUPABASE_URL",
+    "YOUR_SUPABASE_ANON_KEY"
+  );
+
+  // expose for debugging
+  window.sb = sb;
+
+  console.log("Supabase loaded:", sb);
+
+  // ✅ ALL application logic goes here
+
+});
+</script>
 
 <body>
 
