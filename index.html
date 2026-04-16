@@ -67,6 +67,120 @@
       border-radius: 12px;
       margin-bottom: 24px;
     }
+
+    /* ===== FORCE LAYOUT FIX ===== */
+
+/* Global reset */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background: #f4f4f4;
+}
+
+/* Card consistency */
+.card {
+  background: #ffffff;
+  border: 1px solid #e0e0e0;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+/* Form layout */
+.flex {
+  display: flex !important;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.flex > div {
+  flex: 1 1 240px;
+  min-width: 240px;
+}
+
+/* Inputs */
+input, select, textarea {
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 8px;
+  font-size: 14px;
+}
+
+textarea {
+  min-height: 70px;
+  resize: vertical;
+}
+
+/* Buttons */
+button {
+  cursor: pointer;
+}
+
+button.primary {
+  background: #ff7a00;
+  color: #000;
+}
+
+button.primary:hover {
+  opacity: 0.9;
+}
+
+button.danger {
+  background: #e74c3c;
+  color: #fff;
+}
+
+/* Table fixes */
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+th {
+  font-weight: 600;
+}
+
+th, td {
+  vertical-align: top;
+}
+
+/* Section titles */
+.section-title {
+  font-size: 18px;
+  font-weight: 700;
+  border-bottom: 2px solid #eee;
+  padding-bottom: 6px;
+  margin-bottom: 14px;
+}
+
+/* Address cell expand */
+.address-cell {
+  max-width: 260px;
+}
+
+/* Header stays fixed visually */
+header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+/* Charts container */
+.chart-grid {
+  display: grid !important;
+}
+
+/* Mobile friendliness */
+@media (max-width: 768px) {
+  header {
+    flex-wrap: wrap;
+  }
+
+  table {
+    font-size: 12px;
+  }
+}
+
   </style>
 </head>
 
