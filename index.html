@@ -299,159 +299,313 @@ canvas {
 </div>
 
 <script>
-/* ===== JS LOGIC ===== */
-const SUPABASE_URL = "https://yxkospvcqkoxiravjtqd.supabase.co";
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl4a29zcHZjcWtveGlyYXZqdHFkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYyODEyNzEsImV4cCI6MjA5MTg1NzI3MX0.Aaw6wfcXf21uwgMQJWtiVN_vxqaqevEQerx2GjOG-Jc";
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+document.addEventListener("DOMContentLoaded", async () => {
 
-const SERVICES = [
-  {id:"SM",name:"Sports Massage",price:45},
-  {id:"RCB",name:"Recovery Compression Boots",price:25},
-  {id:"AS",name:"Assisted Stretch Session",price:20},
-  {id:"PB",name:"Physio Bundle",price:400},
-  {id:"PKP",name:"Performance Kickstart Program",price:261},
-  {id:"SMFT",name:"Sports Massage - First Trial",price:189}
-];
+  /* ================== SUPABASE ================== */
+  const SUPABASE_URL = "YOUR_SUPABASE_URL";
+  const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY";
+  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-let clients=[], practitioners=[], appointments=[];
-let serviceCountChart, serviceRevenueChart, paymentRevenueChart, ageRevenueChart;
+  /* ================== CONSTANTS ================== */
+  const SERVICES = [
+    {id:"SM", name:"Sports Massage", price:45},
+    {id:"RCB", name:"Recovery Compression Boots", price:25},
+    {id:"AS", name:"Assisted Stretch Session", price:20},
+    {id:"PB", name:"Physio Bundle", price:400},
+    {id:"PKP", name:"Performance Kickstart Program", price:261},
+    {id:"SMFT", name:"Sports Massage - First Trial", price:189}
+  ];
 
-const age = d => Math.floor((Date.now()-new Date(d))/(365.25*86400000));
+  let clients = [];
+  let practitioners = [];
+  let appointments = [];
 
-/* ---------- Tabs ---------- */
-function show(tab){
-  ["clients","practitioners","appointments","reports"].forEach(t=>{
-    document.getElementById(t+"Tab").classList.toggle("hidden",t!==tab);
-    document.getElementById("tab"+t.charAt(0).toUpperCase()+t.slice(1))
-      .classList.toggle("active",t===tab);
+  let serviceCountChart, serviceRevenueChart, paymentRevenueChart, ageRevenueChart;
+
+  /* ================== HELPERS ================== */
+  const calcAge = dob =>
+    Math.floor((Date.now() - new Date(dob)) / (365.25 * 86400000));
+
+  function showTab(tab){
+    ["clients","practitioners","appointments","reports"].forEach(t=>{
+      document.getElementById(t+"Tab").classList.toggle("hidden", t !== tab);
+      document.getElementById("tab"+t.charAt(0).toUpperCase()+t.slice(1))
+        .classList.toggle("active", t === tab);
+    });
+  }
+
+  tabClients.onclick = () => showTab("clients");
+  tabPractitioners.onclick = () => showTab("practitioners");
+  tabAppointments.onclick = () => showTab("appointments");
+  tabReports.onclick = () => showTab("reports");
+
+  /* ================== CLIENTS ================== */
+  async function loadClients(){
+    const { data } = await sb.from("clients").select("*").order("full_name");
+    clients = data || [];
+    clientsTable.innerHTML = "";
+    a_client.innerHTML = "";
+
+    clients.forEach(c=>{
+      clientsTable.innerHTML += `
+        <tr>
+          <td>${c.full_name}</td>
+          <td>${c.date_of_birth}</td>
+          <td>${calcAge(c.date_of_birth)}</td>
+          <td>${c.gender || ""}</td>
+          <td>${c.citizenship || ""}</td>
+          <td>${c.ic_passport || ""}</td>
+          <td>${c.contact || ""}</td>
+          <td>${c.email || ""}</td>
+          <td class="address-cell">${c.address || ""}</td>
+          <td><button onclick="editClient('${c.id}')">✏️</button></td>
+          <td><button onclick="deleteClient('${c.id}')">🗑</button></td>
+        </tr>`;
+      a_client.innerHTML += `<option value="${c.id}">${c.full_name}</option>`;
+    });
+  }
+
+  window.editClient = id => {
+    const c = clients.find(x => x.id === id);
+    client_id.value = c.id;
+    c_name.value = c.full_name;
+    c_dob.value = c.date_of_birth;
+    c_gender.value = c.gender;
+    c_citizenship.value = c.citizenship;
+    c_ic.value = c.ic_passport || "";
+    c_contact.value = c.contact || "";
+    c_email.value = c.email || "";
+    c_address.value = c.address || "";
+  };
+
+  window.deleteClient = async id => {
+    if (!confirm("Delete this client?")) return;
+    await sb.from("clients").delete().eq("id", id);
+    loadClients();
+  };
+
+  saveClientBtn.onclick = async () => {
+    if (!c_name.value || !c_dob.value) {
+      alert("Name and DOB are required");
+      return;
+    }
+
+    const payload = {
+      full_name: c_name.value,
+      date_of_birth: c_dob.value,
+      gender: c_gender.value,
+      citizenship: c_citizenship.value,
+      ic_passport: c_ic.value,
+      contact: c_contact.value,
+      email: c_email.value,
+      address: c_address.value || null
+    };
+
+    client_id.value
+      ? await sb.from("clients").update(payload).eq("id", client_id.value)
+      : await sb.from("clients").insert(payload);
+
+    cancelClientBtn.click();
+    loadClients();
+  };
+
+  cancelClientBtn.onclick = () => {
+    client_id.value="";
+    c_name.value="";
+    c_dob.value="";
+    c_ic.value="";
+    c_contact.value="";
+    c_email.value="";
+    c_address.value="";
+  };
+
+  /* ================== PRACTITIONERS ================== */
+  async function loadPractitioners(){
+    const { data } = await sb.from("practitioners").select("*").order("name");
+    practitioners = data || [];
+    practitionerTable.innerHTML="";
+    a_practitioner.innerHTML="";
+
+    practitioners.forEach(p=>{
+      practitionerTable.innerHTML += `
+        <tr>
+          <td>${p.name}</td>
+          <td><button onclick="deletePractitioner('${p.id}')">🗑</button></td>
+        </tr>`;
+      a_practitioner.innerHTML += `<option>${p.name}</option>`;
+    });
+  }
+
+  addPractitionerBtn.onclick = async () => {
+    if (!p_name.value) return;
+    await sb.from("practitioners").insert({ name: p_name.value });
+    p_name.value = "";
+    loadPractitioners();
+  };
+
+  window.deletePractitioner = async id => {
+    if (!confirm("Delete practitioner?")) return;
+    await sb.from("practitioners").delete().eq("id", id);
+    loadPractitioners();
+  };
+
+  /* ================== APPOINTMENTS ================== */
+  SERVICES.forEach(s=>{
+    a_service.innerHTML += `<option value="${s.id}">${s.name}</option>`;
   });
-}
-tabClients.onclick=()=>show("clients");
-tabPractitioners.onclick=()=>show("practitioners");
-tabAppointments.onclick=()=>show("appointments");
-tabReports.onclick=()=>show("reports");
 
-/* ---------- Formatters ---------- */
-c_ic.oninput=()=>{let v=c_ic.value.replace(/-/g,"");
-if(/^[A-Za-z]/.test(v))return c_ic.value=v;
-v=v.replace(/\D/g,"");
-if(v.length>6&&v.length<=8)c_ic.value=v.slice(0,6)+"-"+v.slice(6);
-else if(v.length>8)c_ic.value=v.slice(0,6)+"-"+v.slice(6,8)+"-"+v.slice(8,12);
-else c_ic.value=v;};
+  function recalc(){
+    const svc = SERVICES.find(s => s.id === a_service.value);
+    const client = clients.find(c => c.id === a_client.value);
+    const sst = client?.citizenship === "Foreigner"
+      ? +(svc.price * 0.06).toFixed(2)
+      : 0;
 
-c_contact.oninput=()=>{let v=c_contact.value.replace(/\D/g,"");
-c_contact.value=v.length>3?v.slice(0,3)+"-"+v.slice(3,11):v;};
+    a_price.value = svc.price;
+    a_sst.value = sst;
+    a_total.value = (svc.price + sst).toFixed(2);
+  }
 
-/* ---------- Clients ---------- */
-async function loadClients(){
-  const {data}=await sb.from("clients").select("*").order("full_name");
-  clients=data||[];
-  clientsTable.innerHTML="";
-  a_client.innerHTML="";
-  clients.forEach(c=>{
-    clientsTable.innerHTML+=`
-      <tr>
-        <td>${c.full_name}</td><td>${c.date_of_birth}</td><td>${age(c.date_of_birth)}</td>
-        <td>${c.gender||""}</td><td>${c.citizenship||""}</td>
-        <td>${c.ic_passport||""}</td><td>${c.contact||""}</td>
-        <td>${c.email||""}</td><td class="address-cell">${c.address||""}</td>
-        <td><button onclick="editClient('${c.id}')">✏️</button></td>
-        <td><button class="danger" onclick="delClient('${c.id}')">🗑</button></td>
-      </tr>`;
-    a_client.innerHTML+=`<option value="${c.id}">${c.full_name}</option>`;
-  });
-}
-window.editClient=id=>{
-  const c=clients.find(x=>x.id===id);
-  if(!c)return;
-  client_id.value=id;
-  c_name.value=c.full_name;
-  c_dob.value=c.date_of_birth;
-  c_gender.value=c.gender||"Male";
-  c_citizenship.value=c.citizenship||"Malaysian";
-  c_ic.value=c.ic_passport||"";
-  c_contact.value=c.contact||"";
-  c_email.value=c.email||"";
-  c_address.value=c.address||"";
-};
-window.delClient=async id=>{
-  if(!confirm("Delete this client?"))return;
-  await sb.from("clients").delete().eq("id",id);
-  loadClients();
-};
+  a_service.onchange = recalc;
+  a_client.onchange = recalc;
 
-saveClientBtn.onclick=async()=>{
-  if(!c_name.value||!c_dob.value)return alert("Name & DOB required");
-  await sb.from("clients")[client_id.value?"update":"insert"]({
-    full_name:c_name.value,
-    date_of_birth:c_dob.value,
-    gender:c_gender.value,
-    citizenship:c_citizenship.value,
-    ic_passport:c_ic.value,
-    contact:c_contact.value,
-    email:c_email.value,
-    address:c_address.value||null
-  }).eq("id",client_id.value||null);
-  cancelClientBtn.click();
-  loadClients();
-};
-cancelClientBtn.onclick=()=>{
-  client_id.value="";c_name.value="";c_dob.value="";
-  c_ic.value="";c_contact.value="";c_email.value="";c_address.value="";
-};
+  async function loadAppointments(){
+    const { data } = await sb.from("appointments").select("*").order("start_time");
+    appointments = data || [];
+    appointmentsTable.innerHTML="";
 
-/* ---------- Practitioners ---------- */
-async function loadPractitioners(){
-  const {data}=await sb.from("practitioners").select("*").order("name");
-  practitioners=data||[];
-  practitionerTable.innerHTML="";
-  a_practitioner.innerHTML="";
-  practitioners.forEach(p=>{
-    practitionerTable.innerHTML+=`
-      <tr>
-        <td>${p.name}</td>
-        <td><button class="danger" onclick="delPractitioner('${p.id}')">🗑</button></td>
-      </tr>`;
-    a_practitioner.innerHTML+=`<option>${p.name}</option>`;
-  });
-}
-window.delPractitioner=async id=>{
-  if(!confirm("Delete practitioner?"))return;
-  await sb.from("practitioners").delete().eq("id",id);
-  loadPractitioners();
-};
-addPractitionerBtn.onclick=async()=>{
-  if(!p_name.value)return;
-  await sb.from("practitioners").insert({name:p_name.value});
-  p_name.value="";
-  loadPractitioners();
-};
+    appointments.forEach(a=>{
+      const clientName = clients.find(c=>c.id===a.client_id)?.full_name || "";
+      const serviceName = SERVICES.find(s=>s.id===a.service_id)?.name || "";
 
-/* ---------- Appointments ---------- */
-SERVICES.forEach(s=>a_service.innerHTML+=`<option value="${s.id}">${s.name}</option>`);
-function recalc(){
-  const s=SERVICES.find(x=>x.id===a_service.value);
-  const c=clients.find(x=>x.id===a_client.value);
-  const sst=c?.citizenship==="Foreigner"?+(s.price*0.06).toFixed(2):0;
-  a_price.value=s.price;
-  a_sst.value=sst;
-  a_total.value=(s.price+sst).toFixed(2);
-}
-a_service.onchange=recalc;
-a_client.onchange=recalc;
+      appointmentsTable.innerHTML += `
+        <tr onclick="editAppointment('${a.id}')">
+          <td>${a.start_time.slice(0,10)}</td>
+          <td>${a.start_time.slice(11,16)}</td>
+          <td>${clientName}</td>
+          <td>${serviceName}</td>
+          <td>${a.practitioner}</td>
+          <td>${a.payment_method}</td>
+          <td>${a.total}</td>
+        </tr>`;
+    });
+  }
 
-/* ... appointments list, reports, charts omitted for brevity ... */
+  window.editAppointment = id => {
+    const a = appointments.find(x=>x.id===id);
+    appointment_id.value = a.id;
+    a_date.value = a.start_time.slice(0,10);
+    a_time.value = a.start_time.slice(11,16);
+    a_client.value = a.client_id;
+    a_service.value = a.service_id;
+    a_practitioner.value = a.practitioner;
+    a_payment.value = a.payment_method;
+    a_remarks.value = a.remarks || "";
+    recalc();
+  };
 
-/* ---------- INIT ---------- */
-(async()=>{
+  saveAppointmentBtn.onclick = async () => {
+    const svc = SERVICES.find(s=>s.id===a_service.value);
+    const client = clients.find(c=>c.id===a_client.value);
+    const sst = client.citizenship==="Foreigner"?+(svc.price*0.06).toFixed(2):0;
+
+    appointment_id.value
+      ? await sb.from("appointments").update({
+          client_id:client.id,
+          service_id:svc.id,
+          practitioner:a_practitioner.value,
+          payment_method:a_payment.value,
+          remarks:a_remarks.value,
+          amount:svc.price,
+          sst,
+          total:svc.price+sst
+        }).eq("id",appointment_id.value)
+      : await sb.from("appointments").insert({
+          client_id:client.id,
+          service_id:svc.id,
+          practitioner:a_practitioner.value,
+          payment_method:a_payment.value,
+          remarks:a_remarks.value,
+          amount:svc.price,
+          sst,
+          total:svc.price+sst,
+          start_time:`${a_date.value}T${a_time.value}:00Z`,
+          end_time:`${a_date.value}T${a_time.value}:00Z`
+        });
+
+    appointment_id.value="";
+    loadAppointments();
+  };
+
+  deleteAppointmentBtn.onclick = async () => {
+    if (!appointment_id.value) return;
+    if (!confirm("Delete appointment?")) return;
+    await sb.from("appointments").delete().eq("id",appointment_id.value);
+    appointment_id.value="";
+    loadAppointments();
+  };
+
+  /* ================== SALES REPORT + CHARTS ================== */
+  applyReportBtn.onclick = () => {
+    const serviceCount = {};
+    const serviceRevenue = {};
+    const paymentRevenue = {};
+    const ageRevenue = {};
+
+    appointments.forEach(a=>{
+      const svc = SERVICES.find(s=>s.id===a.service_id)?.name || "";
+      const client = clients.find(c=>c.id===a.client_id);
+      const age = calcAge(client.date_of_birth);
+      const ageGroup = age<18?"<18":age<30?"18–29":age<40?"30–39":age<50?"40–49":"50+";
+
+      serviceCount[svc]=(serviceCount[svc]||0)+1;
+      serviceRevenue[svc]=(serviceRevenue[svc]||0)+Number(a.total);
+      paymentRevenue[a.payment_method]=(paymentRevenue[a.payment_method]||0)+Number(a.total);
+      ageRevenue[ageGroup]=(ageRevenue[ageGroup]||0)+Number(a.total);
+    });
+
+    if(serviceCountChart)serviceCountChart.destroy();
+    if(serviceRevenueChart)serviceRevenueChart.destroy();
+    if(paymentRevenueChart)paymentRevenueChart.destroy();
+    if(ageRevenueChart)ageRevenueChart.destroy();
+
+    serviceCountChart=new Chart(serviceCountChartEl.getContext("2d"),{
+      type:"bar",
+      data:{labels:Object.keys(serviceCount),datasets:[{data:Object.values(serviceCount),label:"Subscribers"}]},
+      options:{plugins:{title:{display:true,text:"Service Subscription Count"}}}
+    });
+
+    serviceRevenueChart=new Chart(serviceRevenueChartEl.getContext("2d"),{
+      type:"pie",
+      data:{labels:Object.keys(serviceRevenue),datasets:[{data:Object.values(serviceRevenue)}]},
+      options:{plugins:{title:{display:true,text:"Income by Service"}}}
+    });
+
+    paymentRevenueChart=new Chart(paymentRevenueChartEl.getContext("2d"),{
+      type:"pie",
+      data:{labels:Object.keys(paymentRevenue),datasets:[{data:Object.values(paymentRevenue)}]},
+      options:{plugins:{title:{display:true,text:"Income by Payment Method"}}}
+    });
+
+    ageRevenueChart=new Chart(ageRevenueChartEl.getContext("2d"),{
+      type:"pie",
+      data:{labels:Object.keys(ageRevenue),datasets:[{data:Object.values(ageRevenue)}]},
+      options:{plugins:{title:{display:true,text:"Income by Age Group"}}}
+    });
+  };
+
+  /* ================== INIT ================== */
   const today=new Date().toISOString().slice(0,10);
   a_date.value=today;
   a_time.value=new Date().toTimeString().slice(0,5);
   reportFrom.value=today;
   reportTo.value=today;
+
   await loadClients();
   await loadPractitioners();
-})();
+  await loadAppointments();
+
+});
 </script>
 
 </body>
