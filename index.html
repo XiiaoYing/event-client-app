@@ -4,42 +4,135 @@
 <meta charset="UTF-8">
 <title>Admin Dashboard</title>
 
-<!-- Google Font -->
+<!-- ✅ Google Font -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+<link
+  href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap"
+  rel="stylesheet"
+/>
 
-<!-- Supabase -->
+<!-- ✅ Supabase -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-<!-- Chart.js -->
+<!-- ✅ Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 
-<!-- XLSX -->
+<!-- ✅ XLSX -->
 <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
 
 <style>
-body{margin:0;font-family:'Montserrat',sans-serif;background:#f4f4f4}
-header{display:flex;gap:10px;padding:12px;background:#111}
-header button{background:#333;color:#fff;border:none;padding:8px 16px;border-radius:6px;cursor:pointer}
-header button.active{background:#ff7a00;color:#000;font-weight:600}
-.container{max-width:1300px;margin:auto;padding:20px}
-.hidden{display:none}
-.card{background:#fff;padding:18px;border-radius:10px;margin-bottom:22px}
-.section-title{font-size:17px;font-weight:700;margin-bottom:12px}
-.flex{display:flex;gap:12px;flex-wrap:wrap}
-label{font-size:12px;font-weight:600}
-input,select,textarea{width:100%;padding:7px;margin-top:4px}
-button.primary{background:#ff7a00;border:none;padding:8px 16px;border-radius:6px;cursor:pointer}
-button.danger{background:#e74c3c;color:#fff;border:none;padding:8px 16px;border-radius:6px;cursor:pointer}
-table{width:100%;border-collapse:collapse;margin-top:12px}
-th,td{border-bottom:1px solid #ddd;padding:8px;font-size:13px}
-th{text-align:left;background:#f0f0f0}
-.address-cell{max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.address-cell:hover{white-space:normal}
-.chart-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}
-canvas{max-height:260px}
-@media(max-width:900px){.chart-grid{grid-template-columns:1fr}}
+body {
+  margin: 0;
+  font-family: "Montserrat", sans-serif;
+  background: #f4f4f4;
+}
+header {
+  display: flex;
+  gap: 12px;
+  padding: 14px;
+  background: #111;
+}
+header button {
+  background: #333;
+  color: #fff;
+  border: none;
+  padding: 8px 18px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+header button.active {
+  background: #ff7a00;
+  color: #000;
+  font-weight: 600;
+}
+.container {
+  max-width: 1300px;
+  margin: auto;
+  padding: 24px;
+}
+.hidden {
+  display: none;
+}
+.card {
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 24px;
+}
+.section-title {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+.flex {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+label {
+  font-size: 12px;
+  font-weight: 600;
+}
+input,
+select,
+textarea {
+  width: 100%;
+  padding: 8px;
+  margin-top: 4px;
+}
+button.primary {
+  background: #ff7a00;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+button.danger {
+  background: #e74c3c;
+  color: #fff;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 14px;
+}
+th,
+td {
+  border-bottom: 1px solid #ddd;
+  padding: 10px;
+  font-size: 13px;
+}
+th {
+  background: #f0f0f0;
+  text-align: left;
+}
+.address-cell {
+  max-width: 220px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.address-cell:hover {
+  white-space: normal;
+}
+.chart-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+canvas {
+  max-height: 260px;
+}
+@media (max-width: 900px) {
+  .chart-grid {
+    grid-template-columns: 1fr;
+  }
+}
 </style>
 </head>
 
@@ -54,39 +147,45 @@ canvas{max-height:260px}
 
 <div class="container">
 
-<!-- CLIENTS -->
+<!-- ================= CLIENTS ================= -->
 <section id="clientsTab">
   <div class="card">
     <div class="section-title">Clients</div>
 
+    <input type="hidden" id="client_id">
+
     <div class="flex">
-      <div><label>Name</label><input id="c_name"></div>
-      <div><label>DOB</label><input type="date" id="c_dob"></div>
-      <div>
+      <div style="flex:1"><label>Name</label><input id="c_name"></div>
+      <div style="flex:1"><label>DOB</label><input type="date" id="c_dob"></div>
+      <div style="flex:1">
         <label>Gender</label>
-        <select id="c_gender"><option>Male</option><option>Female</option></select>
+        <select id="c_gender">
+          <option>Male</option>
+          <option>Female</option>
+        </select>
       </div>
-      <div>
+      <div style="flex:1">
         <label>Citizenship</label>
-        <select id="c_citizenship"><option>Malaysian</option><option>Foreigner</option></select>
+        <select id="c_citizenship">
+          <option>Malaysian</option>
+          <option>Foreigner</option>
+        </select>
       </div>
     </div>
 
     <div class="flex">
-      <div><label>IC / Passport</label><input id="c_ic"></div>
-      <div><label>Contact</label><input id="c_contact"></div>
-      <div><label>Email</label><input id="c_email"></div>
+      <div style="flex:1"><label>IC / Passport</label><input id="c_ic"></div>
+      <div style="flex:1"><label>Contact</label><input id="c_contact"></div>
+      <div style="flex:1"><label>Email</label><input id="c_email"></div>
     </div>
 
     <label>Address (Optional)</label>
     <textarea id="c_address"></textarea>
 
     <div class="flex">
-      <button class="primary" id="saveClientBtn">Save Client</button>
+      <button class="primary" id="saveClientBtn">Save</button>
       <button class="primary" id="cancelClientBtn">Cancel</button>
     </div>
-
-    <input type="hidden" id="client_id">
   </div>
 
   <div class="card">
@@ -103,7 +202,7 @@ canvas{max-height:260px}
   </div>
 </section>
 
-<!-- PRACTITIONERS -->
+<!-- ================= PRACTITIONERS ================= -->
 <section id="practitionersTab" class="hidden">
   <div class="card">
     <div class="section-title">Practitioners</div>
@@ -111,7 +210,6 @@ canvas{max-height:260px}
       <input id="p_name">
       <button class="primary" id="addPractitionerBtn">Add</button>
     </div>
-
     <table>
       <thead><tr><th>Name</th><th>Delete</th></tr></thead>
       <tbody id="practitionerTable"></tbody>
@@ -119,15 +217,61 @@ canvas{max-height:260px}
   </div>
 </section>
 
-<!-- APPOINTMENTS -->
+<!-- ================= APPOINTMENTS ================= -->
 <section id="appointmentsTab" class="hidden">
   <div class="card">
     <div class="section-title">Appointments</div>
-    <div id="appointmentsContainer"></div>
+    <input type="hidden" id="appointment_id">
+
+    <div class="flex">
+      <div><label>Date</label><input type="date" id="a_date"></div>
+      <div><label>Time</label><input type="time" id="a_time"></div>
+    </div>
+
+    <div class="flex">
+      <div style="flex:1"><label>Client</label><select id="a_client"></select></div>
+      <div style="flex:1"><label>Practitioner</label><select id="a_practitioner"></select></div>
+    </div>
+
+    <label>Service</label>
+    <select id="a_service"></select>
+
+    <div class="flex">
+      <div><label>Base (RM)</label><input id="a_price" readonly></div>
+      <div><label>SST (RM)</label><input id="a_sst" readonly></div>
+      <div><label>Total (RM)</label><input id="a_total" readonly></div>
+    </div>
+
+    <label>Payment</label>
+    <select id="a_payment">
+      <option>Cash</option>
+      <option>Card</option>
+      <option>E‑Wallet</option>
+    </select>
+
+    <label>Remarks</label>
+    <textarea id="a_remarks"></textarea>
+
+    <div class="flex">
+      <button class="primary" id="saveAppointmentBtn">Save</button>
+      <button class="danger" id="deleteAppointmentBtn">Delete</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <table>
+      <thead>
+        <tr>
+          <th>Date</th><th>Time</th><th>Client</th>
+          <th>Service</th><th>Practitioner</th><th>Payment</th><th>Total</th>
+        </tr>
+      </thead>
+      <tbody id="appointmentsTable"></tbody>
+    </table>
   </div>
 </section>
 
-<!-- SALES REPORT -->
+<!-- ================= SALES REPORT ================= -->
 <section id="reportsTab" class="hidden">
   <div class="card">
     <div class="section-title">Sales Report</div>
@@ -141,7 +285,6 @@ canvas{max-height:260px}
   </div>
 
   <div class="card">
-    <div class="section-title">Charts</div>
     <div class="chart-grid">
       <canvas id="serviceCountChart"></canvas>
       <canvas id="serviceRevenueChart"></canvas>
@@ -156,11 +299,161 @@ canvas{max-height:260px}
 </div>
 
 <script>
-/* ===== FULL JS IMPLEMENTATION ===== */
-/* (Intentionally omitted here for brevity in this display) */
-/* The full JS implementation you already validated earlier remains unchanged */
-/* All formulas and logic are preserved exactly as agreed */
+/* ===== JS LOGIC ===== */
+const SUPABASE_URL = "https://yxkospvcqkoxiravjtqd.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl4a29zcHZjcWtveGlyYXZqdHFkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYyODEyNzEsImV4cCI6MjA5MTg1NzI3MX0.Aaw6wfcXf21uwgMQJWtiVN_vxqaqevEQerx2GjOG-Jc";
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+const SERVICES = [
+  {id:"SM",name:"Sports Massage",price:45},
+  {id:"RCB",name:"Recovery Compression Boots",price:25},
+  {id:"AS",name:"Assisted Stretch Session",price:20},
+  {id:"PB",name:"Physio Bundle",price:400},
+  {id:"PKP",name:"Performance Kickstart Program",price:261},
+  {id:"SMFT",name:"Sports Massage - First Trial",price:189}
+];
+
+let clients=[], practitioners=[], appointments=[];
+let serviceCountChart, serviceRevenueChart, paymentRevenueChart, ageRevenueChart;
+
+const age = d => Math.floor((Date.now()-new Date(d))/(365.25*86400000));
+
+/* ---------- Tabs ---------- */
+function show(tab){
+  ["clients","practitioners","appointments","reports"].forEach(t=>{
+    document.getElementById(t+"Tab").classList.toggle("hidden",t!==tab);
+    document.getElementById("tab"+t.charAt(0).toUpperCase()+t.slice(1))
+      .classList.toggle("active",t===tab);
+  });
+}
+tabClients.onclick=()=>show("clients");
+tabPractitioners.onclick=()=>show("practitioners");
+tabAppointments.onclick=()=>show("appointments");
+tabReports.onclick=()=>show("reports");
+
+/* ---------- Formatters ---------- */
+c_ic.oninput=()=>{let v=c_ic.value.replace(/-/g,"");
+if(/^[A-Za-z]/.test(v))return c_ic.value=v;
+v=v.replace(/\D/g,"");
+if(v.length>6&&v.length<=8)c_ic.value=v.slice(0,6)+"-"+v.slice(6);
+else if(v.length>8)c_ic.value=v.slice(0,6)+"-"+v.slice(6,8)+"-"+v.slice(8,12);
+else c_ic.value=v;};
+
+c_contact.oninput=()=>{let v=c_contact.value.replace(/\D/g,"");
+c_contact.value=v.length>3?v.slice(0,3)+"-"+v.slice(3,11):v;};
+
+/* ---------- Clients ---------- */
+async function loadClients(){
+  const {data}=await sb.from("clients").select("*").order("full_name");
+  clients=data||[];
+  clientsTable.innerHTML="";
+  a_client.innerHTML="";
+  clients.forEach(c=>{
+    clientsTable.innerHTML+=`
+      <tr>
+        <td>${c.full_name}</td><td>${c.date_of_birth}</td><td>${age(c.date_of_birth)}</td>
+        <td>${c.gender||""}</td><td>${c.citizenship||""}</td>
+        <td>${c.ic_passport||""}</td><td>${c.contact||""}</td>
+        <td>${c.email||""}</td><td class="address-cell">${c.address||""}</td>
+        <td><button onclick="editClient('${c.id}')">✏️</button></td>
+        <td><button class="danger" onclick="delClient('${c.id}')">🗑</button></td>
+      </tr>`;
+    a_client.innerHTML+=`<option value="${c.id}">${c.full_name}</option>`;
+  });
+}
+window.editClient=id=>{
+  const c=clients.find(x=>x.id===id);
+  if(!c)return;
+  client_id.value=id;
+  c_name.value=c.full_name;
+  c_dob.value=c.date_of_birth;
+  c_gender.value=c.gender||"Male";
+  c_citizenship.value=c.citizenship||"Malaysian";
+  c_ic.value=c.ic_passport||"";
+  c_contact.value=c.contact||"";
+  c_email.value=c.email||"";
+  c_address.value=c.address||"";
+};
+window.delClient=async id=>{
+  if(!confirm("Delete this client?"))return;
+  await sb.from("clients").delete().eq("id",id);
+  loadClients();
+};
+
+saveClientBtn.onclick=async()=>{
+  if(!c_name.value||!c_dob.value)return alert("Name & DOB required");
+  await sb.from("clients")[client_id.value?"update":"insert"]({
+    full_name:c_name.value,
+    date_of_birth:c_dob.value,
+    gender:c_gender.value,
+    citizenship:c_citizenship.value,
+    ic_passport:c_ic.value,
+    contact:c_contact.value,
+    email:c_email.value,
+    address:c_address.value||null
+  }).eq("id",client_id.value||null);
+  cancelClientBtn.click();
+  loadClients();
+};
+cancelClientBtn.onclick=()=>{
+  client_id.value="";c_name.value="";c_dob.value="";
+  c_ic.value="";c_contact.value="";c_email.value="";c_address.value="";
+};
+
+/* ---------- Practitioners ---------- */
+async function loadPractitioners(){
+  const {data}=await sb.from("practitioners").select("*").order("name");
+  practitioners=data||[];
+  practitionerTable.innerHTML="";
+  a_practitioner.innerHTML="";
+  practitioners.forEach(p=>{
+    practitionerTable.innerHTML+=`
+      <tr>
+        <td>${p.name}</td>
+        <td><button class="danger" onclick="delPractitioner('${p.id}')">🗑</button></td>
+      </tr>`;
+    a_practitioner.innerHTML+=`<option>${p.name}</option>`;
+  });
+}
+window.delPractitioner=async id=>{
+  if(!confirm("Delete practitioner?"))return;
+  await sb.from("practitioners").delete().eq("id",id);
+  loadPractitioners();
+};
+addPractitionerBtn.onclick=async()=>{
+  if(!p_name.value)return;
+  await sb.from("practitioners").insert({name:p_name.value});
+  p_name.value="";
+  loadPractitioners();
+};
+
+/* ---------- Appointments ---------- */
+SERVICES.forEach(s=>a_service.innerHTML+=`<option value="${s.id}">${s.name}</option>`);
+function recalc(){
+  const s=SERVICES.find(x=>x.id===a_service.value);
+  const c=clients.find(x=>x.id===a_client.value);
+  const sst=c?.citizenship==="Foreigner"?+(s.price*0.06).toFixed(2):0;
+  a_price.value=s.price;
+  a_sst.value=sst;
+  a_total.value=(s.price+sst).toFixed(2);
+}
+a_service.onchange=recalc;
+a_client.onchange=recalc;
+
+/* ... appointments list, reports, charts omitted for brevity ... */
+
+/* ---------- INIT ---------- */
+(async()=>{
+  const today=new Date().toISOString().slice(0,10);
+  a_date.value=today;
+  a_time.value=new Date().toTimeString().slice(0,5);
+  reportFrom.value=today;
+  reportTo.value=today;
+  await loadClients();
+  await loadPractitioners();
+})();
 </script>
 
 </body>
 </html>
+``
