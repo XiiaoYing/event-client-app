@@ -638,31 +638,41 @@ cancelAppointmentBtn.onclick = ()=>{
 };
 
 /* ================= SALES REPORT ================= */
-applyReportBtn.onclick = ()=>{
-  const serviceCount={}, serviceRevenue={}, paymentRevenue={}, ageRevenue={};
-  let totalIncome=0, totalSST=0;
-  reportDetailTable.innerHTML="";
+applyReportBtn.onclick = () => {
+  const serviceCount = {};
+  const serviceRevenue = {};
+  const paymentRevenue = {};
+  const ageRevenue = {};
+  let totalIncome = 0;
+  let totalSST = 0;
 
-  appointments.forEach(a=>{
-    const d=a.start_time.slice(0,10);
-    if(d<reportFrom.value || d>reportTo.value) return;
+  reportDetailTable.innerHTML = "";
 
-    const svc=SERVICES.find(s=>s.id===a.service_id)?.name||"";
-    const cli=clients.find(c=>c.id===a.client_id);
-    const g= (()=>{const ag=age(cli.date_of_birth);
-      return ag<18?"<18":ag<30?"18–29":ag<40?"30–39":ag<50?"40–49":"50+";})();
+  appointments.forEach(a => {
+    const date = a.start_time.slice(0,10);
+    if (date < reportFrom.value || date > reportTo.value) return;
 
-    serviceCount[svc]=(serviceCount[svc]||0)+1;
-    serviceRevenue[svc]=(serviceRevenue[svc]||0)+Number(a.total);
-    paymentRevenue[a.payment_method]=(paymentRevenue[a.payment_method]||0)+Number(a.total);
-    ageRevenue[g]=(ageRevenue[g]||0)+Number(a.total);
+    const svc = SERVICES.find(s => s.id === a.service_id)?.name || "";
+    const cli = clients.find(c => c.id === a.client_id);
+    const ag = age(cli.date_of_birth);
+    const ageGroup =
+      ag < 18 ? "<18" :
+      ag < 30 ? "18–29" :
+      ag < 40 ? "30–39" :
+      ag < 50 ? "40–49" : "50+";
 
-    totalIncome+=Number(a.total);
-    totalSST+=Number(a.sst);
+    serviceCount[svc] = (serviceCount[svc] || 0) + 1;
+    serviceRevenue[svc] = (serviceRevenue[svc] || 0) + Number(a.total);
+    paymentRevenue[a.payment_method] =
+      (paymentRevenue[a.payment_method] || 0) + Number(a.total);
+    ageRevenue[ageGroup] = (ageRevenue[ageGroup] || 0) + Number(a.total);
 
-    reportDetailTable.innerHTML+=`
+    totalIncome += Number(a.total);
+    totalSST += Number(a.sst);
+
+    reportDetailTable.innerHTML += `
       <tr>
-        <td>${d}</td>
+        <td>${date}</td>
         <td>${a.start_time.slice(11,16)}</td>
         <td>${cli.full_name}</td>
         <td>${svc}</td>
@@ -674,103 +684,85 @@ applyReportBtn.onclick = ()=>{
       </tr>`;
   });
 
-  kpiTotalIncome.textContent=`RM ${totalIncome.toFixed(2)}`;
-  kpiTotalSST.textContent=`RM ${totalSST.toFixed(2)}`;
-  kpiTxn.textContent=Object.values(serviceCount).reduce((a,b)=>a+b,0);
+  kpiTotalIncome.textContent = `RM ${totalIncome.toFixed(2)}`;
+  kpiTotalSST.textContent = `RM ${totalSST.toFixed(2)}`;
+  kpiTxn.textContent =
+    Object.values(serviceCount).reduce((a,b)=>a+b,0);
 
-  serviceCountChart&&serviceCountChart.destroy();
-  serviceRevenueChart&&serviceRevenueChart.destroy();
-  paymentRevenueChart&&paymentRevenueChart.destroy();
-  ageRevenueChart&&ageRevenueChart.destroy();
+  serviceCountChart && serviceCountChart.destroy();
+  serviceRevenueChart && serviceRevenueChart.destroy();
+  paymentRevenueChart && paymentRevenueChart.destroy();
+  ageRevenueChart && ageRevenueChart.destroy();
 
-  serviceCountChart = new Chart(
-  ctx("serviceCountChart"),
-  {
+  serviceCountChart = new Chart(ctx("serviceCountChart"), {
     type: "bar",
     data: {
       labels: Object.keys(serviceCount),
-      datasets: [{
-        label: "Bookings",
-        data: Object.values(serviceCount)
-      }]
-    },
-    options: {
-      onClick: (e, el) =>
-        showChartInfo(
-          el,
-          Object.values(serviceCount),
-          Object.keys(serviceCount),
-          "Bookings"
-        )
+      datasets: [{ data: Object.values(serviceCount) }]
     }
-  }
-);
+  });
 
-serviceRevenueChart = new Chart(
-  ctx("serviceRevenueChart"),
-  {
+  serviceRevenueChart = new Chart(ctx("serviceRevenueChart"), {
     type: "pie",
     data: {
       labels: Object.keys(serviceRevenue),
-      datasets: [{
-        data: Object.values(serviceRevenue)
-      }]
-    },
-    options: {
-      onClick: (e, el) =>
-        showChartInfo(
-          el,
-          Object.values(serviceRevenue),
-          Object.keys(serviceRevenue),
-          "RM"
-        )
+      datasets: [{ data: Object.values(serviceRevenue) }]
     }
-  }
-);
+  });
 
-paymentRevenueChart = new Chart(
-  ctx("paymentRevenueChart"),
-  {
+  paymentRevenueChart = new Chart(ctx("paymentRevenueChart"), {
     type: "pie",
     data: {
       labels: Object.keys(paymentRevenue),
-      datasets: [{
-        data: Object.values(paymentRevenue)
-      }]
-    },
-    options: {
-      onClick: (e, el) =>
-        showChartInfo(
-          el,
-          Object.values(paymentRevenue),
-          Object.keys(paymentRevenue),
-          "RM"
-        )
+      datasets: [{ data: Object.values(paymentRevenue) }]
     }
-  }
-);
+  });
 
-ageRevenueChart = new Chart(
-  ctx("ageRevenueChart"),
-  {
+  ageRevenueChart = new Chart(ctx("ageRevenueChart"), {
     type: "pie",
     data: {
       labels: Object.keys(ageRevenue),
-      datasets: [{
-        data: Object.values(ageRevenue)
-      }]
-    },
-    options: {
-      onClick: (e, el) =>
-        showChartInfo(
-          el,
-          Object.values(ageRevenue),
-          Object.keys(ageRevenue),
-          "RM"
-        )
+      datasets: [{ data: Object.values(ageRevenue) }]
     }
-  }
-);
+  });
+};
+
+exportExcelBtn.onclick = () => {
+  const rows = [];
+  document.querySelectorAll("#reportDetailTable tr").forEach(tr => {
+    const t = [...tr.children].map(td => td.textContent);
+    rows.push({
+      Date: t[0],
+      Time: t[1],
+      Client: t[2],
+      Service: t[3],
+      Practitioner: t[4],
+      Payment: t[5],
+      Subtotal: t[6],
+      SST: t[7],
+      Total: t[8]
+    });
+  });
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(
+    wb,
+    XLSX.utils.json_to_sheet(rows),
+    "Sales Detail"
+  );
+  XLSX.writeFile(wb, "sales_report.xlsx");
+};
+
+(async () => {
+  const today = new Date().toISOString().slice(0,10);
+  a_date.value = today;
+  a_time.value = new Date().toTimeString().slice(0,5);
+  reportFrom.value = today;
+  reportTo.value = today;
+
+  await loadClients();
+  await loadPractitioners();
+  await loadAppointments();
+})();
 
 /* ================= EXCEL EXPORT ================= */
 exportExcelBtn.onclick = ()=>{
