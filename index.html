@@ -4,16 +4,10 @@
   <meta charset="UTF-8">
   <title>Supabase Smoke Test</title>
 
-  <!-- ✅ Correct Google Font loading -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap"
-    rel="stylesheet"
-  >
-
-  <!-- ✅ Correct Supabase JS SDK -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- ✅ Google Font (correct) -->
+  https://fonts.googleapis.com
+  <link rel="preconnect" href="https://fonts="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=upabase SDK (correct) -->
+  https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2</script>
 
   <style>
     body {
@@ -31,19 +25,24 @@
 
 <script>
 document.addEventListener("DOMContentLoaded", () => {
+  try {
+    const sb = supabase.createClient(
+"https://yxkospvcqkoxiravjtqd.supabase.co",
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl4a29zcHZjcWtveGlyYXZqdHFkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYyODEyNzEsImV4cCI6MjA5MTg1NzI3MX0.Aaw6wfcXf21uwgMQJWtiVN_vxqaqevEQerx2GjOG-Jc"
+);
 
-  const sb = supabase.createClient(
-    "YOUR_NEW_SUPABASE_PROJECT_URL",
-    "YOUR_NEW_SUPABASE_ANON_KEY"
-  );
+    window.sb = sb; // expose for debugging
 
-  window.sb = sb; // expose for console check
+    document.getElementById("status").innerText =
+      "✅ Supabase loaded successfully";
 
-  document.getElementById("status").innerText =
-    "✅ Supabase loaded successfully";
+    console.log("Supabase client:", sb);
+  } catch (e) {
+    document.getElementById("status").innerText =
+      "❌ Supabase failed to load";
 
-  console.log("Supabase client:", sb);
-
+    console.error(e);
+  }
 });
 </script>
 
