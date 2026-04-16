@@ -5,109 +5,134 @@
 <title>Admin Dashboard</title>
 
 <!-- Google Font -->
-<link rel="preconnect" href="https://fonts.googleapis.comink href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap"se -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/s/script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+
+<!-- Supabase -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <!-- Chart.js -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 
 <!-- Excel -->
 <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
 
 <style>
-body { margin:0; font-family:Montserrat; background:#f4f4f4 }
-header { display:flex; gap:10px; padding:12px; background:#111 }
-header button { background:#333; color:#fff; border:none; padding:8px 14px; border-radius:6px; cursor:pointer }
-header button.active { background:#ff7a00; color:#000; font-weight:700 }
-.container { max-width:1200px; margin:auto; padding:20px }
-.hidden { display:none }
-.card { background:#fff; padding:16px; border-radius:8px; margin-bottom:20px }
-label { font-size:12px; font-weight:600; display:block; margin-top:10px }
-input,select { width:100%; padding:8px; margin-top:4px }
-button.primary { margin-top:12px; background:#ff7a00; border:none; padding:8px 14px; border-radius:6px; cursor:pointer }
-table { width:100%; border-collapse:collapse; margin-top:10px }
-th,td { padding:8px; border-bottom:1px solid #ddd; font-size:13px }
-th { background:#f0f0f0 }
+body{margin:0;font-family:'Montserrat',sans-serif;background:#f4f4f4}
+header{display:flex;gap:10px;padding:12px;background:#111}
+header button{background:#333;color:#fff;border:none;padding:8px 14px;border-radius:6px;cursor:pointer}
+header button.active{background:#ff7a00;color:#000;font-weight:700}
+.container{max-width:1200px;margin:auto;padding:20px}
+.hidden{display:none}
+.card{background:#fff;padding:16px;border-radius:8px;margin-bottom:20px}
+label{font-size:12px;font-weight:600;display:block;margin-top:10px}
+input,select,textarea{width:100%;padding:8px;margin-top:4px}
+button.primary{margin-top:12px;background:#ff7a00;border:none;padding:8px 14px;border-radius:6px;cursor:pointer}
+button.danger{background:#e74c3c;color:#fff;border:none;padding:6px 10px;border-radius:6px}
+table{width:100%;border-collapse:collapse;margin-top:10px}
+th,td{padding:8px;border-bottom:1px solid #ddd;font-size:13px}
+th{background:#f0f0f0}
+.flex{display:flex;gap:15px;flex-wrap:wrap}
 </style>
 </head>
 
 <body>
 
 <header>
-  <button id="tabClients" class="active">Clients</button>
-  <button id="tabPractitioners">Practitioners</button>
-  <button id="tabAppointments">Appointments</button>
-  <button id="tabReports">Sales Report</button>
+<button id="tabClients" class="active">Clients</button>
+<button id="tabPractitioners">Practitioners</button>
+<button id="tabAppointments">Appointments</button>
+<button id="tabReports">Sales Report</button>
 </header>
 
 <div class="container">
 
 <!-- CLIENTS -->
 <section id="clientsTab">
-  <div class="card">
-    <h3>Client List</h3>
-    <table>
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>DOB</th>
-          <th>Age</th>
-          <th>Gender</th>
-          <th>Citizenship</th>
-        </tr>
-      </thead>
-      <tbody id="clientsTable"></tbody>
-    </table>
-  </div>
+<div class="card">
+<h3>Client List</h3>
+<table>
+<thead>
+<tr>
+<th>Name</th><th>DOB</th><th>Age</th><th>Gender</th><th>Citizen</th>
+<th>Contact</th><th>Email</th><th>Address</th>
+</tr>
+</thead>
+<tbody id="clientsTable"></tbody>
+</table>
+</div>
 </section>
 
-<!-- PRACTITIONERS (unchanged placeholder) -->
+<!-- PRACTITIONERS -->
 <section id="practitionersTab" class="hidden">
-  <div class="card">
-    <h3>Practitioners</h3>
-    <p>(unchanged – existing logic continues)</p>
-  </div>
+<div class="card">
+<h3>Add Practitioner</h3>
+<input id="p_name">
+<button class="primary" id="addPractitionerBtn">Add</button>
+</div>
+<div class="card">
+<h3>Practitioner List</h3>
+<table>
+<thead><tr><th>Name</th><th>Delete</th></tr></thead>
+<tbody id="practitionerTable"></tbody>
+</table>
+</div>
 </section>
 
-<!-- APPOINTMENTS (unchanged placeholder) -->
+<!-- APPOINTMENTS -->
 <section id="appointmentsTab" class="hidden">
-  <div class="card">
-    <h3>Appointments</h3>
-    <p>(unchanged – existing logic continues)</p>
-  </div>
+<div class="card">
+<h3>Add Appointment</h3>
+<label>Date</label><input type="date" id="a_date">
+<label>Time</label><input type="time" id="a_time">
+<label>Client</label><select id="a_client"></select>
+<label>Practitioner</label><select id="a_practitioner"></select>
+<label>Service</label><select id="a_service"></select>
+<label>Payment</label>
+<select id="a_payment"><option>Cash</option><option>Card</option><option>E‑Wallet</option></select>
+<button class="primary" id="saveAppointmentBtn">Save</button>
+</div>
+
+<div class="card">
+<h3>Appointment List</h3>
+<table>
+<thead>
+<tr>
+<th>Date</th><th>Time</th><th>Client</th><th>Service</th>
+<th>Practitioner</th><th>Payment</th><th>Total</th>
+</tr>
+</thead>
+<tbody id="appointmentsTable"></tbody>
+</table>
+</div>
 </section>
 
 <!-- SALES REPORT -->
 <section id="reportsTab" class="hidden">
 
 <div class="card">
-  <h3>Filters</h3>
-  <label>From Date</label>
-  <input type="date" id="reportFrom">
-  <label>To Date</label>
-  <input type="date" id="reportTo">
-  <label>Breakdown</label>
-  <select id="reportMode">
-    <option value="daily">Daily</option>
-    <option value="monthly">Monthly</option>
-  </select>
-  <button class="primary" id="applyReportBtn">Apply</button>
-  <button class="primary" id="exportExcelBtn">Export Excel</button>
+<h3>Filters</h3>
+<label>From</label><input type="date" id="reportFrom">
+<label>To</label><input type="date" id="reportTo">
+<button class="primary" id="applyReportBtn">Apply</button>
+<button class="primary" id="exportExcelBtn">Export Excel</button>
 </div>
 
-<div class="card" style="background:#E3F2FD">
-  <h3>Total Sales</h3>
-  <h2>RM <span id="totalSales">0.00</span></h2>
+<div class="flex">
+<div class="card" style="flex:1;background:#E3F2FD">
+<h4>Total Sales</h4>
+<h2>RM <span id="totalSales">0.00</span></h2>
 </div>
-
-<div class="card" style="background:#FFF3E0">
-  <h3>Total SST</h3>
-  <h2>RM <span id="totalSST">0.00</span></h2>
+<div class="card" style="flex:1;background:#FFF3E0">
+<h4>Total SST</h4>
+<h2>RM <span id="totalSST">0.00</span></h2>
+</div>
 </div>
 
 <div class="card">
-  <h3>Sales by Service</h3>
-  <canvas id="serviceChart"></canvas>
+<h3>Sales by Service</h3>
+<canvas id="serviceChart"></canvas>
 </div>
 
 </section>
@@ -123,94 +148,136 @@ const sb = supabase.createClient(
 );
 
 const SERVICES = [
- {id:"SM", name:"Sports Massage"},
- {id:"RCB", name:"Recovery Compression Boots"},
- {id:"AS", name:"Assisted Stretch Session"},
- {id:"PB", name:"Physio Bundle"},
- {id:"PKP", name:"Performance Kickstart Program"},
- {id:"SMFT", name:"Sports Massage - First Trial"}
+{id:"SM",name:"Sports Massage",price:45},
+{id:"RCB",name:"Recovery Compression Boots",price:25},
+{id:"AS",name:"Assisted Stretch Session",price:20},
+{id:"PB",name:"Physio Bundle",price:400},
+{id:"PKP",name:"Performance Kickstart Program",price:261},
+{id:"SMFT",name:"Sports Massage - First Trial",price:189}
 ];
 
-const getAge = dob =>
-  Math.floor((Date.now() - new Date(dob)) / 31557600000);
+const age = d => Math.floor((Date.now()-new Date(d))/31557600000);
 
-/* ----- LOAD CLIENTS (RESTORE AGE) ----- */
-async function loadClients() {
-  const { data } = await sb.from("clients").select("*");
-  clientsTable.innerHTML = "";
-  data.forEach(c => {
-    clientsTable.innerHTML += `
-      <tr>
-        <td>${c.full_name}</td>
-        <td>${c.date_of_birth}</td>
-        <td>${getAge(c.date_of_birth)}</td>
-        <td>${c.gender}</td>
-        <td>${c.citizenship}</td>
-      </tr>`;
-  });
+async function loadClients(){
+const {data}=await sb.from("clients").select("*");
+clientsTable.innerHTML="";
+a_client.innerHTML="";
+data.forEach(c=>{
+clientsTable.innerHTML+=`
+<tr>
+<td>${c.full_name}</td>
+<td>${c.date_of_birth}</td>
+<td>${age(c.date_of_birth)}</td>
+<td>${c.gender}</td>
+<td>${c.citizenship}</td>
+<td>${c.contact||""}</td>
+<td>${c.email||""}</td>
+<td>${c.address||""}</td>
+</tr>`;
+a_client.innerHTML+=`<option value="${c.id}">${c.full_name}</option>`;
+});
 }
 
-/* ----- SALES REPORT ----- */
-let serviceChart;
-
-applyReportBtn.onclick = () => loadReport();
-
-async function loadReport() {
-  const { data } = await sb.from("appointments").select("*");
-  const serviceMap = {};
-  let total = 0;
-  let sst = 0;
-
-  data.forEach(a => {
-    total += Number(a.total || 0);
-    sst += Number(a.sst || 0);
-
-    const name =
-      SERVICES.find(s => s.id === a.service_id)?.name || a.service_id;
-
-    serviceMap[name] = (serviceMap[name] || 0) + Number(a.total || 0);
-  });
-
-  totalSales.textContent = total.toFixed(2);
-  totalSST.textContent = sst.toFixed(2);
-
-  if (serviceChart) serviceChart.destroy();
-  serviceChart = new Chart(serviceChartEl, {
-    type: "bar",
-    data: {
-      labels: Object.keys(serviceMap),
-      datasets: [{
-        data: Object.values(serviceMap),
-        backgroundColor: "#ff7a00"
-      }]
-    }
-  });
+async function loadPractitioners(){
+const {data}=await sb.from("practitioners").select("*");
+practitionerTable.innerHTML="";
+a_practitioner.innerHTML="";
+data.forEach(p=>{
+practitionerTable.innerHTML+=`
+<tr><td>${p.name}</td>
+<td><button class="danger" onclick="delPractitioner('${p.id}')">X</button></td></tr>`;
+a_practitioner.innerHTML+=`<option>${p.name}</option>`;
+});
 }
 
-/* EXPORT */
-exportExcelBtn.onclick = async () => {
-  const { data } = await sb.from("appointments").select("*");
-  const ws = XLSX.utils.json_to_sheet(data);
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, "Sales");
-  XLSX.writeFile(wb, "sales_report.xlsx");
+async function loadAppointments(){
+const {data}=await sb.from("appointments").select("*").order("start_time");
+appointmentsTable.innerHTML="";
+data.forEach(a=>{
+const svc=SERVICES.find(s=>s.id===a.service_id)?.name||a.service_id;
+appointmentsTable.innerHTML+=`
+<tr>
+<td>${a.start_time.slice(0,10)}</td>
+<td>${a.start_time.slice(11,16)}</td>
+<td>${a.client_id}</td>
+<td>${svc}</td>
+<td>${a.practitioner}</td>
+<td>${a.payment_method}</td>
+<td>RM ${a.total}</td>
+</tr>`;
+});
+}
+
+addPractitionerBtn.onclick=async()=>{
+await sb.from("practitioners").insert({name:p_name.value});
+p_name.value="";
+loadPractitioners();
 };
 
-/* TABS */
-function show(tab) {
-  ["clients","practitioners","appointments","reports"].forEach(t => {
-    document.getElementById(t+"Tab").classList.toggle("hidden", t !== tab);
-    document.getElementById("tab"+t.charAt(0).toUpperCase()+t.slice(1))
-      .classList.toggle("active", t === tab);
-  });
+window.delPractitioner=async id=>{
+await sb.from("practitioners").delete().eq("id",id);
+loadPractitioners();
+};
+
+saveAppointmentBtn.onclick=async()=>{
+const svc=SERVICES.find(s=>s.id===a_service.value);
+await sb.from("appointments").insert({
+client_id:a_client.value,
+service_id:svc.id,
+practitioner:a_practitioner.value,
+payment_method:a_payment.value,
+amount:svc.price,
+sst:0,
+total:svc.price,
+start_time:`${a_date.value}T${a_time.value}:00Z`,
+end_time:`${a_date.value}T${a_time.value}:00Z`
+});
+loadAppointments();
+};
+
+let chart;
+applyReportBtn.onclick=async()=>{
+const {data}=await sb.from("appointments").select("*");
+const map={};
+let total=0,sst=0;
+data.forEach(a=>{
+total+=Number(a.total||0);
+sst+=Number(a.sst||0);
+map[a.service_id]=(map[a.service_id]||0)+Number(a.total||0);
+});
+totalSales.textContent=total.toFixed(2);
+totalSST.textContent=sst.toFixed(2);
+if(chart)chart.destroy();
+chart=new Chart(serviceChart,{type:"bar",data:{labels:Object.keys(map),datasets:[{data:Object.values(map),backgroundColor:"#ff7a00"}]}});
+};
+
+exportExcelBtn.onclick=async()=>{
+const {data}=await sb.from("appointments").select("*");
+const ws=XLSX.utils.json_to_sheet(data);
+const wb=XLSX.utils.book_new();
+XLSX.utils.book_append_sheet(wb,ws,"Sales");
+XLSX.writeFile(wb,"sales_report.xlsx");
+};
+
+function show(tab){
+["clients","practitioners","appointments","reports"].forEach(t=>{
+document.getElementById(t+"Tab").classList.toggle("hidden",t!==tab);
+document.getElementById("tab"+t.charAt(0).toUpperCase()+t.slice(1)).classList.toggle("active",t===tab);
+});
 }
+tabClients.onclick=()=>show("clients");
+tabPractitioners.onclick=()=>show("practitioners");
+tabAppointments.onclick=()=>show("appointments");
+tabReports.onclick=()=>show("reports");
 
-tabClients.onclick = () => show("clients");
-tabPractitioners.onclick = () => show("practitioners");
-tabAppointments.onclick = () => show("appointments");
-tabReports.onclick = () => { show("reports"); loadReport(); };
+const now=new Date();
+a_date.value=now.toISOString().slice(0,10);
+a_time.value=now.toTimeString().slice(0,5);
+SERVICES.forEach(s=>a_service.innerHTML+=`<option value="${s.id}">${s.name}</option>`);
 
-loadClients();
+await loadClients();
+await loadPractitioners();
+await loadAppointments();
 
 });
 </script>
