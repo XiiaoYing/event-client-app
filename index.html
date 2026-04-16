@@ -1,33 +1,49 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Admin Dashboard</title>
+<meta charset="UTF-8">
+<title>Admin Dashboard</title>
 
-  <!-- Google Font -->
-  <link://fonts.googleapis.com
-  https://fonts.gstatic.com
-  <link
-    href="https://fonts.googleapis.com/css2?family=Montserrat0&display=swap
+<!-- Google Font -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link
+  href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap"
+  rel="stylesheet"
+/>
 
-  <!-- Supabase -->
-  <script/cdn.jsdelivr.net/npm/@supabase/supabase-js@2
+<!-- Supabase -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  <!-- Chart.js -->
-  <script src.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js</script>
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 
-  <!-- XLSX -->
-  <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+<!-- XLSX -->
+<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
 
-  <style>
-    body{margin:0;font-family:'Montserrat',sans-serif;background:#f4f4f4}
-    header{display:flex;gap:8px;padding:10px;background:#111}
-    header button{background:#333;color:#fff;border:none;padding:6px 14px;border-radius:6px;cursor:pointer}
-    header button.active{background:#ff7a00;color:#000;font-weight:600}
-    .container{max-width:1200px;margin:auto;padding:20px}
-    .hidden{display:none}
-    .card{background:#fff;padding:16px;border-radius:8px;margin-bottom:20px}
-  </style>
+<style>
+body{margin:0;font-family:'Montserrat',sans-serif;background:#f4f4f4}
+header{display:flex;gap:8px;padding:10px;background:#111}
+header button{background:#333;color:#fff;border:none;padding:6px 14px;border-radius:6px;cursor:pointer}
+header button.active{background:#ff7a00;color:#000;font-weight:600}
+.container{max-width:1200px;margin:auto;padding:20px}
+.hidden{display:none}
+.card{background:#fff;padding:16px;border-radius:8px;margin-bottom:20px}
+.section-title{font-size:16px;font-weight:700;margin-bottom:10px}
+.flex{display:flex;gap:12px;flex-wrap:wrap}
+label{font-size:12px;font-weight:600}
+input,select,textarea{width:100%;padding:6px;margin-top:3px}
+button.primary{background:#ff7a00;border:none;padding:6px 14px;border-radius:6px;cursor:pointer}
+button.danger{background:#e74c3c;color:#fff;border:none;padding:6px 14px;border-radius:6px;cursor:pointer}
+table{width:100%;border-collapse:collapse;margin-top:10px}
+th,td{border-bottom:1px solid #ddd;padding:6px;font-size:13px}
+th{text-align:left;background:#f0f0f0}
+.address-cell{max-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.address-cell:hover{white-space:normal}
+.chart-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+canvas{max-height:240px}
+@media(max-width:900px){.chart-grid{grid-template-columns:1fr}}
+</style>
 </head>
 
 <body>
@@ -41,10 +57,40 @@
 
 <div class="container">
 
-<!-- ================= CLIENTS (LOCKED) ================= -->
+<!-- ================= CLIENTS ================= -->
 <section id="clientsTab">
   <div class="card">
-    <div class="section-title">Clients (Locked)</div>
+    <div class="section-title">Clients</div>
+
+    <div class="flex">
+      <div><label>Name</label><input id="c_name"></div>
+      <div><label>DOB</label><input type="date" id="c_dob"></div>
+      <div><label>Gender</label>
+        <select id="c_gender"><option>Male</option><option>Female</option></select>
+      </div>
+      <div><label>Citizenship</label>
+        <select id="c_citizenship"><option>Malaysian</option><option>Foreigner</option></select>
+      </div>
+    </div>
+
+    <div class="flex">
+      <div><label>IC / Passport</label><input id="c_ic"></div>
+      <div><label>Contact</label><input id="c_contact"></div>
+      <div><label>Email</label><input id="c_email"></div>
+    </div>
+
+    <label>Address (Optional)</label>
+    <textarea id="c_address"></textarea>
+
+    <div class="flex">
+      <button class="primary" id="saveClientBtn">Save Client</button>
+      <button class="primary" id="cancelClientBtn">Cancel</button>
+    </div>
+
+    <input type="hidden" id="client_id">
+  </div>
+
+  <div class="card">
     <table>
       <thead>
         <tr>
@@ -57,10 +103,13 @@
   </div>
 </section>
 
-<!-- ================= PRACTITIONERS (LOCKED) ================= -->
+<!-- ================= PRACTITIONERS ================= -->
 <section id="practitionersTab" class="hidden">
   <div class="card">
-    <div class="section-title">Practitioners (Locked)</div>
+    <div class="section-title">Practitioners</div>
+    <input id="p_name">
+    <button class="primary" id="addPractitionerBtn">Add</button>
+
     <table>
       <thead><tr><th>Name</th></tr></thead>
       <tbody id="practitionerTable"></tbody>
@@ -71,25 +120,32 @@
 <!-- ================= APPOINTMENTS ================= -->
 <section id="appointmentsTab" class="hidden">
   <div class="card">
-    <div class="section-title">Add / Edit Appointment</div>
+    <div class="section-title">Appointments</div>
     <input type="hidden" id="appointment_id">
+
     <div class="flex">
       <div><label>Date</label><input type="date" id="a_date"></div>
       <div><label>Time</label><input type="time" id="a_time"></div>
     </div>
+
     <div class="flex">
       <div style="flex:1"><label>Client</label><select id="a_client"></select></div>
       <div style="flex:1"><label>Practitioner</label><select id="a_practitioner"></select></div>
     </div>
+
     <label>Service</label><select id="a_service"></select>
+
     <div class="flex">
       <div><label>Base (RM)</label><input id="a_price" readonly></div>
       <div><label>SST (RM)</label><input id="a_sst" readonly></div>
       <div><label>Total (RM)</label><input id="a_total" readonly></div>
     </div>
+
     <label>Payment</label>
     <select id="a_payment"><option>Cash</option><option>Card</option><option>E‑Wallet</option></select>
+
     <label>Remarks</label><textarea id="a_remarks"></textarea>
+
     <div class="flex">
       <button class="primary" id="saveAppointmentBtn">Save</button>
       <button class="danger" id="deleteAppointmentBtn">Delete</button>
@@ -97,7 +153,6 @@
   </div>
 
   <div class="card">
-    <div class="section-title">Appointment List</div>
     <table>
       <thead>
         <tr><th>Date</th><th>Time</th><th>Client</th><th>Service</th><th>Practitioner</th><th>Payment</th><th>Total</th></tr>
@@ -111,34 +166,7 @@
 <section id="reportsTab" class="hidden">
   <div class="card">
     <div class="section-title">Sales Report</div>
-    <div class="flex">
-      <div><label>From</label><input type="date" id="reportFrom"></div>
-      <div><label>To</label><input type="date" id="reportTo"></div>
-      <button class="primary" id="applyReportBtn">Apply</button>
-      <button class="primary" id="exportExcelBtn">Export Excel</button>
-    </div>
-  </div>
 
-  <div class="card">
-    <div class="section-title">Daily Summary</div>
-    <table>
-      <thead><tr><th>Date</th><th>Total Sales (RM)</th><th>SST (RM)</th></tr></thead>
-      <tbody id="summaryTable"></tbody>
-    </table>
-  </div>
-
-  <div class="card">
-    <div class="section-title">Detail</div>
-    <table>
-      <thead>
-        <tr><th>Date</th><th>Time</th><th>Client</th><th>Service</th><th>Practitioner</th><th>Payment</th><th>Subtotal</th><th>SST</th><th>Total</th></tr>
-      </thead>
-      <tbody id="detailTable"></tbody>
-    </table>
-  </div>
-
-  <div class="card">
-    <div class="section-title">Visual Insights</div>
     <div class="chart-grid">
       <canvas id="serviceCountChart"></canvas>
       <canvas id="serviceRevenueChart"></canvas>
@@ -146,6 +174,8 @@
     <div class="chart-grid">
       <canvas id="paymentRevenueChart"></canvas>
     </div>
+
+    <button class="primary" id="exportExcelBtn">Export Excel</button>
   </div>
 </section>
 
@@ -165,16 +195,34 @@ const SERVICES=[
   {id:"SMFT",name:"Sports Massage - First Trial",price:189}
 ];
 
-let clients=[], appointments=[];
-let serviceCountChart, serviceRevenueChart, paymentRevenueChart;
+let clients=[],appointments=[];
+let serviceCountChart,serviceRevenueChart,paymentRevenueChart;
 
-function age(d){return Math.floor((Date.now()-new Date(d))/(365.25*86400000));}
+/* ---------- Helpers ---------- */
+const age = d => Math.floor((Date.now()-new Date(d))/(365.25*86400000));
 
-/* Tabs */
+function formatIC(input){
+  let v=input.value.replace(/-/g,"");
+  if(/^[A-Za-z]/.test(v)){input.value=v;return;}
+  v=v.replace(/\D/g,"");
+  if(v.length>6&&v.length<=8)input.value=v.slice(0,6)+"-"+v.slice(6);
+  else if(v.length>8)input.value=v.slice(0,6)+"-"+v.slice(6,8)+"-"+v.slice(8,12);
+  else input.value=v;
+}
+function formatContact(input){
+  let v=input.value.replace(/\D/g,"");
+  if(v.length>3)input.value=v.slice(0,3)+"-"+v.slice(3,11);
+  else input.value=v;
+}
+c_ic.oninput=()=>formatIC(c_ic);
+c_contact.oninput=()=>formatContact(c_contact);
+
+/* ---------- Tabs ---------- */
 function show(tab){
   ["clients","practitioners","appointments","reports"].forEach(t=>{
-    document.getElementById(t+"Tab").classList.toggle("hidden", t!==tab);
-    document.getElementById("tab"+t.charAt(0).toUpperCase()+t.slice(1)).classList.toggle("active", t===tab);
+    document.getElementById(t+"Tab").classList.toggle("hidden",t!==tab);
+    document.getElementById("tab"+t.charAt(0).toUpperCase()+t.slice(1))
+      .classList.toggle("active",t===tab);
   });
 }
 tabClients.onclick=()=>show("clients");
@@ -182,11 +230,12 @@ tabPractitioners.onclick=()=>show("practitioners");
 tabAppointments.onclick=()=>show("appointments");
 tabReports.onclick=()=>show("reports");
 
-/* Load Clients (read‑only) */
+/* ---------- Clients ---------- */
 async function loadClients(){
-  const {data}=await sb.from("clients").select("*");
+  const {data}=await sb.from("clients").select("*").order("full_name");
   clients=data||[];
-  clientsTable.innerHTML=""; a_client.innerHTML="";
+  clientsTable.innerHTML="";
+  a_client.innerHTML="";
   clients.forEach(c=>{
     clientsTable.innerHTML+=`
       <tr>
@@ -204,25 +253,65 @@ async function loadClients(){
   });
 }
 
-/* Load Practitioners (read‑only) */
+saveClientBtn.onclick=async()=>{
+  if(!c_name.value||!c_dob.value) return alert("Name and DOB required");
+  if(c_citizenship.value==="Malaysian" && /^[0-9]/.test(c_ic.value) && !/^\d{6}-\d{2}-\d{4}$/.test(c_ic.value))
+    return alert("IC format XXXXXX-XX-XXXX");
+
+  const payload={
+    full_name:c_name.value.trim(),
+    date_of_birth:c_dob.value,
+    gender:c_gender.value,
+    citizenship:c_citizenship.value,
+    ic_passport:c_ic.value,
+    contact:c_contact.value,
+    email:c_email.value,
+    address:c_address.value||null
+  };
+
+  client_id.value
+    ? await sb.from("clients").update(payload).eq("id",client_id.value)
+    : await sb.from("clients").insert(payload);
+
+  cancelClientBtn.click();
+  loadClients();
+};
+
+cancelClientBtn.onclick=()=>{
+  client_id.value="";c_name.value="";c_dob.value="";
+  c_ic.value="";c_contact.value="";c_email.value="";c_address.value="";
+};
+
+/* ---------- Practitioners ---------- */
 async function loadPractitioners(){
-  const {data}=await sb.from("practitioners").select("*");
-  practitionerTable.innerHTML=""; a_practitioner.innerHTML="";
+  const {data}=await sb.from("practitioners").select("*").order("name");
+  practitionerTable.innerHTML="";
+  a_practitioner.innerHTML="";
   (data||[]).forEach(p=>{
     practitionerTable.innerHTML+=`<tr><td>${p.name}</td></tr>`;
     a_practitioner.innerHTML+=`<option>${p.name}</option>`;
   });
 }
+addPractitionerBtn.onclick=async()=>{
+  if(!p_name.value)return;
+  await sb.from("practitioners").insert({name:p_name.value});
+  p_name.value="";
+  loadPractitioners();
+};
 
-/* Appointments */
+/* ---------- Appointments ---------- */
 SERVICES.forEach(s=>a_service.innerHTML+=`<option value="${s.id}">${s.name}</option>`);
+
 function recalc(){
   const s=SERVICES.find(x=>x.id===a_service.value);
   const c=clients.find(x=>x.id===a_client.value);
   const sst=c?.citizenship==="Foreigner"?+(s.price*0.06).toFixed(2):0;
-  a_price.value=s.price; a_sst.value=sst; a_total.value=(s.price+sst).toFixed(2);
+  a_price.value=s.price;
+  a_sst.value=sst;
+  a_total.value=(s.price+sst).toFixed(2);
 }
-a_service.onchange=recalc; a_client.onchange=recalc;
+a_service.onchange=recalc;
+a_client.onchange=recalc;
 
 async function loadAppointments(){
   const {data}=await sb.from("appointments").select("*").order("start_time");
@@ -244,9 +333,9 @@ async function loadAppointments(){
   });
 }
 
-window.editRow = (id)=>{
+window.editRow=id=>{
   const a=appointments.find(x=>x.id===id);
-  if(!a) return;
+  if(!a)return;
   appointment_id.value=a.id;
   a_date.value=a.start_time.slice(0,10);
   a_time.value=a.start_time.slice(11,16);
@@ -261,139 +350,117 @@ window.editRow = (id)=>{
 saveAppointmentBtn.onclick=async()=>{
   const s=SERVICES.find(x=>x.id===a_service.value);
   const c=clients.find(x=>x.id===a_client.value);
-  const sst=c.citizenship==="Foreigner"?+(s.price*0.06).toFixed(2):0;
+  const sst=c?.citizenship==="Foreigner"?+(s.price*0.06).toFixed(2):0;
+
   appointment_id.value
     ? await sb.from("appointments").update({
-        client_id:c.id, service_id:s.id, practitioner:a_practitioner.value,
-        payment_method:a_payment.value, remarks:a_remarks.value,
-        amount:s.price, sst, total:s.price+sst
+        client_id:c.id,service_id:s.id,practitioner:a_practitioner.value,
+        payment_method:a_payment.value,remarks:a_remarks.value,
+        amount:s.price,sst,total:s.price+sst
       }).eq("id",appointment_id.value)
     : await sb.from("appointments").insert({
-        client_id:c.id, service_id:s.id, practitioner:a_practitioner.value,
-        payment_method:a_payment.value, remarks:a_remarks.value,
-        amount:s.price, sst, total:s.price+sst,
+        client_id:c.id,service_id:s.id,practitioner:a_practitioner.value,
+        payment_method:a_payment.value,remarks:a_remarks.value,
+        amount:s.price,sst,total:s.price+sst,
         start_time:`${a_date.value}T${a_time.value}:00Z`,
         end_time:`${a_date.value}T${a_time.value}:00Z`
       });
-  appointment_id.value=""; loadAppointments();
+
+  appointment_id.value="";
+  loadAppointments();
 };
 
 deleteAppointmentBtn.onclick=async()=>{
-  if(!appointment_id.value) return;
-  if(!confirm("Delete this appointment?")) return;
+  if(!appointment_id.value)return;
+  if(!confirm("Delete appointment?"))return;
   await sb.from("appointments").delete().eq("id",appointment_id.value);
-  appointment_id.value=""; loadAppointments();
+  appointment_id.value="";
+  loadAppointments();
 };
 
-/* Sales Report & Charts */
-applyReportBtn.onclick=async()=>{
-  const {data}=await sb.from("appointments").select("*");
-  summaryTable.innerHTML=""; detailTable.innerHTML="";
-  const dateMap={}, serviceCount={}, serviceRevenue={}, paymentRevenue={};
-
-  data.forEach(a=>{
-    const date=a.start_time.slice(0,10);
-    dateMap[date]=dateMap[date]||{sales:0,sst:0};
-    dateMap[date].sales+=Number(a.total||0);
-    dateMap[date].sst+=Number(a.sst||0);
-
+/* ---------- Sales Report & Charts ---------- */
+tabReports.onclick=async()=>{
+  show("reports");
+  const dateMap={},serviceCount={},serviceRevenue={},paymentRevenue={};
+  appointments.forEach(a=>{
     const svc=SERVICES.find(s=>s.id===a.service_id)?.name||"";
     serviceCount[svc]=(serviceCount[svc]||0)+1;
     serviceRevenue[svc]=(serviceRevenue[svc]||0)+Number(a.total||0);
     paymentRevenue[a.payment_method]=(paymentRevenue[a.payment_method]||0)+Number(a.total||0);
-
-    const cname=clients.find(c=>c.id===a.client_id)?.full_name||"";
-    detailTable.innerHTML+=`
-      <tr>
-        <td>${date}</td><td>${a.start_time.slice(11,16)}</td><td>${cname}</td><td>${svc}</td>
-        <td>${a.practitioner||""}</td><td>${a.payment_method||""}</td>
-        <td>${a.amount}</td><td>${a.sst}</td><td>${a.total}</td>
-      </tr>`;
   });
 
-  Object.keys(dateMap).forEach(d=>{
-    summaryTable.innerHTML+=`<tr><td>${d}</td><td>${dateMap[d].sales.toFixed(2)}</td><td>${dateMap[d].sst.toFixed(2)}</td></tr>`;
-  });
+  if(serviceCountChart)serviceCountChart.destroy();
+  if(serviceRevenueChart)serviceRevenueChart.destroy();
+  if(paymentRevenueChart)paymentRevenueChart.destroy();
 
-  if(serviceCountChart) serviceCountChart.destroy();
-  if(serviceRevenueChart) serviceRevenueChart.destroy();
-  if(paymentRevenueChart) paymentRevenueChart.destroy();
-
-  serviceCountChart=new Chart(document.getElementById("serviceCountChart"),{
+  serviceCountChart=new Chart(serviceCountChartEl={
+    getContext:()=>document.getElementById("serviceCountChart").getContext("2d")
+  }.getContext(),{
     type:"bar",
-    data:{labels:Object.keys(serviceCount),
-      datasets:[{label:"Subscribers",data:Object.values(serviceCount),backgroundColor:"#ff7a00"}]},
-    options:{
-      onClick:(e,el)=>{
-        if(!el.length) return;
-        const i=el[0].index;
-        const svc=Object.keys(serviceCount)[i];
-        const count=serviceCount[svc];
-        const total=Object.values(serviceCount).reduce((a,b)=>a+b,0);
-        alert(`${svc}\nSubscribers: ${count}\nPercentage: ${((count/total)*100).toFixed(1)}%`);
-      }
-    }
+    data:{labels:Object.keys(serviceCount),datasets:[{data:Object.values(serviceCount),backgroundColor:"#ff7a00"}]},
+    options:{onClick:(e,el)=>{
+      if(!el.length)return;
+      const i=el[0].index;
+      const k=Object.keys(serviceCount)[i];
+      const total=Object.values(serviceCount).reduce((a,b)=>a+b,0);
+      alert(`${k}\nPeople: ${serviceCount[k]}\nPercentage: ${((serviceCount[k]/total)*100).toFixed(1)}%`);
+    }}
   });
 
   serviceRevenueChart=new Chart(document.getElementById("serviceRevenueChart"),{
     type:"pie",
-    data:{labels:Object.keys(serviceRevenue),
-      datasets:[{data:Object.values(serviceRevenue)}]},
-    options:{
-      onClick:(e,el)=>{
-        if(!el.length) return;
-        const i=el[0].index;
-        const svc=Object.keys(serviceRevenue)[i];
-        alert(`${svc}\nRevenue: RM ${serviceRevenue[svc].toFixed(2)}`);
-      }
-    }
+    data:{labels:Object.keys(serviceRevenue),datasets:[{data:Object.values(serviceRevenue)}]},
+    options:{onClick:(e,el)=>{
+      if(!el.length)return;
+      const k=Object.keys(serviceRevenue)[el[0].index];
+      alert(`${k}\nRevenue: RM ${serviceRevenue[k].toFixed(2)}`);
+    }}
   });
 
   paymentRevenueChart=new Chart(document.getElementById("paymentRevenueChart"),{
     type:"pie",
-    data:{labels:Object.keys(paymentRevenue),
-      datasets:[{data:Object.values(paymentRevenue)}]},
-    options:{
-      onClick:(e,el)=>{
-        if(!el.length) return;
-        const k=Object.keys(paymentRevenue)[el[0].index];
-        alert(`${k}\nRevenue: RM ${paymentRevenue[k].toFixed(2)}`);
-      }
-    }
+    data:{labels:Object.keys(paymentRevenue),datasets:[{data:Object.values(paymentRevenue)}]},
+    options:{onClick:(e,el)=>{
+      if(!el.length)return;
+      const k=Object.keys(paymentRevenue)[el[0].index];
+      alert(`${k}\nRevenue: RM ${paymentRevenue[k].toFixed(2)}`);
+    }}
   });
 };
 
-/* Excel Export */
-exportExcelBtn.onclick=function(){
-  const rows=[], summary=[], charts=[];
-  document.querySelectorAll("#detailTable tr").forEach(tr=>{
-    const t=[...tr.children].map(td=>td.textContent);
-    rows.push({Date:t[0],Time:t[1],Client:t[2],Service:t[3],Practitioner:t[4],Payment:t[5],Subtotal:t[6],SST:t[7],Total:t[8]});
+exportExcelBtn.onclick=()=>{
+  const wb=XLSX.utils.book_new();
+  const rows=[],summary=[],charts=[];
+  appointments.forEach(a=>{
+    const cname=clients.find(c=>c.id===a.client_id)?.full_name||"";
+    const sname=SERVICES.find(s=>s.id===a.service_id)?.name||"";
+    rows.push({
+      Date:a.start_time.slice(0,10),
+      Time:a.start_time.slice(11,16),
+      Client:cname,
+      Service:sname,
+      Practitioner:a.practitioner,
+      Payment:a.payment_method,
+      Subtotal:a.amount,
+      SST:a.sst,
+      Total:a.total
+    });
   });
-  document.querySelectorAll("#summaryTable tr").forEach(tr=>{
-    const t=[...tr.children].map(td=>td.textContent);
-    summary.push({Date:t[0],"Total Sales":t[1],"Total SST":t[2]});
-  });
-  // charts data
-  Object.keys(serviceCountChart.data.labels||{}).forEach((_,i)=>{
+  Object.keys(serviceRevenueChart.data.labels||{}).forEach((_,i)=>{
     charts.push({
-      Service: serviceCountChart.data.labels[i],
-      Subscribers: serviceCountChart.data.datasets[0].data[i],
-      Revenue: serviceRevenueChart.data.datasets[0].data[i] || 0
+      Service:serviceRevenueChart.data.labels[i],
+      Revenue:serviceRevenueChart.data.datasets[0].data[i]
     });
   });
 
-  const wb=XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(rows),"Detail");
-  XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(summary),"Daily Summary");
-  XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(charts),"Charts Data");
   XLSX.writeFile(wb,"sales_report.xlsx");
 };
 
-/* Init */
+/* ---------- Init ---------- */
 const today=new Date().toISOString().slice(0,10);
-a_date.value=today; a_time.value=new Date().toTimeString().slice(0,5);
-reportFrom.value=today; reportTo.value=today;
+a_date.value=today;
+a_time.value=new Date().toTimeString().slice(0,5);
 
 await loadClients();
 await loadPractitioners();
