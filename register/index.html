@@ -2,9 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Client Registration</title>
+  <title>Client Registration | Dynamique Sports Rehab Centre</title>
 
-  <!-- Supabase -->
+  <!-- ✅ Supabase Library -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
@@ -12,27 +12,44 @@
       font-family: Arial, sans-serif;
       background: #111;
       padding: 30px;
+      margin: 0;
     }
+
     .card {
       max-width: 480px;
       margin: auto;
-      background: #fff;
+      background: #ffffff;
       padding: 24px;
-      border-radius: 10px;
+      border-radius: 12px;
     }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
     label {
+      font-size: 13px;
       font-weight: bold;
-      margin-top: 12px;
       display: block;
+      margin-top: 12px;
     }
+
     input, select, textarea {
       width: 100%;
       padding: 8px;
       margin-top: 6px;
+      box-sizing: border-box;
     }
+
+    input[readonly] {
+      background: #f2f2f2;
+    }
+
     textarea {
       min-height: 60px;
     }
+
     button {
       margin-top: 20px;
       width: 100%;
@@ -42,6 +59,15 @@
       font-weight: bold;
       cursor: pointer;
     }
+
+    .msg {
+      margin-top: 16px;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    .success { color: green; }
+    .error { color: red; }
   </style>
 </head>
 
@@ -62,8 +88,8 @@
   <label>Gender *</label>
   <select id="gender">
     <option value="">Select</option>
-    <option>Male</option>
-    <option>Female</option>
+    <option value="Male">Male</option>
+    <option value="Female">Female</option>
   </select>
 
   <label>Citizenship *</label>
@@ -80,50 +106,92 @@
   <input id="contact">
 
   <label>Email</label>
-  <input id="email">
+  <input type="email" id="email">
 
   <label>Address</label>
   <textarea id="address"></textarea>
 
-  <button id="registerBtn">Register</button>
-  <div id="msg"></div>
+  <button id="registerBtn" type="button">REGISTER</button>
+
+  <div id="msg" class="msg"></div>
 </div>
 
 <script>
+/* ================= SUPABASE ================= */
 const supabaseClient = supabase.createClient(
-  "https://yxkospvcqkoxiravjtqd.supabase.co",
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl4a29zcHZjcWtveGlyYXZqdHFkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYyODEyNzEsImV4cCI6MjA5MTg1NzI3MX0.Aaw6wfcXf21uwgMQJWtiVN_vxqaqevEQerx2GjOG-Jc"
+  "https://yxkospvcqkoxiravjtqd.supabase.co",        // e.g. https://abcd1234.supabase.co
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl4a29zcHZjcWtveGlyYXZqdHFkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYyODEyNzEsImV4cCI6MjA5MTg1NzI3MX0.Aaw6wfcXf21uwgMQJWtiVN_vxqaqevEQerx2GjOG-Jc"    // anon public key
 );
 
-// ✅ Auto-calc age
-document.getElementById("dob").addEventListener("change", () => {
-  const dob = new Date(dob.value);
-  const today = new Date();
-  let age = today.getFullYear() - dob.getFullYear();
-  const m = today.getMonth() - dob.getMonth();
-  if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) age--;
-  document.getElementById("age").value = isNaN(age) ? "" : age;
+/* ================= AGE AUTO-COMPUTE ================= */
+document.addEventListener("DOMContentLoaded", () => {
+  const dobInput = document.getElementById("dob");
+  const ageInput = document.getElementById("age");
+
+  dobInput.addEventListener("change", () => {
+    if (!dobInput.value) {
+      ageInput.value = "";
+      return;
+    }
+
+    const dob = new Date(dobInput.value);
+    const today = new Date();
+
+    let age = today.getFullYear() - dob.getFullYear();
+    const monthDiff = today.getMonth() - dob.getMonth();
+
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
+      age--;
+    }
+
+    ageInput.value = age >= 0 ? age : "";
+  });
 });
 
+/* ================= REGISTER CLIENT ================= */
 document.getElementById("registerBtn").addEventListener("click", async () => {
+  const msg = document.getElementById("msg");
+  msg.innerHTML = "";
+
   const payload = {
-    full_name: full_name.value.trim(),
-    date_of_birth: dob.value,
-    gender: gender.value,
-    citizenship: citizenship.value,
-    ic_passport: ic_passport.value,
-    contact: contact.value,
-    email: email.value,
-    address: address.value
+    full_name: document.getElementById("full_name").value.trim(),
+    date_of_birth: document.getElementById("dob").value,
+    gender: document.getElementById("gender").value,
+    citizenship: document.getElementById("citizenship").value,
+    ic_passport: document.getElementById("ic_passport").value,
+    contact: document.getElementById("contact").value,
+    email: document.getElementById("email").value,
+    address: document.getElementById("address").value
   };
 
-  if (!payload.full_name || !payload.date_of_birth || !payload.contact || !payload.citizenship) {
-    msg.innerText = "Please fill all required fields";
+  // ✅ Required field check
+  if (
+    !payload.full_name ||
+    !payload.date_of_birth ||
+    !payload.contact ||
+    !payload.gender ||
+    !payload.citizenship
+  ) {
+    msg.innerHTML = "<span class='error'>Please fill all required fields *</span>";
     return;
   }
 
-  const { error } = await supabaseClient.from("clients").insert(payload);
-  msg.innerText = error ? error.message : "✅ Registration successful";
+  const { error } = await supabaseClient
+    .from("clients")
+    .insert(payload);
+
+  if (error) {
+    console.error(error);
+    msg.innerHTML = `<span class="error">${error.message}</span>`;
+  } else {
+    msg.innerHTML = "<span class='success'>✅ Registration successful</span>";
+
+    // reset form
+    document.querySelectorAll("input, textarea").forEach(el => el.value = "");
+    document.getElementById("gender").value = "";
+    document.getElementById("citizenship").value = "";
+    document.getElementById("age").value = "";
+  }
 });
 </script>
 
