@@ -4,169 +4,127 @@
   <meta charset="UTF-8">
   <title>Client Registration</title>
 
-  <!-- Font -->
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
-
   <!-- Supabase -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
-    * { box-sizing: border-box; }
-
     body {
-      margin: 0;
-      min-height: 100vh;
-      font-family: "Montserrat", sans-serif;
-      background: radial-gradient(circle at top, #111 0%, #000 60%);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      color: #000;
+      font-family: Arial, sans-serif;
+      background: #111;
+      padding: 30px;
     }
-
     .card {
+      max-width: 480px;
+      margin: auto;
       background: #fff;
-      width: 100%;
-      max-width: 460px;
-      padding: 32px;
-      border-radius: 16px;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+      padding: 24px;
+      border-radius: 10px;
     }
-
-    h1 {
-      text-align: center;
-      font-size: 22px;
-      margin-bottom: 20px;
-    }
-
     label {
-      font-size: 13px;
-      font-weight: 600;
-      margin-bottom: 6px;
+      font-weight: bold;
+      margin-top: 12px;
       display: block;
     }
-
     input, select, textarea {
       width: 100%;
-      padding: 12px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      margin-bottom: 14px;
-      font-size: 14px;
+      padding: 8px;
+      margin-top: 6px;
     }
-
     textarea {
-      min-height: 70px;
-      resize: vertical;
+      min-height: 60px;
     }
-
-    .age {
-      font-size: 13px;
-      color: #666;
-      margin-bottom: 14px;
-    }
-
     button {
+      margin-top: 20px;
       width: 100%;
-      padding: 14px;
+      padding: 12px;
       background: #ff7a00;
       border: none;
-      color: #000;
-      font-weight: 700;
-      font-size: 15px;
-      border-radius: 8px;
+      font-weight: bold;
       cursor: pointer;
-      margin-top: 10px;
     }
-
-    button:hover {
-      opacity: 0.9;
-    }
-
-    .success, .error {
-      text-align: center;
-      font-size: 14px;
-      margin-top: 14px;
-      display: none;
-    }
-
-    .success { color: #1a8f3a; }
-    .error { color: #b00020; }
   </style>
 </head>
 
 <body>
 
 <div class="card">
-  <h1>Client Registration</h1>
+  <h2>Client Registration</h2>
 
-  <form id="registerForm">
+  <label>Full Name *</label>
+  <input id="full_name">
 
-    <label>Full Name *</label>
-    <input id="full_name" required>
+  <label>Date of Birth *</label>
+  <input type="date" id="dob">
 
-    <label>Date of Birth *</label>
-    <input type="date" id="dob" required>
+  <label>Age</label>
+  <input id="age" readonly>
 
-    <div class="age">Age: <span id="ageText">–</span></div>
+  <label>Gender *</label>
+  <select id="gender">
+    <option value="">Select</option>
+    <option>Male</option>
+    <option>Female</option>
+  </select>
 
-    <label>Contact *</label>
-    <input id="contact" required>
+  <label>Citizenship *</label>
+  <select id="citizenship">
+    <option value="">Select</option>
+    <option value="Malaysian">Malaysian</option>
+    <option value="Foreigner">Foreigner</option>
+  </select>
 
-    <label>Gender</label>
-    <select id="gender">
-      <option value="">Select</option>
-      <option>Male</option>
-      <option>Female</option>
-    </select>
+  <label>IC / Passport *</label>
+  <input id="ic_passport">
 
-    <label>Address</label>
-    <textarea id="address"></textarea>
+  <label>Contact *</label>
+  <input id="contact">
 
-    <button type="submit">REGISTER</button>
+  <label>Email</label>
+  <input id="email">
 
-    <div class="success" id="successMsg">✅ Registration successful</div>
-    <div class="error" id="errorMsg">❌ Please try again</div>
-  </form>
+  <label>Address</label>
+  <textarea id="address"></textarea>
+
+  <button id="registerBtn">Register</button>
+  <div id="msg"></div>
 </div>
 
 <script>
-/* ===== SUPABASE ===== */
-const SUPABASE_URL = "https://yxkospvcqkoxiravjtqd.supabase.co";
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl4a29zcHZjcWtveGlyYXZqdHFkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYyODEyNzEsImV4cCI6MjA5MTg1NzI3MX0.Aaw6wfcXf21uwgMQJWtiVN_vxqaqevEQerx2GjOG-Jc";
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const supabaseClient = supabase.createClient(
+  "https://yxkospvcqkoxiravjtqd.supabase.co",
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl4a29zcHZjcWtveGlyYXZqdHFkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYyODEyNzEsImV4cCI6MjA5MTg1NzI3MX0.Aaw6wfcXf21uwgMQJWtiVN_vxqaqevEQerx2GjOG-Jc"
+);
 
-/* ===== AGE ===== */
-dob.onchange = () => {
-  if (!dob.value) return;
-  const age = Math.floor((Date.now() - new Date(dob.value)) / (365.25 * 86400000));
-  ageText.textContent = age;
-};
+// ✅ Auto-calc age
+document.getElementById("dob").addEventListener("change", () => {
+  const dob = new Date(dob.value);
+  const today = new Date();
+  let age = today.getFullYear() - dob.getFullYear();
+  const m = today.getMonth() - dob.getMonth();
+  if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) age--;
+  document.getElementById("age").value = isNaN(age) ? "" : age;
+});
 
-/* ===== SUBMIT ===== */
-registerForm.onsubmit = async (e) => {
-  e.preventDefault();
-  successMsg.style.display = "none";
-  errorMsg.style.display = "none";
-
-  const { error } = await sb.from("clients").insert({
-    full_name: full_name.value,
+document.getElementById("registerBtn").addEventListener("click", async () => {
+  const payload = {
+    full_name: full_name.value.trim(),
     date_of_birth: dob.value,
+    gender: gender.value,
+    citizenship: citizenship.value,
+    ic_passport: ic_passport.value,
     contact: contact.value,
-    gender: gender.value || null,
-    address: address.value || null,
-    citizenship: "Malaysian"
-  });
+    email: email.value,
+    address: address.value
+  };
 
-  if (error) {
-    console.error(error);
-    errorMsg.style.display = "block";
-  } else {
-    successMsg.style.display = "block";
-    registerForm.reset();
-    ageText.textContent = "–";
+  if (!payload.full_name || !payload.date_of_birth || !payload.contact || !payload.citizenship) {
+    msg.innerText = "Please fill all required fields";
+    return;
   }
-};
+
+  const { error } = await supabaseClient.from("clients").insert(payload);
+  msg.innerText = error ? error.message : "✅ Registration successful";
+});
 </script>
 
 </body>
