@@ -441,7 +441,8 @@ c_contact.oninput = ()=>{
 };
 
 /* ================= CLIENTS ================= */
-async function loadClients() {
+
+  window.loadClients = async function () {
   const { data, error } = await sb
     .from("clients")
     .select("*")
@@ -453,13 +454,12 @@ async function loadClients() {
   }
 
   // ✅ update GLOBAL state
-  clients = data;
+  window.clients = data;
 
-  // ✅ render table
   const table = document.getElementById("clientsTable");
   table.innerHTML = "";
 
-  clients.forEach(c => {
+  data.forEach(c => {
     const age = c.date_of_birth
       ? Math.floor(
           (new Date() - new Date(c.date_of_birth)) /
@@ -483,8 +483,9 @@ async function loadClients() {
       </tr>
     `;
   });
-}
+};
 
+  
 function editClient(id) {
   const c = clients.find(x => String(x.id) === String(id));
 
@@ -882,10 +883,11 @@ async function loadClients() {
   });
 }
 
+
 window.onload = async () => {
-  await loadClients();
-  await loadPractitioners();
-  await loadAppointments();
+    await loadClients();
+    await loadPractitioners();
+    await loadAppointments();
 };
   
 </script>
