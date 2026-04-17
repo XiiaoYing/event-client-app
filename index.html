@@ -442,8 +442,7 @@ c_contact.oninput = ()=>{
 
 /* ================= CLIENTS ================= */
 async function loadClients() {
-  const { data, error } = await supabaseClient
-    .from("clients")
+  const { data, error } = await sb.from("clients")
     .select("*")
     .order("created_at", { ascending: false });
 
@@ -811,8 +810,7 @@ exportExcelBtn.onclick = ()=>{
 
 // ================= ALL CLIENTS LIST =================
 async function loadClients() {
-  const { data, error } = await supabaseClient
-    .from("clients")
+  const { data, error } = await sb.from("clients")
     .select("*")
     .order("created_at", { ascending: false });
 
