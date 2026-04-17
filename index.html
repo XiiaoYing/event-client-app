@@ -50,15 +50,19 @@
       color: #000;
       font-weight: 600;
     }
-    header {
+header {
   position: relative;
   z-index: 1000;
 }
 
 section {
   position: relative;
-  z-index: 1;
 }
+
+section[hidden] {
+  display: none;
+}
+
 
     .container {
       max-width: 1300px;
@@ -415,15 +419,14 @@ let serviceCountChart, serviceRevenueChart, paymentRevenueChart, ageRevenueChart
 const age = d => Math.floor((Date.now() - new Date(d)) / (365.25 * 86400000));
 
 function showTab(tabId) {
-  // hide only the main tab sections
   clientsTab.hidden = true;
   practitionersTab.hidden = true;
   appointmentsTab.hidden = true;
   reportsTab.hidden = true;
 
-  // show selected tab
   document.getElementById(tabId).hidden = false;
 }
+
 tabClients.onclick = () => {
   showTab("clientsTab");
   loadClients();
@@ -442,7 +445,7 @@ tabAppointments.onclick = () => {
 tabReports.onclick = () => {
   showTab("reportsTab");
 };
-
+  
 function showChartInfo(el, values, labels, unit){
   if(!el.length) return;
   const i = el[0].index;
