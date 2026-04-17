@@ -435,9 +435,11 @@ tabPractitioners.onclick = () => {
   loadPractitioners();
 };
 
-tabAppointments.onclick = () => {
+tabAppointments.onclick = async () => {
   showTab("appointmentsTab");
-  loadAppointments();
+  await loadClients();
+  await loadPractitioners();
+  await loadAppointments();
 };
 
 tabReports.onclick = () => {
@@ -470,30 +472,27 @@ c_contact.oninput = ()=>{
 
 /* ================= CLIENTS ================= */
 function loadClients() {
-  return sb
-    .from("clients")
-    .select("*")
-    .order("created_at", { ascending: false })
+  return sb.from("clients").select("*").order("created_at", { ascending: false })
     .then(({ data, error }) => {
       if (error) {
-        console.error("loadClients error:", error);
+        console.error(error);
         return;
       }
 
-      // ✅ populate GLOBAL array
       clients = data || [];
 
-      const table = document.getElementById("clientsTable");
+      // ✅ CLIENT DROPDOWN (Appointments)
+      a_client.innerHTML = "<option value=''>Select Client</option>";
+      clients.forEach(c => {
+        a_client.innerHTML += `<option value="${c.id}">${c.full_name}</option>`;
+      });
+
+      // ✅ CLIENT TABLE
+      const table = clientsTable;
       table.innerHTML = "";
 
       clients.forEach(c => {
-        const age = c.date_of_birth
-          ? Math.floor(
-              (new Date() - new Date(c.date_of_birth)) /
-              (365.25 * 24 * 60 * 60 * 1000)
-            )
-          : "";
-
+        const age = c.date_of_birth ? Math.floor((Date.now() - new Date(c.date_of_birth)) / 31557600000) : "";
         table.innerHTML += `
           <tr>
             <td>${c.full_name}</td>
@@ -507,11 +506,11 @@ function loadClients() {
             <td>${c.address || ""}</td>
             <td><button onclick="editClient('${c.id}')">✏️</button></td>
             <td><button onclick="deleteClient('${c.id}')">🗑</button></td>
-          </tr>
-        `;
+          </tr>`;
       });
     });
 }
+
 
 function editClient(id) {
   if (!clients || clients.length === 0) {
@@ -574,9 +573,18 @@ cancelClientBtn.onclick = ()=>{
 
 /* ================= PRACTITIONERS ================= */
 async function loadPractitioners() {
-  const { data } = await sb.from("practitioners").select("*").order("name");
+  const { data, error } = await sb.from("practitioners").select("*").order("name");
+  if (error) return console.error(error);
+
   practitioners = data || [];
 
+  // ✅ PRACTITIONER DROPDOWN (Appointments)
+  a_practitioner.innerHTML = "<option value=''>Select Practitioner</option>";
+  practitioners.forEach(p => {
+    a_practitioner.innerHTML += `<option value="${p.name}">${p.name}</option>`;
+  });
+
+  // ✅ PRACTITIONER TABLE
   practitionerTable.innerHTML = "";
   practitioners.forEach(p => {
     practitionerTable.innerHTML += `
