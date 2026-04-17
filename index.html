@@ -809,22 +809,21 @@ exportExcelBtn.onclick = ()=>{
 })();
 
 /* ================= CLIENTS ================= */
-async function loadClients(){
+async function loadClients() {
   const { data, error } = await sb
     .from("clients")
     .select("*")
     .order("created_at", { ascending: false });
 
   if (error) {
-    console.error("loadClients error:", error);
+    console.error("loadClients:", error);
     return;
   }
 
-  clients = data || [];
   clientsTable.innerHTML = "";
   a_client.innerHTML = "";
 
-  clients.forEach(c => {
+  data.forEach(c => {
     const age = c.date_of_birth
       ? Math.floor(
           (new Date() - new Date(c.date_of_birth)) /
@@ -834,7 +833,7 @@ async function loadClients(){
 
     clientsTable.innerHTML += `
       <tr>
-        <td>${c.full_name}</td>
+        <td>${c.full_name || ""}</td>
         <td>${c.date_of_birth || ""}</td>
         <td>${age}</td>
         <td>${c.gender || ""}</td>
@@ -842,20 +841,16 @@ async function loadClients(){
         <td>${c.ic_passport || ""}</td>
         <td>${c.contact || ""}</td>
         <td>${c.email || ""}</td>
-        <td class="address-cell">${c.address || ""}</td>
-        <td>
-          <button class="small" onclick="editClient('${c.id}')">✏️</button>
-        </td>
-        <td>
-          <button class="danger small" onclick="deleteClient('${c.id}')">🗑</button>
-        </td>
+        <td>${c.address || ""}</td>
+        <td><button onclick="editClient('${c.id}')">Edit</button></td>
+        <td><button onclick="deleteClient('${c.id}')">Delete</button></td>
       </tr>
     `;
 
-    // used for appointments dropdown
     a_client.innerHTML += `<option value="${c.id}">${c.full_name}</option>`;
   });
 }
+
 // load automatically
 document.addEventListener("DOMContentLoaded", loadClients);
 
