@@ -853,6 +853,37 @@ window.onload = function () {
     .then(loadAppointments)
     .catch(err => console.error("Admin init failed:", err));
 };
+
+// ========= TAB WIRING (REQUIRED) =========
+
+// Clients tab
+tabClients.onclick = async () => {
+  showTab("clients");
+  await loadClients();
+};
+
+// Practitioners tab
+tabPractitioners.onclick = async () => {
+  showTab("practitioners");
+  await loadPractitioners();
+};
+
+// Appointments tab
+tabAppointments.onclick = async () => {
+  showTab("appointments");
+  await loadAppointments();
+};
+
+// Sales Report tab
+tabReports.onclick = async () => {
+  showTab("reports");
+  await loadAppointments(); // reports depend on appointments
+  renderReports();          // your existing report/chart function
+};
+
+  window.onload = async () => {
+  await loadClients();
+};
   
 </script>
 
