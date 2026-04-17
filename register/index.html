@@ -149,7 +149,16 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 document.getElementById("ic_passport").addEventListener("input", () => {
-  let value = ic_passport.value.replace(/\D/g, ""); // digits only
+  let value = ic_passport.value;
+
+  // If starts with alphabet → PASSPORT (no formatting)
+  if (/^[A-Za-z]/.test(value)) {
+    ic_passport.value = value.toUpperCase().replace(/[^A-Z0-9]/g, "");
+    return;
+  }
+
+  // Else treat as IC (digits with dashes)
+  value = value.replace(/\D/g, "");
 
   if (value.length > 6)
     value = value.slice(0, 6) + "-" + value.slice(6);
