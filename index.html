@@ -265,7 +265,26 @@
       <tbody id="clientsTable"></tbody>
     </table>
   </div>
+<!-- ✅ All Clients (Admin + Public Registration) -->
+<div class="card">
+  <div class="section-title">All Clients</div>
+
+  <button class="primary" onclick="loadClients()">Refresh</button>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Contact</th>
+        <th>Citizenship</th>
+        <th>Email</th>
+      </tr>
+    </thead>
+    <tbody id="clientsTable"></tbody>
+  </table>
+</div>
 </section>
+
 
 <!-- ================= PRACTITIONERS ================= -->
 <section id="practitionersTab" class="hidden">
@@ -792,6 +811,40 @@ exportExcelBtn.onclick = ()=>{
   await loadPractitioners();
   await loadAppointments();
 })();
+
+// ================= ALL CLIENTS LIST =================
+async function loadClients() {
+  const { data, error } = await supabaseClient
+    .from("clients")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("Load clients error:", error);
+    return;
+  }
+
+  const table = document.getElementById("clientsTable");
+  if (!table) return; // safety check
+
+  table.innerHTML = "";
+
+  data.forEach(c => {
+    table.innerHTML += `
+      <tr>
+        <td>${c.full_name || ""}</td>
+        <td>${c.contact || ""}</td>
+        <td>${c.citizenship || ""}</td>
+        <td>${c.email || ""}</td>
+      </tr>
+    `;
+  });
+}
+
+// Load clients when admin dashboard opens
+document.addEventListener("DOMContentLoaded", loadClients);
+
+  
 </script>
 
 </body>
