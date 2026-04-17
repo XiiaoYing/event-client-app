@@ -148,25 +148,33 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
-document.getElementById("ic_passport").addEventListener("input", () => {
-  let value = ic_passport.value;
+const icInput = document.getElementById("ic_passport");
 
-  // If starts with alphabet → PASSPORT (no formatting)
+icInput.addEventListener("input", () => {
+  let value = icInput.value;
+
+  // ✅ PASSPORT: starts with a letter
   if (/^[A-Za-z]/.test(value)) {
-    ic_passport.value = value.toUpperCase().replace(/[^A-Z0-9]/g, "");
+    // Allow only letters + numbers, uppercase
+    icInput.value = value
+      .toUpperCase()
+      .replace(/[^A-Z0-9]/g, "");
     return;
   }
 
-  // Else treat as IC (digits with dashes)
-  value = value.replace(/\D/g, "");
+  // ✅ IC: starts with number
+  value = value.replace(/\D/g, ""); // digits only
 
-  if (value.length > 6)
+  if (value.length > 6) {
     value = value.slice(0, 6) + "-" + value.slice(6);
-  if (value.length > 9)
+  }
+  if (value.length > 9) {
     value = value.slice(0, 9) + "-" + value.slice(9, 13);
+  }
 
-  ic_passport.value = value;
+  icInput.value = value;
 });
+
   
 document.getElementById("contact").addEventListener("input", () => {
   let value = contact.value.replace(/\D/g, ""); // digits only
