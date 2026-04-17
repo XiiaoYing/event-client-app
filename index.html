@@ -857,13 +857,9 @@ async function loadClients() {
 }
 
 window.onload = async () => {
-  try {
-    await loadClients();
-    await loadPractitioners();
-    await loadAppointments();
-  } catch (e) {
-    console.error("Admin init error:", e);
-  }
+  await loadClients();
+  await loadPractitioners();
+  await loadAppointments();
 };
   
 </script>
