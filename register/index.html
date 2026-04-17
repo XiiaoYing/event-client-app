@@ -148,6 +148,25 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
+document.getElementById("ic_passport").addEventListener("input", () => {
+  let value = ic_passport.value.replace(/\D/g, ""); // digits only
+
+  if (value.length > 6)
+    value = value.slice(0, 6) + "-" + value.slice(6);
+  if (value.length > 9)
+    value = value.slice(0, 9) + "-" + value.slice(9, 13);
+
+  ic_passport.value = value;
+});
+  
+document.getElementById("contact").addEventListener("input", () => {
+  let value = contact.value.replace(/\D/g, ""); // digits only
+
+  if (value.length > 3)
+    value = value.slice(0, 3) + "-" + value.slice(3, 11);
+
+  contact.value = value;
+});
 /* ================= REGISTER CLIENT ================= */
 document.getElementById("registerBtn").addEventListener("click", async () => {
   const msg = document.getElementById("msg");
