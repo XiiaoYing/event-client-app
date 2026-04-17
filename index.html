@@ -395,9 +395,10 @@ const SERVICES = [
   { id:"SMFT", name:"Sports Massage - First Trial", price:189 }
 ];
 
-let clients = [];
-let practitioners = [];
-let appointments = [];
+// ===== GLOBAL STATE (MUST BE TOP-LEVEL) =====
+var clients = [];
+var practitioners = [];
+var appointments = [];
 
 let serviceCountChart, serviceRevenueChart, paymentRevenueChart, ageRevenueChart;
 
@@ -441,68 +442,72 @@ c_contact.oninput = ()=>{
 };
 
 /* ================= CLIENTS ================= */
-
-  window.loadClients = async function () {
-  const { data, error } = await sb
+function loadClients() {
+  return sb
     .from("clients")
     .select("*")
-    .order("created_at", { ascending: false });
+    .order("created_at", { ascending: false })
+    .then(({ data, error }) => {
+      if (error) {
+        console.error("loadClients error:", error);
+        return;
+      }
 
-  if (error) {
-    console.error("loadClients error:", error);
+      // ✅ populate GLOBAL array
+      clients = data || [];
+
+      const table = document.getElementById("clientsTable");
+      table.innerHTML = "";
+
+      clients.forEach(c => {
+        const age = c.date_of_birth
+          ? Math.floor(
+              (new Date() - new Date(c.date_of_birth)) /
+              (365.25 * 24 * 60 * 60 * 1000)
+            )
+          : "";
+
+        table.innerHTML += `
+          <tr>
+            <td>${c.full_name}</td>
+            <td>${c.date_of_birth || ""}</td>
+            <td>${age}</td>
+            <td>${c.gender || ""}</td>
+            <td>${c.citizenship || ""}</td>
+            <td>${c.ic_passport || ""}</td>
+            <td>${c.contact || ""}</td>
+            <td>${c.email || ""}</td>
+            <td>${c.address || ""}</td>
+            <td><button onclick="editClient('${c.id}')">✏️</button></td>
+            <td><button onclick="deleteClient('${c.id}')">🗑</button></td>
+          </tr>
+        `;
+      });
+    });
+}
+
+function editClient(id) {
+  if (!clients || clients.length === 0) {
+    console.error("Clients not loaded yet");
     return;
   }
 
-  // ✅ update GLOBAL state
-  window.clients = data;
-
-  const table = document.getElementById("clientsTable");
-  table.innerHTML = "";
-
-  data.forEach(c => {
-    const age = c.date_of_birth
-      ? Math.floor(
-          (new Date() - new Date(c.date_of_birth)) /
-          (365.25 * 24 * 60 * 60 * 1000)
-        )
-      : "";
-
-    table.innerHTML += `
-      <tr>
-        <td>${c.full_name}</td>
-        <td>${c.date_of_birth || ""}</td>
-        <td>${age}</td>
-        <td>${c.gender || ""}</td>
-        <td>${c.citizenship || ""}</td>
-        <td>${c.ic_passport || ""}</td>
-        <td>${c.contact || ""}</td>
-        <td>${c.email || ""}</td>
-        <td>${c.address || ""}</td>
-        <td><button onclick="editClient('${c.id}')">✏️</button></td>
-        <td><button onclick="deleteClient('${c.id}')">🗑</button></td>
-      </tr>
-    `;
-  });
-};
-
-  
-function editClient(id) {
-  const c = clients.find(x => String(x.id) === String(id));
+  const c = clients.find(x => x.id === id);
 
   if (!c) {
     console.error("Client not found:", id, clients);
     return;
   }
 
-  document.getElementById("client_id").value = c.id;
-  document.getElementById("c_name").value = c.full_name || "";
-  document.getElementById("c_dob").value = c.date_of_birth || "";
-  document.getElementById("c_gender").value = c.gender || "";
-  document.getElementById("c_citizenship").value = c.citizenship || "";
-  document.getElementById("c_ic").value = c.ic_passport || "";
-  document.getElementById("c_contact").value = c.contact || "";
-  document.getElementById("c_email").value = c.email || "";
-  document.getElementById("c_address").value = c.address || "";
+  client_id.value = c.id;
+  c_name.value = c.full_name || "";
+  c_dob.value = c.date_of_birth || "";
+  c_gender.value = c.gender || "";
+  c_citizenship.value = c.citizenship || "";
+  c_ic.value = c.ic_passport || "";
+  c_contact.value = c.contact || "";
+  c_email.value = c.email || "";
+  c_address.value = c.address || "";
 }
 
 window.deleteClient = async id=>{
@@ -840,54 +845,13 @@ exportExcelBtn.onclick = ()=>{
   await loadAppointments();
 })();
 
-/* ================= CLIENTS ================= */
-async function loadClients() {
-  const { data, error } = await sb
-    .from("clients")
-    .select("*")
-    .order("created_at", { ascending: false });
 
-  if (error) {
-    console.error("loadClients:", error);
-    return;
-  }
-
-  clientsTable.innerHTML = "";
-  a_client.innerHTML = "";
-
-  data.forEach(c => {
-    const age = c.date_of_birth
-      ? Math.floor(
-          (new Date() - new Date(c.date_of_birth)) /
-          (365.25 * 24 * 60 * 60 * 1000)
-        )
-      : "";
-
-    clientsTable.innerHTML += `
-      <tr>
-        <td>${c.full_name || ""}</td>
-        <td>${c.date_of_birth || ""}</td>
-        <td>${age}</td>
-        <td>${c.gender || ""}</td>
-        <td>${c.citizenship || ""}</td>
-        <td>${c.ic_passport || ""}</td>
-        <td>${c.contact || ""}</td>
-        <td>${c.email || ""}</td>
-        <td>${c.address || ""}</td>
-        <td><button onclick="editClient('${c.id}')">Edit</button></td>
-        <td><button onclick="deleteClient('${c.id}')">Delete</button></td>
-      </tr>
-    `;
-
-    a_client.innerHTML += `<option value="${c.id}">${c.full_name}</option>`;
-  });
-}
-
-
-window.onload = async () => {
-    await loadClients();
-    await loadPractitioners();
-    await loadAppointments();
+window.onload = function () {
+  Promise.resolve()
+    .then(loadClients)
+    .then(loadPractitioners)
+    .then(loadAppointments)
+    .catch(err => console.error("Admin init failed:", err));
 };
   
 </script>
