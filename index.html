@@ -856,33 +856,31 @@ window.onload = function () {
 
 // ========= TAB WIRING (REQUIRED) =========
 
-// Clients tab
-tabClients.onclick = async () => {
-  showTab("clients");
-  await loadClients();
+tabClients.onclick = () => {
+  showTab("clientsTab");
+  loadClients();
 };
 
-// Practitioners tab
-tabPractitioners.onclick = async () => {
-  showTab("practitioners");
-  await loadPractitioners();
+tabPractitioners.onclick = () => {
+  showTab("practitionersTab");
+  loadPractitioners();
 };
 
-// Appointments tab
-tabAppointments.onclick = async () => {
-  showTab("appointments");
-  await loadAppointments();
+tabAppointments.onclick = () => {
+  showTab("appointmentsTab");
+  loadAppointments();
 };
 
-// Sales Report tab
-tabReports.onclick = async () => {
-  showTab("reports");
-  await loadAppointments(); // reports depend on appointments
-  renderReports();          // your existing report/chart function
+tabReports.onclick = () => {
+  showTab("reportsTab");
+  loadAppointments(); // reports depend on appointments data
+  renderReports();    // your existing report/chart function
 };
 
-  window.onload = async () => {
-  await loadClients();
+
+window.onload = () => {
+  showTab("clientsTab");
+  loadClients();
 };
   
 </script>
