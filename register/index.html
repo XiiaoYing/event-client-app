@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Client Registration | Dynamique Sports Rehab Centre</title>
+
+  <!-- Google Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <!-- Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      font-family: "Montserrat", sans-serif;
+      background: #f4f4f4;
+      margin: 0;
+      padding: 40px 16px;
+    }
+
+    .card {
+      background: #fff;
+      max-width: 420px;
+      margin: auto;
+      padding: 26px;
+      border-radius: 14px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    label {
+      font-size: 13px;
+      font-weight: 600;
+      display: block;
+      margin-top: 14px;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 9px;
+      margin-top: 6px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+    }
+
+    textarea {
+      min-height: 70px;
+      resize: vertical;
+    }
+
+    button {
+      margin-top: 22px;
+      width: 100%;
+      background: #ff7a00;
+      color: #000;
+      border: none;
+      padding: 12px;
+      font-size: 15px;
+      border-radius: 10px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .msg {
+      margin-top: 16px;
+      text-align: center;
+      font-size: 14px;
+    }
+
+    .success { color: #1e7e34; }
+    .error { color: #c82333; }
+  </style>
+</head>
+
+<body>
+
+<div class="card">
+  <h2>Client Registration</h2>
+
+  <label>Full Name</label>
+  <input id="full_name">
+
+  <label>Date of Birth</label>
+  <input type="date" id="dob">
+
+  <label>Gender</label>
+  <select id="gender">
+    <option value="">Select</option>
+    <option>Male</option>
+    <option>Female</option>
+  </select>
+
+  <label>Citizenship</label>
+  <select id="citizenship">
+    <option>Malaysian</option>
+    <option>Foreigner</option>
+  </select>
+
+  <label>IC / Passport</label>
+  <input id="ic_passport">
+
+  <label>Contact</label>
+  <input id="contact">
+
+  <label>Email</label>
+  <input type="email" id="email">
+
+  <label>Address</label>
+  <textarea id="address"></textarea>
+
+  <button onclick="registerClient()">Register</button>
+
+  <div id="msg" class="msg"></div>
+</div>
+
+<script>
+const supabase = supabase.createClient(
+  "https://yxkospvcqkoxiravjtqd.supabase.co",
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl4a29zcHZjcWtveGlyYXZqdHFkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYyODEyNzEsImV4cCI6MjA5MTg1NzI3MX0.Aaw6wfcXf21uwgMQJWtiVN_vxqaqevEQerx2GjOG-Jc"
+);
+
+async function registerClient() {
+  const msg = document.getElementById("msg");
+  msg.innerHTML = "";
+
+  const payload = {
+    full_name: document.getElementById("full_name").value,
+    date_of_birth: document.getElementById("dob").value,
+    gender: document.getElementById("gender").value,
+    citizenship: document.getElementById("citizenship").value,
+    ic_passport: document.getElementById("ic_passport").value,
+    contact: document.getElementById("contact").value,
+    email: document.getElementById("email").value,
+    address: document.getElementById("address").value,
+    source: "self_registration"
+  };
+
+  const { error } = await supabase.from("clients").insert(payload);
+
+  if (error) {
+    msg.innerHTML = `<div class="error">${error.message}</div>`;
+  } else {
+    msg.innerHTML = `<div class="success">✅ Registration successful!</div>`;
+    document.querySelectorAll("input, textarea").forEach(el => el.value = "");
+    document.getElementById("gender").value = "";
+  }
+}
+</script>
+
+</body>
+</html>
