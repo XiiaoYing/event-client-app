@@ -99,14 +99,16 @@
     const msg = document.getElementById("msg");
     msg.textContent = "";
 
-    const payload = {
-      full_name: document.getElementById("full_name").value.trim(),
-      date_of_birth: document.getElementById("dob").value,
-      contact: document.getElementById("contact").value,
-      gender: document.getElementById("gender").value,
-      address: document.getElementById("address").value,
-      source: "self_registration"
-    };
+const payload = {
+  full_name: full_name.value.trim(),
+  date_of_birth: dob.value,
+  gender: gender.value,
+  citizenship: citizenship.value,
+  ic_passport: ic_passport.value,
+  contact: contact.value,
+  email: email.value,
+  address: address.value
+};
 
     if (!payload.full_name || !payload.date_of_birth || !payload.contact) {
       msg.style.color = "red";
