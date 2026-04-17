@@ -442,26 +442,34 @@ c_contact.oninput = ()=>{
 
 /* ================= CLIENTS ================= */
 async function loadClients() {
-  const { data, error } = await sb.from("clients")
+  const { data, error } = await sb
+    .from("clients")
     .select("*")
     .order("created_at", { ascending: false });
 
   if (error) {
-    console.error(error);
+    console.error("loadClients error:", error);
     return;
   }
 
+  // ✅ update GLOBAL state
+  clients = data;
+
+  // ✅ render table
   const table = document.getElementById("clientsTable");
   table.innerHTML = "";
 
-  data.forEach(c => {
+  clients.forEach(c => {
     const age = c.date_of_birth
-      ? Math.floor((new Date() - new Date(c.date_of_birth)) / (365.25 * 24 * 60 * 60 * 1000))
+      ? Math.floor(
+          (new Date() - new Date(c.date_of_birth)) /
+          (365.25 * 24 * 60 * 60 * 1000)
+        )
       : "";
 
     table.innerHTML += `
       <tr>
-        <td>${c.full_name || ""}</td>
+        <td>${c.full_name}</td>
         <td>${c.date_of_birth || ""}</td>
         <td>${age}</td>
         <td>${c.gender || ""}</td>
@@ -470,17 +478,18 @@ async function loadClients() {
         <td>${c.contact || ""}</td>
         <td>${c.email || ""}</td>
         <td>${c.address || ""}</td>
-        <td><button onclick="editClient('${c.id}')">Edit</button></td>
-        <td><button onclick="deleteClient('${c.id}')">Delete</button></td>
+        <td><button onclick="editClient('${c.id}')">✏️</button></td>
+        <td><button onclick="deleteClient('${c.id}')">🗑</button></td>
       </tr>
     `;
   });
 }
 
 function editClient(id) {
-  const c = clients.find(x => x.id === id);
+  const c = clients.find(x => String(x.id) === String(id));
+
   if (!c) {
-    console.error("Client not found:", id);
+    console.error("Client not found:", id, clients);
     return;
   }
 
@@ -531,20 +540,37 @@ cancelClientBtn.onclick = ()=>{
 };
 
 /* ================= PRACTITIONERS ================= */
-async function loadPractitioners(){
+async function loadPractitioners() {
   const { data } = await sb.from("practitioners").select("*").order("name");
   practitioners = data || [];
-  practitionerTable.innerHTML="";
-  a_practitioner.innerHTML="";
-  practitioners.forEach(p=>{
+
+  practitionerTable.innerHTML = "";
+  practitioners.forEach(p => {
     practitionerTable.innerHTML += `
       <tr>
         <td>${p.name}</td>
-        <td><button class="danger small" onclick="deletePractitioner('${p.id}')">🗑</button></td>
+        <td><button onclick="deletePractitioner('${p.id}')">🗑</button></td>
       </tr>`;
-    a_practitioner.innerHTML += `<option>${p.name}</option>`;
   });
 }
+
+async function loadAppointments() {
+  const { data } = await sb.from("appointments").select("*").order("start_time");
+  appointments = data || [];
+
+  appointmentsTable.innerHTML = "";
+  appointments.forEach(a => {
+    appointmentsTable.innerHTML += `
+      <tr>
+        <td>${a.start_time.slice(0,10)}</td>
+        <td>${a.start_time.slice(11,16)}</td>
+        <td>${a.practitioner}</td>
+        <td>${a.payment_method}</td>
+        <td>${a.total}</td>
+      </tr>`;
+  });
+}
+
 
 addPractitionerBtn.onclick = async ()=>{
   if(!p_name.value) return;
