@@ -2,134 +2,171 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Client Registration | Dynamique Sports Rehab Centre</title>
+  <title>Client Registration</title>
 
-  <!-- ✅ LOAD SUPABASE FIRST -->
+  <!-- Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <!-- Supabase -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
+    * { box-sizing: border-box; }
+
     body {
       margin: 0;
-      padding: 40px 16px;
-      background: #0f0f0f;
-      font-family: Arial, sans-serif;
+      min-height: 100vh;
+      font-family: "Montserrat", sans-serif;
+      background: radial-gradient(circle at top, #111 0%, #000 60%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
       color: #000;
     }
+
     .card {
-      max-width: 420px;
-      margin: auto;
-      background: #ffffff;
-      padding: 24px;
-      border-radius: 12px;
+      background: #fff;
+      width: 100%;
+      max-width: 460px;
+      padding: 32px;
+      border-radius: 16px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.6);
     }
-    h2 {
+
+    h1 {
       text-align: center;
+      font-size: 22px;
+      margin-bottom: 20px;
     }
+
     label {
-      display: block;
-      margin-top: 12px;
       font-size: 13px;
-      font-weight: bold;
+      font-weight: 600;
+      margin-bottom: 6px;
+      display: block;
     }
+
     input, select, textarea {
       width: 100%;
-      padding: 8px;
-      margin-top: 6px;
-      box-sizing: border-box;
-    }
-    textarea {
-      min-height: 60px;
-    }
-    button {
-      margin-top: 20px;
-      width: 100%;
       padding: 12px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      margin-bottom: 14px;
+      font-size: 14px;
+    }
+
+    textarea {
+      min-height: 70px;
+      resize: vertical;
+    }
+
+    .age {
+      font-size: 13px;
+      color: #666;
+      margin-bottom: 14px;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
       background: #ff7a00;
       border: none;
-      font-weight: bold;
+      color: #000;
+      font-weight: 700;
+      font-size: 15px;
+      border-radius: 8px;
       cursor: pointer;
+      margin-top: 10px;
     }
-    .msg {
-      margin-top: 16px;
+
+    button:hover {
+      opacity: 0.9;
+    }
+
+    .success, .error {
       text-align: center;
+      font-size: 14px;
+      margin-top: 14px;
+      display: none;
     }
+
+    .success { color: #1a8f3a; }
+    .error { color: #b00020; }
   </style>
 </head>
 
 <body>
 
 <div class="card">
-  <h2>Client Registration</h2>
+  <h1>Client Registration</h1>
 
-  <label>Full Name *</label>
-  <input id="full_name">
+  <form id="registerForm">
 
-  <label>Date of Birth *</label>
-  <input type="date" id="dob">
+    <label>Full Name *</label>
+    <input id="full_name" required>
 
-  <label>Contact *</label>
-  <input id="contact">
+    <label>Date of Birth *</label>
+    <input type="date" id="dob" required>
 
-  <label>Gender</label>
-  <select id="gender">
-    <option value="">Select</option>
-    <option>Male</option>
-    <option>Female</option>
-  </select>
+    <div class="age">Age: <span id="ageText">–</span></div>
 
-  <label>Address</label>
-  <textarea id="address"></textarea>
+    <label>Contact *</label>
+    <input id="contact" required>
 
-  <button id="registerBtn" type="button">REGISTER</button>
+    <label>Gender</label>
+    <select id="gender">
+      <option value="">Select</option>
+      <option>Male</option>
+      <option>Female</option>
+    </select>
 
-  <div id="msg" class="msg"></div>
+    <label>Address</label>
+    <textarea id="address"></textarea>
+
+    <button type="submit">REGISTER</button>
+
+    <div class="success" id="successMsg">✅ Registration successful</div>
+    <div class="error" id="errorMsg">❌ Please try again</div>
+  </form>
 </div>
 
-<!-- ✅ YOUR SCRIPT COMES AFTER SUPABASE -->
 <script>
-  // ✅ CREATE CLIENT (NOTE: supabase comes from the library)
-  const supabaseClient = supabase.createClient(
-    "https://yxkospvcqkoxiravjtqd.supabase.co",
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl4a29zcHZjcWtveGlyYXZqdHFkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYyODEyNzEsImV4cCI6MjA5MTg1NzI3MX0.Aaw6wfcXf21uwgMQJWtiVN_vxqaqevEQerx2GjOG-Jc"
-  );
+/* ===== SUPABASE ===== */
+const SUPABASE_URL = "https://yxkospvcqkoxiravjtqd.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl4a29zcHZjcWtveGlyYXZqdHFkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYyODEyNzEsImV4cCI6MjA5MTg1NzI3MX0.Aaw6wfcXf21uwgMQJWtiVN_vxqaqevEQerx2GjOG-Jc";
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-  document.getElementById("registerBtn").addEventListener("click", registerClient);
-
-  async function registerClient() {
-    const msg = document.getElementById("msg");
-    msg.textContent = "";
-
-const payload = {
-  full_name: full_name.value.trim(),
-  date_of_birth: dob.value,
-  gender: gender.value,
-  citizenship: citizenship.value,
-  ic_passport: ic_passport.value,
-  contact: contact.value,
-  email: email.value,
-  address: address.value
+/* ===== AGE ===== */
+dob.onchange = () => {
+  if (!dob.value) return;
+  const age = Math.floor((Date.now() - new Date(dob.value)) / (365.25 * 86400000));
+  ageText.textContent = age;
 };
 
-    if (!payload.full_name || !payload.date_of_birth || !payload.contact) {
-      msg.style.color = "red";
-      msg.textContent = "Please fill all required fields";
-      return;
-    }
+/* ===== SUBMIT ===== */
+registerForm.onsubmit = async (e) => {
+  e.preventDefault();
+  successMsg.style.display = "none";
+  errorMsg.style.display = "none";
 
-    const { error } = await supabaseClient
-      .from("clients")
-      .insert(payload);
+  const { error } = await sb.from("clients").insert({
+    full_name: full_name.value,
+    date_of_birth: dob.value,
+    contact: contact.value,
+    gender: gender.value || null,
+    address: address.value || null,
+    citizenship: "Malaysian"
+  });
 
-    if (error) {
-      console.error(error);
-      msg.style.color = "red";
-      msg.textContent = error.message;
-    } else {
-      msg.style.color = "green";
-      msg.textContent = "✅ Registration successful";
-      document.querySelectorAll("input, textarea").forEach(e => e.value = "");
-    }
+  if (error) {
+    console.error(error);
+    errorMsg.style.display = "block";
+  } else {
+    successMsg.style.display = "block";
+    registerForm.reset();
+    ageText.textContent = "–";
   }
+};
 </script>
 
 </body>
