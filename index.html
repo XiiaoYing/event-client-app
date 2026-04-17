@@ -247,6 +247,34 @@
       <div class="full-row"><label>Address (Optional)</label><textarea id="c_address"></textarea></div>
     </div>
 
+    <!-- ✅ ONE unified Clients list -->
+  <div class="card">
+    <div class="section-title">All Clients</div>
+
+    <button class="primary" onclick="loadClients()">Refresh</button>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>DOB</th>
+          <th>Age</th>
+          <th>Gender</th>
+          <th>Citizenship</th>
+          <th>IC / Passport</th>
+          <th>Contact</th>
+          <th>Email</th>
+          <th>Address</th>
+          <th>Edit</th>
+          <th>Delete</th>
+        </tr>
+      </thead>
+      <tbody id="clientsTable"></tbody>
+    </table>
+  </div>
+</section>
+
+
     <div style="margin-top:16px">
       <button class="primary" id="saveClientBtn">Save</button>
       <button class="primary" id="cancelClientBtn">Cancel</button>
@@ -456,28 +484,40 @@ c_contact.oninput = ()=>{
 };
 
 /* ================= CLIENTS ================= */
-async function loadClients(){
-  const { data } = await sb.from("clients").select("*").order("full_name");
-  clients = data || [];
-  clientsTable.innerHTML = "";
-  a_client.innerHTML = "";
+async function loadClients() {
+  const { data, error } = await supabaseClient
+    .from("clients")
+    .select("*")
+    .order("created_at", { ascending: false });
 
-  clients.forEach(c=>{
-    clientsTable.innerHTML += `
+  if (error) {
+    console.error(error);
+    return;
+  }
+
+  const table = document.getElementById("clientsTable");
+  table.innerHTML = "";
+
+  data.forEach(c => {
+    const age = c.date_of_birth
+      ? Math.floor((new Date() - new Date(c.date_of_birth)) / (365.25 * 24 * 60 * 60 * 1000))
+      : "";
+
+    table.innerHTML += `
       <tr>
-        <td>${c.full_name}</td>
-        <td>${c.date_of_birth}</td>
-        <td>${age(c.date_of_birth)}</td>
-        <td>${c.gender||""}</td>
-        <td>${c.citizenship||""}</td>
-        <td>${c.ic_passport||""}</td>
-        <td>${c.contact||""}</td>
-        <td>${c.email||""}</td>
-        <td class="address-cell">${c.address||""}</td>
-        <td><button class="small" onclick="editClient('${c.id}')">✏️</button></td>
-        <td><button class="danger small" onclick="deleteClient('${c.id}')">🗑</button></td>
-      </tr>`;
-    a_client.innerHTML += `<option value="${c.id}">${c.full_name}</option>`;
+        <td>${c.full_name || ""}</td>
+        <td>${c.date_of_birth || ""}</td>
+        <td>${age}</td>
+        <td>${c.gender || ""}</td>
+        <td>${c.citizenship || ""}</td>
+        <td>${c.ic_passport || ""}</td>
+        <td>${c.contact || ""}</td>
+        <td>${c.email || ""}</td>
+        <td>${c.address || ""}</td>
+        <td><button onclick="editClient('${c.id}')">Edit</button></td>
+        <td><button onclick="deleteClient('${c.id}')">Delete</button></td>
+      </tr>
+    `;
   });
 }
 
@@ -820,29 +860,39 @@ async function loadClients() {
     .order("created_at", { ascending: false });
 
   if (error) {
-    console.error("Load clients error:", error);
+    console.error(error);
     return;
   }
 
   const table = document.getElementById("clientsTable");
-  if (!table) return; // safety check
-
   table.innerHTML = "";
 
   data.forEach(c => {
+    const age = c.date_of_birth
+      ? Math.floor((new Date() - new Date(c.date_of_birth)) / (365.25 * 24 * 60 * 60 * 1000))
+      : "";
+
     table.innerHTML += `
       <tr>
         <td>${c.full_name || ""}</td>
-        <td>${c.contact || ""}</td>
+        <td>${c.date_of_birth || ""}</td>
+        <td>${age}</td>
+        <td>${c.gender || ""}</td>
         <td>${c.citizenship || ""}</td>
+        <td>${c.ic_passport || ""}</td>
+        <td>${c.contact || ""}</td>
         <td>${c.email || ""}</td>
+        <td>${c.address || ""}</td>
+        <td><button onclick="editClient('${c.id}')">Edit</button></td>
+        <td><button onclick="deleteClient('${c.id}')">Delete</button></td>
       </tr>
     `;
   });
 }
 
-// Load clients when admin dashboard opens
+// load automatically
 document.addEventListener("DOMContentLoaded", loadClients);
+
 
   
 </script>
