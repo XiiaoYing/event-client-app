@@ -405,17 +405,34 @@ let serviceCountChart, serviceRevenueChart, paymentRevenueChart, ageRevenueChart
 /* ================= HELPERS ================= */
 const age = d => Math.floor((Date.now() - new Date(d)) / (365.25 * 86400000));
 
-function showTab(t){
-  ["clients","practitioners","appointments","reports"].forEach(x=>{
-    document.getElementById(x+"Tab").classList.toggle("hidden", x!==t);
-    document.getElementById("tab"+x.charAt(0).toUpperCase()+x.slice(1))
-      .classList.toggle("active", x===t);
-  });
+function showTab(tabId) {
+  // hide only the main tab sections
+  document.getElementById("clientsTab").style.display = "none";
+  document.getElementById("practitionersTab").style.display = "none";
+  document.getElementById("appointmentsTab").style.display = "none";
+  document.getElementById("reportsTab").style.display = "none";
+
+  // show the selected tab
+  document.getElementById(tabId).style.display = "block";
 }
-tabClients.onclick = ()=>showTab("clients");
-tabPractitioners.onclick = ()=>showTab("practitioners");
-tabAppointments.onclick = ()=>showTab("appointments");
-tabReports.onclick = ()=>showTab("reports");
+tabClients.onclick = () => {
+  showTab("clientsTab");
+  loadClients();
+};
+
+tabPractitioners.onclick = () => {
+  showTab("practitionersTab");
+  loadPractitioners();
+};
+
+tabAppointments.onclick = () => {
+  showTab("appointmentsTab");
+  loadAppointments();
+};
+
+tabReports.onclick = () => {
+  showTab("reportsTab");
+};
 
 function showChartInfo(el, values, labels, unit){
   if(!el.length) return;
@@ -853,32 +870,6 @@ window.onload = function () {
     .then(loadAppointments)
     .catch(err => console.error("Admin init failed:", err));
 };
-
-// ========= TAB WIRING (REQUIRED) =========
-
-tabClients.onclick = () => {
-  showTab("clientsTab");
-  loadClients();
-};
-
-tabPractitioners.onclick = () => {
-  showTab("practitionersTab");
-  loadPractitioners();
-};
-
-tabAppointments.onclick = () => {
-  showTab("appointmentsTab");
-  loadAppointments();
-};
-
-tabReports.onclick = async () => {
-  showTab("reportsTab");
-  await loadAppointments();
-  // ✅ Do NOT call renderReports()
-  // Reports will generate only when user clicks "Apply"
-};
-
-
 
 window.onload = () => {
   showTab("clientsTab");
