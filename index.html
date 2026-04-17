@@ -871,11 +871,13 @@ tabAppointments.onclick = () => {
   loadAppointments();
 };
 
-tabReports.onclick = () => {
+tabReports.onclick = async () => {
   showTab("reportsTab");
-  loadAppointments(); // reports depend on appointments data
-  renderReports();    // your existing report/chart function
+  await loadAppointments();
+  // ✅ Do NOT call renderReports()
+  // Reports will generate only when user clicks "Apply"
 };
+
 
 
 window.onload = () => {
