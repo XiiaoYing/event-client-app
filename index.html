@@ -59,10 +59,6 @@ section {
   position: relative;
 }
 
-section[hidden] {
-  display: none;
-}
-
 
     .container {
       max-width: 1300px;
@@ -70,8 +66,9 @@ section[hidden] {
       padding: 24px;
     }
 
-    .hidden { display: none; }
-
+section[hidden] {
+  display: none;
+}
     .card {
       background: #fff;
       border: 1px solid #e0e0e0;
@@ -285,7 +282,7 @@ section[hidden] {
 
 
 <!-- ================= PRACTITIONERS ================= -->
-<section id="practitionersTab" class="hidden">
+<section id="practitionersTab" hidden>
   <div class="card">
     <div class="section-title">Practitioners</div>
     <input id="p_name">
@@ -299,7 +296,7 @@ section[hidden] {
 </section>
 
 <!-- ================= APPOINTMENTS ================= -->
-<section id="appointmentsTab" class="hidden">
+<section id="appointmentsTab" hidden
   <div class="card">
     <div class="section-title">Appointments</div>
     <input type="hidden" id="appointment_id">
@@ -348,7 +345,7 @@ section[hidden] {
 </section>
 
 <!-- ================= SALES REPORT ================= -->
-<section id="reportsTab" class="hidden">
+<section id="reportsTab" hidden>
   <div class="card">
     <div class="section-title">Sales Report</div>
     <input type="date" id="reportFrom">
@@ -862,18 +859,6 @@ exportExcelBtn.onclick = ()=>{
 };
 
 /* ================= INIT ================= */
-(async()=>{
-  const today=new Date().toISOString().slice(0,10);
-  a_date.value=today;
-  a_time.value=new Date().toTimeString().slice(0,5);
-  reportFrom.value=today;
-  reportTo.value=today;
-
-  await loadClients();
-  await loadPractitioners();
-  await loadAppointments();
-})();
-
 
 window.onload = function () {
   Promise.resolve()
