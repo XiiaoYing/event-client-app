@@ -50,6 +50,15 @@
       color: #000;
       font-weight: 600;
     }
+    header {
+  position: relative;
+  z-index: 1000;
+}
+
+section {
+  position: relative;
+  z-index: 1;
+}
 
     .container {
       max-width: 1300px;
@@ -407,13 +416,13 @@ const age = d => Math.floor((Date.now() - new Date(d)) / (365.25 * 86400000));
 
 function showTab(tabId) {
   // hide only the main tab sections
-  document.getElementById("clientsTab").style.display = "none";
-  document.getElementById("practitionersTab").style.display = "none";
-  document.getElementById("appointmentsTab").style.display = "none";
-  document.getElementById("reportsTab").style.display = "none";
+  clientsTab.hidden = true;
+  practitionersTab.hidden = true;
+  appointmentsTab.hidden = true;
+  reportsTab.hidden = true;
 
-  // show the selected tab
-  document.getElementById(tabId).style.display = "block";
+  // show selected tab
+  document.getElementById(tabId).hidden = false;
 }
 tabClients.onclick = () => {
   showTab("clientsTab");
